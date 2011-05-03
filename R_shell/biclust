@@ -1,0 +1,1 @@
+/usr/bin/Rscript /projects/sysbio/lab_apps/R_shell/biclust.r $@

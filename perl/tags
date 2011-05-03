@@ -1,0 +1,864 @@
+AddBinaryAssignment	bio/bio_generate_attributes.pl	/^sub AddBinaryAssignment$/
+AddFunctionAssignment	bio/bio_generate_attributes.pl	/^sub AddFunctionAssignment$/
+AddLog	lib/libstats.pl	/^sub AddLog$/
+AddNewVar	bio/bio_generate_attributes.pl	/^sub AddNewVar$/
+AddOperand	bio/bio_generate_attributes.pl	/^sub AddOperand$/
+AddToOutputs	bio/bio_generate_attributes.pl	/^sub AddToOutputs ($\\@)$/
+AddUnaryAssignment	bio/bio_generate_attributes.pl	/^sub AddUnaryAssignment$/
+AddVarAssignment	bio/bio_generate_attributes.pl	/^sub AddVarAssignment$/
+CalculateAndVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateAndVariableInst ($$\\@)$/
+CalculateAssignmentVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateAssignmentVariableInst ($$\\@)$/
+CalculateAverageVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateAverageVariableInst ($$\\@)$/
+CalculateDivisionVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateDivisionVariableInst ($$\\@)$/
+CalculateEqualVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateEqualVariableInst ($$\\@)$/
+CalculateGreaterEqualVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateGreaterEqualVariableInst ($$\\@)$/
+CalculateGreaterVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateGreaterVariableInst ($$\\@)$/
+CalculateLessEqualVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateLessEqualVariableInst ($$\\@)$/
+CalculateLessVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateLessVariableInst ($$\\@)$/
+CalculateMaxVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateMaxVariableInst ($$\\@)$/
+CalculateMinVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateMinVariableInst ($$\\@)$/
+CalculateMinusVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateMinusVariableInst ($$\\@)$/
+CalculateMulVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateMulVariableInst ($$\\@)$/
+CalculateNotEqualVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateNotEqualVariableInst ($$\\@)$/
+CalculateNotVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateNotVariableInst ($$\\@)$/
+CalculateNumberVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateNumberVariableInst ($$\\@)$/
+CalculateOperandVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateOperandVariableInst ($$\\@$)$/
+CalculateOrVariableInst	bio/bio_generate_attributes.pl	/^sub CalculateOrVariableInst ($$\\@)$/
+CalculatePlusVariableInst	bio/bio_generate_attributes.pl	/^sub CalculatePlusVariableInst ($$\\@)$/
+CalculateVariableInsts	bio/bio_generate_attributes.pl	/^sub CalculateVariableInsts$/
+CmpGeneWorm	lib/libmap_worm.pl	/^sub CmpGeneWorm$/
+ComputeBinomial	lib/libstats.pl	/^sub ComputeBinomial$/
+ComputeHyperPValue	lib/libstats.pl	/^sub ComputeHyperPValue$/
+ComputeHyperPValueUpper	lib/libstats.pl	/^sub ComputeHyperPValueUpper # one-sided$/
+ComputeLog10HyperDensity	lib/libstats.pl	/^sub ComputeLog10HyperDensity$/
+ComputeLog10HyperPValue	lib/libstats.pl	/^sub ComputeLog10HyperPValue$/
+ComputeLogHyperDistOverDensity	lib/libstats.pl	/^sub ComputeLogHyperDistOverDensity {$/
+ComputeSymmetricUniformCdf	lib/libstats.pl	/^sub ComputeSymmetricUniformCdf$/
+ConvertFromDictionary	bio/bio_generate_attributes.pl	/^sub ConvertFromDictionary$/
+DEBUG	bio/bio_generate_attributes.pl	/^sub DEBUG$/
+DEBUG_VO	lib/libstats.pl	/^sub DEBUG_VO$/
+DO_BLAST	Blast/blast_all.pl	/^sub DO_BLAST$/
+ExecuteRules	bio/bio_generate_attributes.pl	/^sub ExecuteRules$/
+FixGeneWorm	lib/libmap_worm.pl	/^sub FixGeneWorm$/
+FixOrfWorm	lib/libmap_worm.pl	/^sub FixOrfWorm$/
+FlattenFile	GO/flatten_go_files.pl	/^sub FlattenFile$/
+FlattenHierarchyFile	GO/flatten_go_hierarchy.pl	/^sub FlattenHierarchyFile$/
+GetAllDirs	lib/libfile.pl	/^sub GetAllDirs$/
+GetDataValue	bio/bio_generate_attributes.pl	/^sub GetDataValue$/
+GetNumRows	lib/libfile.pl	/^sub GetNumRows$/
+GetRowData	bio/bio_generate_attributes.pl	/^sub GetRowData$/
+GetRowDesc	bio/bio_generate_attributes.pl	/^sub GetRowDesc$/
+GetRowName	bio/bio_generate_attributes.pl	/^sub GetRowName$/
+IsGeneWorm	lib/libmap_worm.pl	/^sub IsGeneWorm # ($name)$/
+IsMatch	Tools/resolve_keys.pl	/^sub IsMatch$/
+IsOrfWorm	lib/libmap_worm.pl	/^sub IsOrfWorm # ($name)$/
+IsSpliceWorm	lib/libmap_worm.pl	/^sub IsSpliceWorm # ($name)$/
+LoadDataMatrix	bio/bio_generate_attributes.pl	/^sub LoadDataMatrix$/
+LoadDictionary	bio/bio_generate_attributes.pl	/^sub LoadDictionary$/
+LoadOutputs	bio/bio_generate_attributes.pl	/^sub LoadOutputs$/
+LoadRules	bio/bio_generate_attributes.pl	/^sub LoadRules$/
+LoadVars	bio/bio_generate_attributes.pl	/^sub LoadVars$/
+Mnetwork_matrix_analysis.pl	alex/network_matrix_analysis.pl	/^sub main();$/
+ORFFromGene	alex/network_matrix_analysis.pl	/^sub ORFFromGene($) {$/
+Pearson2FisherZ	lib/libstats.pl	/^sub Pearson2FisherZ$/
+Pearson2FisherZscore	lib/libstats.pl	/^sub Pearson2FisherZscore$/
+PrintClusterMatrix	bio/bio_generate_attributes.pl	/^sub PrintClusterMatrix$/
+PrintHierarchy	bio/bio_generate_attributes.pl	/^sub PrintHierarchy$/
+PrintOutputs	bio/bio_generate_attributes.pl	/^sub PrintOutputs$/
+PrintRawData	bio/bio_generate_attributes.pl	/^sub PrintRawData$/
+PrintSQL	bio/bio_generate_attributes.pl	/^sub PrintSQL$/
+PrintTSC	bio/bio_generate_attributes.pl	/^sub PrintTSC$/
+RAND	Map/scramble_gene_positions.pl	/^sub RAND$/
+Splice2OrfWorm	lib/libmap_worm.pl	/^sub Splice2OrfWorm$/
+Usage	bio/bio_run_prm_dbg.pl	/^sub Usage$/
+__OVERFLOW_TO_INF	lib/libstats.pl	/^sub __OVERFLOW_TO_INF {$/
+addAttribs	lib/libattrib.pl	/^sub addAttribs # (\\%to, \\%from)$/
+addEntry	Tools/edges2matrix.pl	/^sub addEntry$/
+addGeneORFPair	alex/network_matrix_analysis.pl	/^sub addGeneORFPair($$) {$/
+addSynthLethalEntry	alex/network_matrix_analysis.pl	/^sub addSynthLethalEntry($$$$$) {$/
+addTestTarget	alex/network_matrix_analysis.pl	/^sub addTestTarget($$$@) {$/
+addThreeWayUnions	alex/network_matrix_analysis.pl	/^sub addThreeWayUnions($\\@\\@\\@) {$/
+addTwoWayUnions	alex/network_matrix_analysis.pl	/^sub addTwoWayUnions($\\@\\@) {$/
+add_entry	Map/genesets2tab.pl	/^sub add_entry$/
+add_file_to_manage	bio/bio_copy_to_web.pl	/^sub add_file_to_manage$/
+add_files_to_manage	bio/bio_copy_to_web.pl	/^sub add_files_to_manage$/
+add_keys	bio/bio_run_prm_observed_dbg.pl	/^sub add_keys$/
+add_node	Tools/connected_components.pl	/^sub add_node$/
+add_to_cluster_matrix	bio/bio_convert_to_bicluster.pl	/^sub add_to_cluster_matrix$/
+add_to_xml	lib/add_to_xml.pl	/^sub add_to_xml$/
+aggregate	Map/smdxls2tab.pl	/^sub aggregate$/
+allFilesExist	lib/libfile.pl	/^sub allFilesExist$/
+allPathsExist	lib/libfile.pl	/^sub allPathsExist$/
+ambig2regexp	lib/libseq.pl	/^sub ambig2regexp$/
+append_to_file	lib/bio_system.pl	/^sub append_to_file$/
+arraymax	lib/libstats.pl	/^sub arraymax (\\@)$/
+arraymin	lib/libstats.pl	/^sub arraymin (\\@)$/
+assembleSegments	lib/libblast.pl	/^sub assembleSegments$/
+assert	lib/bio_assert.pl	/^sub assert$/
+assignAttribs	lib/libattrib.pl	/^sub assignAttribs # ($text,$attribs,$assignments,$/
+associateNameWithIndex	alex/network_matrix_analysis.pl	/^sub associateNameWithIndex($) {$/
+attrib2Set	lib/libset.pl	/^sub attrib2Set$/
+attribAdd	lib/libattrib.pl	/^sub attribAdd$/
+attribGetAttribSortByNumericValue	lib/libattrib.pl	/^sub attribGetAttribSortByNumericValue$/
+attribGetAttribWithMinNumericValue	lib/libattrib.pl	/^sub attribGetAttribWithMinNumericValue$/
+attribInvert	lib/libattrib.pl	/^sub attribInvert$/
+attribMerge	lib/libattrib.pl	/^sub attribMerge$/
+attribPermute	lib/libattrib.pl	/^sub attribPermute$/
+attribPrint	lib/libattrib.pl	/^sub attribPrint$/
+attribRead	lib/libattrib.pl	/^sub attribRead$/
+attribReadFp	lib/libattrib.pl	/^sub attribReadFp$/
+attribReadTuples	lib/libattrib.pl	/^sub attribReadTuples$/
+attribReadTuplesFp	lib/libattrib.pl	/^sub attribReadTuplesFp$/
+attribSetUndef	lib/libattrib.pl	/^sub attribSetUndef$/
+attribTranslate	lib/libattrib.pl	/^sub attribTranslate$/
+attribTranslateFile	lib/libattrib.pl	/^sub attribTranslateFile$/
+beautify	Tools/sets2matrix.pl	/^sub beautify$/
+beautify_orf_name	lib/libmap_data.pl	/^sub beautify_orf_name # ($orf,$organism)$/
+better	Tools/uniq.pl	/^sub better$/
+binarySearch	lib/liblist.pl	/^sub binarySearch$/
+bindAttribs	lib/libattrib.pl	/^sub bindAttribs # ($text, \\%attribs, $recursive,$m/
+block2hits	Map/find_motifs_in_cluster.pl	/^sub block2hits # ($block,$slen,$width) $/
+build_attribute_where	bio/bio_fix_gene_expression_tables.pl	/^sub build_attribute_where$/
+build_feature_list	bio/bio_convert_to_bicluster.pl	/^sub build_feature_list$/
+build_other_attribute_tables_from	bio/bio_convert_to_bicluster.pl	/^sub build_other_attribute_tables_from$/
+build_other_attribute_tables_where	bio/bio_convert_to_bicluster.pl	/^sub build_other_attribute_tables_where$/
+by2nditem	Tools/sets2matrix.pl	/^sub by2nditem$/
+byNumber	Tools/trimmed_mean.pl	/^sub byNumber$/
+by_age	Tools/newest.pl	/^sub by_age$/
+by_annot_pvalue	Map/combine_annot_eval.pl	/^sub by_annot_pvalue$/
+by_beg	Map/get_orf_seqs.pl	/^sub by_beg$/
+by_depth	GeneXPress/extract_regulators.pl	/^sub by_depth$/
+by_evalue	Map/find_motifs_in_cluster.pl	/^sub by_evalue # ($a,$b) - globals$/
+by_first_numeric	lib/libattrib.pl	/^sub by_first_numeric$/
+by_pvalue	Map/find_motifs_in_cluster.pl	/^sub by_pvalue # ($a,$b) - globals$/
+by_run_pvalue	Map/combine_annot_eval.pl	/^sub by_run_pvalue$/
+by_safe_numeric	lib/libfunc.pl	/^sub by_safe_numeric$/
+by_second_decreasing	Map/meg_correspondence.pl	/^sub by_second_decreasing$/
+calcCorrespond	Tools/neighborhood_pairs.pl	/^sub calcCorrespond$/
+calc_arg	bio/bio_run_prm_dbg.pl	/^sub calc_arg$/
+calc_correlation	bio/bio_compute_correlations.pl	/^sub calc_correlation (\\@$\\@$$)$/
+calculateSortedResults	alex/network_matrix_analysis.pl	/^sub calculateSortedResults($$) {$/
+capEnds	lib/libstd.pl	/^sub capEnds # ($delim, $str)$/
+change_attribute_in_file	lib/bio_change_attribute_in_file.pl	/^sub change_attribute_in_file$/
+change_attributes	bio/bio_run_prm_observed_dbg.pl	/^sub change_attributes$/
+change_attributes_for_test_set	bio/bio_prepare_default_settings.pl	/^sub change_attributes_for_test_set$/
+checkExpressionData	Map/check_data.pl	/^sub checkExpressionData$/
+chunk	GeneXPress/genexpress2dotty.pl	/^sub chunk$/
+clean	Map/swissprot2tab.pl	/^sub clean$/
+cleanDescription	Tools/tab2dotty.pl	/^sub cleanDescription$/
+clean_dsc_file	bio/bio_copy_to_web2.pl	/^sub clean_dsc_file$/
+clean_experiment_name	bio/bio_join_genes.pl	/^sub clean_experiment_name$/
+clean_key	Map/map_keys.pl	/^sub clean_key$/
+clean_name	GeneXPress/genexpress2dotty.pl	/^sub clean_name$/
+cleanup	bio/run_prm_test_set.pl	/^sub cleanup$/
+closeDb	lib/libsql.pl	/^sub closeDb # ($dbh)$/
+closeMapErrorLog	lib/libmap.pl	/^sub closeMapErrorLog$/
+closeSql	lib/libsql.pl	/^sub closeSql # ($sth)$/
+cogs_organism_id	lib/libmap_data.pl	/^sub cogs_organism_id$/
+colCountByIndex	alex/network_matrix_analysis.pl	/^sub colCountByIndex($);		sub colCountByName($);$/
+colCountByName	alex/network_matrix_analysis.pl	/^sub colCountByName($) { colCountByIndex(indexFromN/
+colSumByIndex	alex/network_matrix_analysis.pl	/^sub colSumByIndex($);		sub colSumByName($);$/
+colSumByName	alex/network_matrix_analysis.pl	/^sub colSumByName($) { colSumByIndex(indexFromName(/
+collate_cluster_tightness	Map/collate_evals.pl	/^sub collate_cluster_tightness$/
+collate_gene_sets	Map/collate_evals.pl	/^sub collate_gene_sets$/
+collate_motifs	Map/collate_evals.pl	/^sub collate_motifs$/
+combineValues	Tools/combine.pl	/^sub combineValues # (\\@vals,$func)$/
+comp	Map/parse_transfac_matrices.pl	/^sub comp() {$/
+compareKeys	lib/libtable.pl	/^sub compareKeys$/
+compliment	lib/libseq.pl	/^sub compliment$/
+computeCassette	Cassettes/search_cassette.pl	/^sub computeCassette$/
+computeCorrelation	Map/chrom_corr.pl	/^sub computeCorrelation$/
+computeGeneCorrelations	Map/chrom_corr.pl	/^sub computeGeneCorrelations$/
+compute_change	bio/bio_compute_attribute_changes.pl	/^sub compute_change$/
+compute_score	lib/libstats.pl	/^sub compute_score (\\@\\@\\$)$/
+conditional_execute	lib/bio_conditional_execute.pl	/^sub conditional_execute $/
+convert2Percentiles	Tools/count_ranks.pl	/^sub convert2Percentiles$/
+convertAttribs2Values	lib/libattrib.pl	/^sub convertAttribs2Values # (\\%attribs2vals, \\@att/
+convertSymbol2MapOrganismName	lib/libmap.pl	/^sub convertSymbol2MapOrganismName # ($symbol)$/
+convert_if_ghost	Map/make_meta_genes.pl	/^sub convert_if_ghost # ($file)$/
+copyFile	lib/libfile.pl	/^sub copyFile$/
+copy_file	lib/bio_system.pl	/^sub copy_file$/
+copy_files_to_web	bio/bio_copy_to_web2.pl	/^sub copy_files_to_web$/
+correlation	lib/libstats.pl	/^sub correlation (\\@\\@)$/
+count_kmers	lib/count_kmers.pl	/^sub count_kmers (\\@$)$/
+count_leading_spaces	lib/bio_str.pl	/^sub count_leading_spaces$/
+createRun	Map/create_maps.pl	/^sub createRun # ($name,$template,$targets,$before_/
+createRunMakefile	Map/create_maps.pl	/^sub createRunMakefile # ($dir,$xml,$targets)$/
+createTable	lib/libsql.pl	/^sub createTable # ($dbh, $table, @fields)$/
+create_acyclicity_file	GeneXPress/gx2acyclicity.pl	/^sub create_acyclicity_file$/
+create_cross_validation_sets	lib/make_cross_validation_sets.pl	/^sub create_cross_validation_sets$/
+create_dir	lib/bio_system.pl	/^sub create_dir$/
+create_genexpress_cluster_list	GeneXPress/create_genexpress_cluster_lists.pl	/^sub create_genexpress_cluster_list$/
+create_genexpress_color_scheme	GeneXPress/create_genexpress_color_schemes.pl	/^sub create_genexpress_color_scheme$/
+decapEnds	lib/libstd.pl	/^sub decapEnds # ($delim, $str)$/
+deleteCols	Tools/delete_columns.pl	/^sub deleteCols$/
+deleteFile	lib/libfile.pl	/^sub deleteFile$/
+delete_file	lib/bio_system.pl	/^sub delete_file$/
+denest	lib/liblist.pl	/^sub denest$/
+deprotectFromShell	lib/libfile.pl	/^sub deprotectFromShell # ($file)$/
+dirExists	lib/libfile.pl	/^sub dirExists$/
+dnaNbr	lib/libseq.pl	/^sub dnaNbr$/
+doSql	lib/libsql.pl	/^sub doSql # ($sth)$/
+doTheMap	Tools/mapper.pl	/^sub doTheMap$/
+do_remove	Tools/rmcode.pl	/^sub do_remove$/
+doesEat	Tools/replace.pl	/^sub doesEat$/
+does_exist	Tools/exists.pl	/^sub does_exist$/
+dos2unix	lib/libfile.pl	/^sub dos2unix$/
+dotProduct	Map/meg_correspondence.pl	/^sub dotProduct$/
+dot_product	lib/libstats.pl	/^sub dot_product (\\@\\@)$/
+download	lib/libfile.pl	/^sub download$/
+downloadMultiple	lib/libfile.pl	/^sub downloadMultiple$/
+dropTable	lib/libsql.pl	/^sub dropTable # ($dbh, $table)$/
+duplicate	lib/libfile.pl	/^sub duplicate$/
+emptyTuple	lib/libtable.pl	/^sub emptyTuple$/
+evalFractionGreaterThanOrEqual	lib/libfunc.pl	/^sub evalFractionGreaterThanOrEqual$/
+evalFunction	lib/libfunc.pl	/^sub evalFunction # ($function, \\@X, \\@args)$/
+evalFunctionString	lib/libfunc.pl	/^sub evalFunctionString$/
+evalGreaterThanOrEqual	lib/libfunc.pl	/^sub evalGreaterThanOrEqual$/
+evalMax	lib/libfunc.pl	/^sub evalMax$/
+evalMean	lib/libfunc.pl	/^sub evalMean$/
+evalMedian	lib/libfunc.pl	/^sub evalMedian$/
+evalMin	lib/libfunc.pl	/^sub evalMin$/
+evalRegex	lib/libfile.pl	/^sub evalRegex$/
+execFetchSql	lib/libsql.pl	/^sub execFetchSql # ($dbh, $sql, $delim)$/
+execSql	lib/libsql.pl	/^sub execSql # ($dbh, $sql)$/
+execute	bio/bio_prm_tree_to_leaf_selects.pl	/^sub execute$/
+expandBlock	lib/libattrib.pl	/^sub expandBlock # ($text,$type,$case,\\@info)$/
+expandForEachLoop	lib/libattrib.pl	/^sub expandForEachLoop # ($block,$variable_list,$va/
+expandForLoop	lib/libattrib.pl	/^sub expandForLoop # ($block,$init,$condition,$upda/
+expandIf	lib/libattrib.pl	/^sub expandIf # ($block,$condition,$case)$/
+expandPath	lib/libfile.pl	/^sub expandPath$/
+expandRanges	lib/libattrib.pl	/^sub expandRanges # ($text,\\%attribs,$case)$/
+expandSpecial	lib/libattrib.pl	/^sub expandSpecial # ($text,\\%attribs,$case)$/
+expand_node	Tools/connected_components.pl	/^sub expand_node$/
+extractAnyKey	lib/libmap.pl	/^sub extractAnyKey # ($text,$entity,@databases)$/
+extractEcoliKey	lib/libmap_ecoli.pl	/^sub extractEcoliKey # ($text,$map_entity,$map_data/
+extractFlyKey	lib/libmap_fly.pl	/^sub extractFlyKey # ($text,$map_entity,$map_databa/
+extractFlybaseCuratedGene	lib/libmap_fly.pl	/^sub extractFlybaseCuratedGene # ($text)$/
+extractFlybaseCuratedTranscript	lib/libmap_fly.pl	/^sub extractFlybaseCuratedTranscript # ($text)$/
+extractFlybaseId	lib/libmap_fly.pl	/^sub extractFlybaseId # ($text)$/
+extractFlybaseKey	lib/libmap_fly.pl	/^sub extractFlybaseKey # (string $text, string $map/
+extractHumanKey	lib/libmap_human.pl	/^sub extractHumanKey # ($text, $map_entity, $map_da/
+extractKey	lib/libmap.pl	/^sub extractKey # (string $text, string $entity, st/
+extractMouseKey	lib/libmap_mouse.pl	/^sub extractMouseKey # ($text,$map_entity,$map_data/
+extractNcbiGi	lib/libmap_ncbi.pl	/^sub extractNcbiGi # (string $ncbi_key, string map_/
+extractRatKey	lib/libmap_rat.pl	/^sub extractRatKey # (string $text, string $map_ent/
+extractWormGeneFromSpliceVariant	lib/libmap_worm.pl	/^sub extractWormGeneFromSpliceVariant$/
+extractWormKey	lib/libmap_worm.pl	/^sub extractWormKey # (string $text, string $map_en/
+extractYeastKey	lib/libmap_yeast.pl	/^sub extractYeastKey # ($text, $map_entity, $map_da/
+extract_attribute_names_from_list	bio/bio_make_tsc.pl	/^sub extract_attribute_names_from_list$/
+extract_go_subsets	GO/extract_go_subsets.pl	/^sub extract_go_subsets$/
+extract_max_correlations	bio/bio_compute_correlations.pl	/^sub extract_max_correlations$/
+extract_orf_seqs	Map/find_motifs_in_cluster.pl	/^sub extract_orf_seqs # ($tmp_dir, $rm_tmp_files, $/
+extract_regulators	GeneXPress/extract_regulators.pl	/^sub extract_regulators$/
+fancyCompare	Tools/sort.pl	/^sub fancyCompare$/
+fancyCompareRecursive	Tools/sort.pl	/^sub fancyCompareRecursive$/
+fancyCompareRev	Tools/sort.pl	/^sub fancyCompareRev$/
+fetchSql	lib/libsql.pl	/^sub fetchSql # ($sth, $delim)$/
+fileExists	lib/libfile.pl	/^sub fileExists$/
+fileFriendlyName	lib/libfile.pl	/^sub fileFriendlyName$/
+file_exists	lib/bio_system.pl	/^sub file_exists$/
+file_manip	lib/file_manip.pl	/^sub file_manip$/
+file_to_hash	lib/file_to_hash.pl	/^sub file_to_hash$/
+fill	lib/libfile.pl	/^sub fill$/
+findLine	lib/libfile.pl	/^sub findLine$/
+findLineWhereAllMatch	lib/libfile.pl	/^sub findLineWhereAllMatch$/
+findLineWhereAnyMatch	lib/libfile.pl	/^sub findLineWhereAnyMatch$/
+find_motifs_from_gene_lists	lib/find_motifs_from_gene_lists.pl	/^sub find_motifs_from_gene_lists$/
+find_motifs_in_file	lib/find_motifs_from_gene_lists.pl	/^sub find_motifs_in_file$/
+find_stack_location	GO/flatten_go_hierarchy.pl	/^sub find_stack_location (\\@$$)$/
+fix	GeneXPress/extract_regulators.pl	/^sub fix$/
+fixEndnoteArticleFields	Tools/endnote2bibtex.pl	/^sub fixEndnoteArticleFields$/
+fixIndex	Tools/substr.pl	/^sub fixIndex$/
+fixName	Map/parse_locuslink.pl	/^sub fixName$/
+fixSpacing	Tools/endnote2bibtex.pl	/^sub fixSpacing$/
+fix_attributes	bio/bio_fix_gene_expression_tables.pl	/^sub fix_attributes$/
+fix_eran_worm_name	GeneXPress/extract_regulators.pl	/^sub fix_eran_worm_name$/
+fix_experiment_table	bio/bio_fix_gene_expression_tables.pl	/^sub fix_experiment_table$/
+fix_expression_table	bio/bio_fix_gene_expression_tables.pl	/^sub fix_expression_table$/
+fix_gene_table	bio/bio_fix_gene_expression_tables.pl	/^sub fix_gene_table$/
+fix_object_name	GeneXPress/tab2gxa.pl	/^sub fix_object_name$/
+forceIndexBounds	lib/libfile.pl	/^sub forceIndexBounds$/
+forcePrecision	lib/libtable.pl	/^sub forcePrecision$/
+forceRangeBounds	lib/libfile.pl	/^sub forceRangeBounds$/
+forceTuplePrecision	lib/libtable.pl	/^sub forceTuplePrecision$/
+formatGenbankAccession	lib/libmap_ncbi.pl	/^sub formatGenbankAccession # (string $orf)$/
+formatGene	lib/libmap.pl	/^sub formatGene # (string $key, string $database)$/
+formatGeneralGene	lib/libmap.pl	/^sub formatGeneralGene # (string $key)$/
+formatMapDirName	lib/libmap.pl	/^sub formatMapDirName # ($name)$/
+formatMapFileName	lib/libmap.pl	/^sub formatMapFileName # ($name)$/
+formatPercent	Tools/count_ranks.pl	/^sub formatPercent$/
+formatRefseqAccession	lib/libmap_ncbi.pl	/^sub formatRefseqAccession # (string $orf)$/
+formatWormbaseCloneId	lib/libmap_worm.pl	/^sub formatWormbaseCloneId # (string $key)$/
+format_number	lib/format_number.pl	/^sub format_number$/
+format_regulators	GeneXPress/extract_regulators.pl	/^sub format_regulators # ($return_cluster,%regulato/
+genMoreDataObj	bio/bio_convert_to_pah.pl	/^sub genMoreDataObj {$/
+geneFromORF	alex/network_matrix_analysis.pl	/^sub geneFromORF($);$/
+generate_GeneXPress_info	bio/bio_make_tsc.pl	/^sub generate_GeneXPress_info$/
+generate_html	bio/bio_copy_to_web2.pl	/^sub generate_html$/
+generate_motif_html	bio/bio_copy_to_web2.pl	/^sub generate_motif_html$/
+genexpress_util	GeneXPress/genexpress_util.pl	/^sub genexpress_util$/
+geoComment	lib/libgeo.pl	/^sub geoComment$/
+getAVArray	lib/libattrib.pl	/^sub getAVArray$/
+getAllCodeRecursively	lib/libfile.pl	/^sub getAllCodeRecursively # ($follow_links,@dirs)$/
+getAllDirs	lib/libfile.pl	/^sub getAllDirs$/
+getAllFiles	lib/libfile.pl	/^sub getAllFiles$/
+getAllFilesRecursively	lib/libfile.pl	/^sub getAllFilesRecursively # ($follow_links,@dirs)/
+getBioCartaPathwayNameFromHtml	lib/libpathway.pl	/^sub getBioCartaPathwayNameFromHtml(\\$)$/
+getBlastProgram	lib/libblast.pl	/^sub getBlastProgram$/
+getBlastTableColumn	lib/libblast.pl	/^sub getBlastTableColumn # ($field)$/
+getClusteringCommonDenominator	lib/libmap_run.pl	/^sub getClusteringCommonDenominator # ($cluster2mem/
+getClusteringROC	lib/libmap_run.pl	/^sub getClusteringROC # ($gold_c2m,$query_m2c,$maxp/
+getClustersFromVectorized	lib/libmap_run.pl	/^sub getClustersFromVectorized # ($file,$headers,$d/
+getCols	lib/libfile.pl	/^sub getCols$/
+getCutoffs	Tools/neighborhood_pairs.pl	/^sub getCutoffs$/
+getDbMsAccess	lib/libsql.pl	/^sub getDbMsAccess # ($dsn [, $username, $password]/
+getDbMySql	lib/libsql.pl	/^sub getDbMySql # ($dsn [, $username, $password])$/
+getDepthFromMapRoot	Map/create_maps.pl	/^sub getDepthFromMapRoot # ($dir)$/
+getExptNameFromSmdXlsGzip	lib/libsmd.pl	/^sub getExptNameFromSmdXlsGzip # ($file_xls_gz)$/
+getExptSets	Map/download_smd_pub_data.pl	/^sub getExptSets$/
+getFileNames	Tools/sets2matrix.pl	/^sub getFileNames$/
+getFileText	lib/libfile.pl	/^sub getFileText($)$/
+getGeoFamilySamples	lib/libgeo.pl	/^sub getGeoFamilySamples$/
+getGeoPlatformAliases	lib/libgeo.pl	/^sub getGeoPlatformAliases$/
+getGmlEdge	Tools/tab2gml.pl	/^sub getGmlEdge$/
+getGmlNode	Tools/tab2gml.pl	/^sub getGmlNode$/
+getHeader	lib/libfile.pl	/^sub getHeader$/
+getHtmlTableRow	lib/libhtml.pl	/^sub getHtmlTableRow$/
+getLetter	Tools/endnote2bibtex.pl	/^sub getLetter$/
+getLinesWithIdenticalKeys	lib/libtable.pl	/^sub getLinesWithIdenticalKeys$/
+getLongestBlastHit	lib/libblast.pl	/^sub getLongestBlastHit$/
+getMapAliases	lib/libmap.pl	/^sub getMapAliases # (string $entity,string $organi/
+getMapAliasesFile	lib/libmap.pl	/^sub getMapAliasesFile # (string $entity, string $o/
+getMapAnnotGroupFromEvalAnnotPath	lib/libmap_eval.pl	/^sub getMapAnnotGroupFromEvalAnnotPath # ($file)$/
+getMapBlastDb	lib/libmap.pl	/^sub getMapBlastDb$/
+getMapDatabaseName	lib/libmap.pl	/^sub getMapDatabaseName # (string $string, string $/
+getMapDatabaseNames	lib/libmap.pl	/^sub getMapDatabaseNames # (string $entity)$/
+getMapDir	lib/libmap.pl	/^sub getMapDir # ($type)$/
+getMapEntityName	lib/libmap.pl	/^sub getMapEntityName # (string $text)$/
+getMapEntityNames	lib/libmap.pl	/^sub getMapEntityNames # ()$/
+getMapEvalAnnotName	lib/libmap_eval.pl	/^sub getMapEvalAnnotName # ($line)$/
+getMapEvalAnnotNumData	lib/libmap_eval.pl	/^sub getMapEvalAnnotNumData # ($line)$/
+getMapEvalAnnotNumGlobal	lib/libmap_eval.pl	/^sub getMapEvalAnnotNumGlobal # ($line)$/
+getMapEvalAnnotOverlaps	lib/libmap_eval.pl	/^sub getMapEvalAnnotOverlaps # ($line)$/
+getMapEvalAnnotPvalue	lib/libmap_eval.pl	/^sub getMapEvalAnnotPvalue # ($line)$/
+getMapEvalAnnotStats	lib/libmap_eval.pl	/^sub getMapEvalAnnotStats # ($line)$/
+getMapExe	lib/libmap.pl	/^sub getMapExe # ()$/
+getMapGeneSetsName	lib/libmap.pl	/^sub getMapGeneSetsName # ($string)$/
+getMapLogErrorFooter	lib/libmap.pl	/^sub getMapLogErrorFooter # ($message)$/
+getMapLogErrorHeader	lib/libmap.pl	/^sub getMapLogErrorHeader # ($message)$/
+getMapOrganismFromEvalAnnotPath	lib/libmap_eval.pl	/^sub getMapOrganismFromEvalAnnotPath # ($file)$/
+getMapOrganismFromPath	lib/libmap.pl	/^sub getMapOrganismFromPath # ($path)$/
+getMapOrganismName	lib/libmap.pl	/^sub getMapOrganismName # (string $string)$/
+getMapOrganismNameFromSmdXlsGzip	lib/libsmd.pl	/^sub getMapOrganismNameFromSmdXlsGzip # ($file_xls_/
+getMapOrganismNames	lib/libmap.pl	/^sub getMapOrganismNames # ()$/
+getMapOrganismNamesFromSmdExptSetMeta	lib/libsmd.pl	/^sub getMapOrganismNamesFromSmdExptSetMeta # (@file/
+getMapOrganismNamesFromSmdPublicationMeta	lib/libsmd.pl	/^sub getMapOrganismNamesFromSmdPublicationMeta # (@/
+getMapPublicationNameFromSmdPublicationMeta	lib/libsmd.pl	/^sub getMapPublicationNameFromSmdPublicationMeta # /
+getMapRunFromEvalAnnotPath	lib/libmap_eval.pl	/^sub getMapRunFromEvalAnnotPath # ($file)$/
+getMapSmdDir	lib/libsmd.pl	/^sub getMapSmdDir # ($type)$/
+getMapTableDelim	lib/libmap.pl	/^sub getMapTableDelim$/
+getMat	alex/network_matrix_analysis.pl	/^sub getMat($$);	sub getValueByNames($$);$/
+getMean	Tools/trimmed_mean.pl	/^sub getMean$/
+getMetric	Tools/order_rows.pl	/^sub getMetric$/
+getNeighbors	alex/network_matrix_analysis.pl	/^sub getNeighbors($) {$/
+getNonMissing	Tools/trimmed_mean.pl	/^sub getNonMissing$/
+getNumCols	lib/libtable.pl	/^sub getNumCols$/
+getParams	lib/libattrib.pl	/^sub getParams # ($text)$/
+getPathDepth	lib/libfile.pl	/^sub getPathDepth$/
+getPathExt	lib/libfile.pl	/^sub getPathExt$/
+getPathPrefix	Cassettes/client_cassettes.pl	/^sub getPathPrefix$/
+getPathSuffix	Cassettes/client_cassettes.pl	/^sub getPathSuffix$/
+getPrettyName	Tools/old.sets2list.pl	/^sub getPrettyName # ($file)$/
+getPubId	Map/download_smd_pub_data.pl	/^sub getPubId$/
+getSmdDataSource	lib/libsmd.pl	/^sub getSmdDataSource # ($organism)$/
+getSmdExptIdsFromExptSetMeta	lib/libsmd.pl	/^sub getSmdExptIdsFromExptSetMeta # (@file_exptset_/
+getSmdExptIdsFromPublicationMeta	lib/libsmd.pl	/^sub getSmdExptIdsFromPublicationMeta # (@file_publ/
+getSmdExptInfoFromXls	lib/libsmd.pl	/^sub getSmdExptInfoFromXls$/
+getSmdExptSetsFromPublicationMeta	lib/libsmd.pl	/^sub getSmdExptSetsFromPublicationMeta # (@file_pub/
+getSubTuple	lib/libtable.pl	/^sub getSubTuple$/
+getSubTupleString	lib/libtable.pl	/^sub getSubTupleString$/
+getSublist	lib/libfile.pl	/^sub getSublist$/
+getTopNResults	alex/network_matrix_analysis.pl	/^sub getTopNResults($\\@) {$/
+getTrimmedMean	Tools/trimmed_mean.pl	/^sub getTrimmedMean$/
+getTupleEntry	lib/libtable.pl	/^sub getTupleEntry # ($line,$i,$delim)$/
+getTupleLength	lib/libtable.pl	/^sub getTupleLength$/
+getTuplePrecision	lib/libtable.pl	/^sub getTuplePrecision$/
+getUnboundAttributes	lib/libattrib.pl	/^sub getUnboundAttributes # ($text,$keep_dollar)$/
+getUrl	Cassettes/search_cassette.pl	/^sub getUrl # ($organism)$/
+getValueByNames	alex/network_matrix_analysis.pl	/^sub getValueByNames($$) { # [0] is colName, [1] is/
+getWormCloneIdsWithBogusNumber	lib/libmap_worm.pl	/^sub getWormCloneIdsWithBogusNumber$/
+get_arg	lib/load_args.pl	/^sub get_arg ($$\\%)$/
+get_attribute_in_file	bio/bio_copy_to_web2.pl	/^sub get_attribute_in_file$/
+get_attribute_value	bio/bio_create_prm_meta.pl	/^sub get_attribute_value$/
+get_bio_format	lib/libmap_data.pl	/^sub get_bio_format # ($file_name)$/
+get_chromosome_name	lib/libmap_data.pl	/^sub get_chromosome_name # ($chr,$total)$/
+get_chromosome_number	lib/libmap_data.pl	/^sub get_chromosome_number # ($chr,$total)$/
+get_counts_for_tree_cpd	bio/bio_convert_to_bicluster.pl	/^sub get_counts_for_tree_cpd$/
+get_file_dsc	lib/bio_get_file_dsc.pl	/^sub get_file_dsc$/
+get_file_names_for_dir	lib/bio_get_file_names_for_dir.pl	/^sub get_file_names_for_dir$/
+get_gif_height	lib/gifinfo.pl	/^sub get_gif_height$/
+get_gif_width	lib/gifinfo.pl	/^sub get_gif_width$/
+get_go_association	Map/make_sgd_htmls.pl	/^sub get_go_association$/
+get_go_color	Map/make_sgd_htmls.pl	/^sub get_go_color$/
+get_group_attribute	bio/bio_dissect.pl	/^sub get_group_attribute$/
+get_iteration_dsc	bio/bio_copy_to_web2.pl	/^sub get_iteration_dsc$/
+get_keys	GeneXPress/create_genexpress_color_schemes.pl	/^sub get_keys$/
+get_line_keys	lib/add_to_xml.pl	/^sub get_line_keys$/
+get_num_columns_in_file	lib/bio_system.pl	/^sub get_num_columns_in_file$/
+get_num_lines_in_file	lib/bio_system.pl	/^sub get_num_lines_in_file$/
+get_orf_name	GO/parse_gene_associations.pl	/^sub get_orf_name (\\@)$/
+get_path_suffix	Tools/sets2matrix.pl	/^sub get_path_suffix$/
+get_row_data	Tools/compute_all_pairwise_correlations.pl	/^sub get_row_data$/
+get_settings_value	bio/bio_create_prm_meta.pl	/^sub get_settings_value$/
+get_sql_database_dsc	lib/bio_get_sql_database_dsc.pl	/^sub get_sql_database_dsc$/
+get_sql_table_dsc	lib/bio_get_sql_table_dsc.pl	/^sub get_sql_table_dsc$/
+get_synonyms	Data/merge_synonyms_worm.pl	/^sub get_synonyms$/
+get_test_set_ll	bio/bio_copy_to_web2.pl	/^sub get_test_set_ll$/
+get_time	lib/time.pl	/^sub get_time$/
+graphCast	lib/libgraph-old.pl	/^sub graphCast$/
+graphConnectEdge	lib/libgraph-old.pl	/^sub graphConnectEdge$/
+graphConnectedComponent	lib/libgraph-old.pl	/^sub graphConnectedComponent$/
+graphConnections	lib/libgraph-old.pl	/^sub graphConnections$/
+graphDegree	lib/libgraph-old.pl	/^sub graphDegree$/
+graphDegrees	lib/libgraph-old.pl	/^sub graphDegrees$/
+graphDeleteEdge	lib/libgraph-old.pl	/^sub graphDeleteEdge$/
+graphDeleteNode	lib/libgraph-old.pl	/^sub graphDeleteNode$/
+graphDisconnectEdge	lib/libgraph-old.pl	/^sub graphDisconnectEdge$/
+graphEdges	lib/libgraph-old.pl	/^sub graphEdges$/
+graphGetNode	lib/libgraph-old.pl	/^sub graphGetNode$/
+graphGetSortedNbrs	lib/libgraph-old.pl	/^sub graphGetSortedNbrs$/
+graphMaxDegreeNode	lib/libgraph-old.pl	/^sub graphMaxDegreeNode$/
+graphMerge	lib/libgraph-old.pl	/^sub graphMerge$/
+graphNodes	lib/libgraph-old.pl	/^sub graphNodes$/
+graphNumEdges	lib/libgraph-old.pl	/^sub graphNumEdges$/
+graphPrint	lib/libgraph-old.pl	/^sub graphPrint$/
+graphReadEdgeList	lib/libgraph-old.pl	/^sub graphReadEdgeList$/
+graphReadEdgeTable	lib/libgraph-old.pl	/^sub graphReadEdgeTable$/
+graphReverse	lib/libgraph-old.pl	/^sub graphReverse$/
+graphSize	lib/libgraph-old.pl	/^sub graphSize$/
+graphSources	lib/libgraph-old.pl	/^sub graphSources$/
+graphTargets	lib/libgraph-old.pl	/^sub graphTargets$/
+graphUndirected	lib/libgraph-old.pl	/^sub graphUndirected$/
+groupTuple	Tools/merge_fields.pl	/^sub groupTuple$/
+group_has_hide_attributes	bio/bio_run_prm_hidden_dbg.pl	/^sub group_has_hide_attributes$/
+gx2gene_lists	GeneXPress/gxc2gene_lists.pl	/^sub gx2gene_lists$/
+gx2interactions	GeneXPress/gxc2interactions.pl	/^sub gx2interactions$/
+gx2kmers	GeneXPress/gxc2kmers.pl	/^sub gx2kmers$/
+gx2targets	GeneXPress/gxc2targets.pl	/^sub gx2targets$/
+hasGenbankAccession	lib/libmap_ncbi.pl	/^sub hasGenbankAccession # (string $text, string $m/
+hasHumanUnigeneAccession	lib/libmap_human.pl	/^sub hasHumanUnigeneAccession # (string $text, stri/
+hasImageAccession	lib/libmap_ncbi.pl	/^sub hasImageAccession # (string $text, string $map/
+hasLocuslinkAccession	lib/libmap_ncbi.pl	/^sub hasLocuslinkAccession # (string $text, string /
+hasNcbiGi	lib/libmap_ncbi.pl	/^sub hasNcbiGi # (string $text, string $map_entity)/
+hasRefseqAccession	lib/libmap_ncbi.pl	/^sub hasRefseqAccession # (string $text, string $ma/
+hasSgdAccession	lib/libmap_yeast.pl	/^sub hasSgdAccession # ($text)$/
+hasSgdKey	lib/libmap_yeast.pl	/^sub hasSgdKey # ($text, $map_entity)$/
+hasSgdOrf	lib/libmap_yeast.pl	/^sub hasSgdOrf # ($text)$/
+hasSwissprotAccession	lib/libmap_ncbi.pl	/^sub hasSwissprotAccession # (string $text, string /
+hasSwissprotGene	lib/libmap_ncbi.pl	/^sub hasSwissprotGene # (string $text, string $map_/
+hasUnboundAttributes	lib/libattrib.pl	/^sub hasUnboundAttributes # ($text)$/
+hasWormbaseCe	lib/libmap_worm.pl	/^sub hasWormbaseCe # ($text)$/
+hasWormbaseCloneId	lib/libmap_worm.pl	/^sub hasWormbaseCloneId # ($text)$/
+hasWormbaseKey	lib/libmap_worm.pl	/^sub hasWormbaseKey # ($text, string $map_entity)$/
+hasYeastSwissprotGene	lib/libmap_yeast.pl	/^sub hasYeastSwissprotGene # ($text)$/
+hasYeastSwissprotKey	lib/libmap_yeast.pl	/^sub hasYeastSwissprotKey # ($text)$/
+hitValueFromIndex	alex/network_matrix_analysis.pl	/^sub hitValueFromIndex($) {$/
+hitValueFromName	alex/network_matrix_analysis.pl	/^sub hitValueFromName($) {$/
+html2table	lib/libhtml.pl	/^sub html2table($$$$)$/
+htmlString	web/lists2htmltable.pl	/^sub htmlString$/
+html_end_table	web/html_utils.pl	/^sub html_end_table$/
+html_end_table_row	web/html_utils.pl	/^sub html_end_table_row$/
+html_footer	web/html_utils.pl	/^sub html_footer$/
+html_freestyle	web/html_utils.pl	/^sub html_freestyle$/
+html_header	web/html_utils.pl	/^sub html_header$/
+html_link_str	web/html_utils.pl	/^sub html_link_str$/
+html_new_line	web/html_utils.pl	/^sub html_new_line$/
+html_start_table	web/html_utils.pl	/^sub html_start_table$/
+html_start_table_row	web/html_utils.pl	/^sub html_start_table_row$/
+html_table_column	web/html_utils.pl	/^sub html_table_column$/
+html_table_row	web/html_utils.pl	/^sub html_table_row$/
+include_experiment	bio/bio_join_genes.pl	/^sub include_experiment$/
+include_gene	bio/bio_join_genes.pl	/^sub include_gene$/
+indexFromName	alex/network_matrix_analysis.pl	/^sub indexFromName($);	sub nameFromIndex($);$/
+initNodeAttribs	Tools/tab2gml.pl	/^sub initNodeAttribs$/
+insertTable	lib/libsql.pl	/^sub insertTable # ($dbh, $table, @fields, @tuple)$/
+insertTableMany	lib/libsql.pl	/^sub insertTableMany # ($dbh, $table, $delim, $numF/
+integrate	lib/libmath.pl	/^sub integrate$/
+interp	lib/libmath.pl	/^sub interp$/
+intersect	lib/libstats.pl	/^sub intersect (\\@\\@)$/
+isAbsolute	lib/libfile.pl	/^sub isAbsolute # ($file)$/
+isBetter	Tools/order_rows.pl	/^sub isBetter$/
+isBlank	Tools/trimmed_mean.pl	/^sub isBlank$/
+isCodeFile	lib/libfile.pl	/^sub isCodeFile$/
+isDefinedValue	lib/libattrib.pl	/^sub isDefinedValue # ($value)$/
+isEmpty	Tools/sort.pl	/^sub isEmpty$/
+isMissing	Tools/count_ranks.pl	/^sub isMissing$/
+isNumeric	alex/network_matrix_analysis.pl	/^sub isNumeric($) {$/
+isOK	Tools/check_table.pl	/^sub isOK$/
+isProteinFasta	lib/libblast.pl	/^sub isProteinFasta$/
+isRelative	lib/libfile.pl	/^sub isRelative # ($file)$/
+isTrue	Tools/replace.pl	/^sub isTrue$/
+isWormCloneIdWithBogusNumber	lib/libmap_worm.pl	/^sub isWormCloneIdWithBogusNumber$/
+joinCols	Tools/uniq.pl	/^sub joinCols$/
+kmeans	Tools/kmeans.pl	/^sub kmeans$/
+layoutNodes	Tools/tab2gml.pl	/^sub layoutNodes$/
+lchoose	lib/libstats.pl	/^sub lchoose$/
+lgamma	lib/libstats.pl	/^sub lgamma$/
+linkExists	lib/libfile.pl	/^sub linkExists$/
+link_file	lib/bio_system.pl	/^sub link_file$/
+list2Set	lib/libset.pl	/^sub list2Set$/
+listAnd	Tools/consecutive_and.pl	/^sub listAnd$/
+listCombinations	lib/liblist.pl	/^sub listCombinations$/
+listCombinationsRecursively	lib/liblist.pl	/^sub listCombinationsRecursively$/
+listMax	lib/liblist.pl	/^sub listMax$/
+listMaxString	lib/liblist.pl	/^sub listMaxString$/
+listMean	lib/liblist.pl	/^sub listMean$/
+listMin	lib/liblist.pl	/^sub listMin$/
+listMinString	lib/liblist.pl	/^sub listMinString$/
+listPaste	lib/liblist.pl	/^sub listPaste(\\@\\@)$/
+listPermute	lib/liblist.pl	/^sub listPermute$/
+listPrint	lib/liblist.pl	/^sub listPrint$/
+listRandom	lib/liblist.pl	/^sub listRandom$/
+listRandomElement	lib/liblist.pl	/^sub listRandomElement$/
+listRead	lib/liblist.pl	/^sub listRead$/
+listRemoveUndef	lib/liblist.pl	/^sub listRemoveUndef(\\@)$/
+listSize	lib/liblist.pl	/^sub listSize$/
+listSublist	lib/liblist.pl	/^sub listSublist$/
+listSum	lib/liblist.pl	/^sub listSum$/
+listsPaste	lib/liblist.pl	/^sub listsPaste$/
+loadLogDataFile	alex/network_matrix_analysis.pl	/^sub loadLogDataFile($) {$/
+loadMatrix	alex/network_matrix_analysis.pl	/^sub loadMatrix($$);         # loads a predefined l/
+loadOpticalDensityData	alex/network_matrix_analysis.pl	/^sub loadOpticalDensityData($); # loads the "growth/
+loadOpticalDensityDataType2	alex/network_matrix_analysis.pl	/^sub loadOpticalDensityDataType2($$) {$/
+load_allowed_hide_attributes	bio/bio_run_prm_hidden_dbg.pl	/^sub load_allowed_hide_attributes$/
+load_args	lib/load_args.pl	/^sub load_args (\\@)$/
+load_cluster_results	bio/bio_prepare_gene_expression_data_files.pl	/^sub load_cluster_results$/
+load_counts_file	lib/count_kmers.pl	/^sub load_counts_file$/
+load_dictionary	bio/bio_convert_to_bicluster.pl	/^sub load_dictionary$/
+load_experiment_groups	bio/bio_convert_to_bicluster.pl	/^sub load_experiment_groups$/
+load_experiment_list	bio/bio_join_genes.pl	/^sub load_experiment_list$/
+load_experiments	bio/bio_prepare_gene_expression_data_files.pl	/^sub load_experiments$/
+load_expressions	bio/bio_prepare_gene_expression_data_files.pl	/^sub load_expressions$/
+load_file_attribute_groups	lib/load_file_attribute_groups.pl	/^sub load_file_attribute_groups$/
+load_file_to_memory	lib/bio_load_file_to_memory.pl	/^sub load_file_to_memory$/
+load_gene_list	bio/bio_join_genes.pl	/^sub load_gene_list$/
+load_gene_to_unqiue_id_map	GeneXPress/gx2acyclicity.pl	/^sub load_gene_to_unqiue_id_map$/
+load_genes	bio/bio_prepare_gene_expression_data_files.pl	/^sub load_genes$/
+load_hide_attributes	bio/run_prm_test_set.pl	/^sub load_hide_attributes$/
+load_hide_groups	bio/bio_run_prm_hidden_dbg.pl	/^sub load_hide_groups$/
+load_sequences	lib/count_kmers.pl	/^sub load_sequences (\\%$$$)$/
+load_settings	lib/bio_load_settings.pl	/^sub load_settings$/
+load_sql_table_to_memory	lib/bio_load_sql_table_to_memory.pl	/^sub load_sql_table_to_memory$/
+load_vec_to_memory	lib/bio_load_file_to_memory.pl	/^sub load_vec_to_memory$/
+log2	Map/parse_transfac_matrices.pl	/^sub log2() {$/
+logMapError	lib/libmap.pl	/^sub logMapError # (string $message, string $header/
+log_conditional_execute	bio/bio_run_prm_dbg.pl	/^sub log_conditional_execute$/
+lookForRoot	bio/bio_convert_to_pah.pl	/^sub lookForRoot {$/
+lookupMapId	Map/parse_geo_gds.pl	/^sub lookupMapId$/
+makeAuthorHandle	Tools/endnote2bibtex.pl	/^sub makeAuthorHandle$/
+makeBibIdFromEndnote	Tools/endnote2bibtex.pl	/^sub makeBibIdFromEndnote$/
+makeBibIdFromEndnoteArticle	Tools/endnote2bibtex.pl	/^sub makeBibIdFromEndnoteArticle$/
+makeBibIds	Tools/endnote2bibtex.pl	/^sub makeBibIds$/
+makeBibIdsOld	Tools/endnote2bibtex.pl	/^sub makeBibIdsOld$/
+makeTmpFile	lib/libfile.pl	/^sub makeTmpFile$/
+makeUnion	alex/network_matrix_analysis.pl	/^sub makeUnion($@) {$/
+makeValidFileName	lib/libfile.pl	/^sub makeValidFileName$/
+makeZeros	Tools/range.pl	/^sub makeZeros$/
+make_acyclicity_file	GeneXPress/gx2acyclicity.pl	/^sub make_acyclicity_file$/
+make_data	bio/bio_flat_file_to_sql.pl	/^sub make_data$/
+make_dictionaries	bio/bio_run_prm_observed_dbg.pl	/^sub make_dictionaries$/
+make_dsc	bio/bio_flat_file_to_sql.pl	/^sub make_dsc$/
+make_dsc_file	bio/run_prm_test_set.pl	/^sub make_dsc_file$/
+make_experiment_sql	bio/bio_prepare_gene_expression_data_files.pl	/^sub make_experiment_sql$/
+make_experiments_file	bio/bio_dissect.pl	/^sub make_experiments_file$/
+make_file	Map/make_meta_genes.pl	/^sub make_file$/
+make_gene_expression_sql	bio/bio_prepare_gene_expression_data_files.pl	/^sub make_gene_expression_sql$/
+make_gene_file	bio/bio_dissect.pl	/^sub make_gene_file$/
+make_label	GeneXPress/genexpress2dotty.pl	/^sub make_label # ($reg,\\%genes,\\%descriptions)$/
+make_meta_file	bio/run_prm_test_set.pl	/^sub make_meta_file$/
+make_settings_file	bio/run_prm_test_set.pl	/^sub make_settings_file$/
+make_tree_file	bio/run_prm_test_set.pl	/^sub make_tree_file$/
+manipulate_seq	Map/find_motifs_in_cluster.pl	/^sub manipulate_seq # ($seq, $upstream_size)$/
+max	lib/libstats.pl	/^sub max$/
+max4	Map/parse_transfac_matrices.pl	/^sub max4() {$/
+maxColDim	lib/libfunc.pl	/^sub maxColDim$/
+maxCols	lib/libfile.pl	/^sub maxCols$/
+mean	lib/libstats.pl	/^sub mean (\\@) $/
+meanCols	lib/libfunc.pl	/^sub meanCols$/
+meanDotProduct	Map/meg_correspondence.pl	/^sub meanDotProduct$/
+mergeDatasets	Map/parse_geo_gds.pl	/^sub mergeDatasets$/
+mi	lib/libstats.pl	/^sub mi (\\$\\$\\%)$/
+min	lib/libstats.pl	/^sub min$/
+modify_orf_seqs	Map/find_motifs_in_cluster.pl	/^sub modify_orf_seqs # ($fasta_in, $upstream_size, /
+move_file	lib/bio_system.pl	/^sub move_file$/
+multiSplice	lib/libfile.pl	/^sub multiSplice$/
+mutual_information	lib/libstats.pl	/^sub mutual_information (\\@\\@)$/
+myAssert	alex/network_matrix_analysis.pl	/^sub myAssert($$);$/
+myChop	lib/libstd.pl	/^sub myChop$/
+myJoin	lib/libstd.pl	/^sub myJoin$/
+mySplit	lib/libstd.pl	/^sub mySplit$/
+myprint	lib/average_rows.pl	/^sub myprint$/
+nGenes	alex/network_matrix_analysis.pl	/^sub nGenes();$/
+nameFromIndex	alex/network_matrix_analysis.pl	/^sub nameFromIndex($) {  # $_[0] is the index$/
+name_to_sql_legal_column_name	lib/bio_name_to_sql_legal_column_name.pl	/^sub name_to_sql_legal_column_name$/
+nest	lib/liblist.pl	/^sub nest$/
+normByTrimmedMean	Tools/trimmed_mean.pl	/^sub normByTrimmedMean$/
+norm_pdf	lib/libstats.pl	/^sub norm_pdf$/
+normalizeField	lib/libsql.pl	/^sub normalizeField # ($field)$/
+normalizeMapGeneDescription	lib/libmap.pl	/^sub normalizeMapGeneDescription$/
+normalize_orf_name	lib/libmap_data.pl	/^sub normalize_orf_name # ($orf,$organism)$/
+numCols	lib/libfile.pl	/^sub numCols$/
+numCols2	lib/libfile.pl	/^sub numCols2$/
+numRows	lib/libfile.pl	/^sub numRows$/
+numTokens	lib/libfile.pl	/^sub numTokens$/
+openDoSql	lib/libsql.pl	/^sub openDoSql # ($dbh, $sql)$/
+openFile	lib/libfile.pl	/^sub openFile$/
+openMapErrorLog	lib/libmap.pl	/^sub openMapErrorLog$/
+openSql	lib/libsql.pl	/^sub openSql # ($dbh, $sql)$/
+orderHeader	Tools/merge_fields.pl	/^sub orderHeader$/
+order_rows	Tools/order_file.pl	/^sub order_rows$/
+outputForVisANT	alex/network_matrix_analysis.pl	/^sub outputForVisANT($\\@$) {$/
+outputSIF	alex/network_matrix_analysis.pl	/^sub outputSIF($\\@) {$/
+outputXMLFile	bio/bio_convert_to_pah.pl	/^sub outputXMLFile {$/
+pad	lib/libfile.pl	/^sub pad$/
+pairsRead	lib/libset.pl	/^sub pairsRead$/
+parseArgs	lib/libfile.pl	/^sub parseArgs$/
+parseAuthors	Tools/endnote2bibtex.pl	/^sub parseAuthors$/
+parseBioCartaHtml	lib/libpathway.pl	/^sub parseBioCartaHtml(\\$$$$)$/
+parseColsFromArgs	Tools/join_multi.pl	/^sub parseColsFromArgs$/
+parseEndnote	Tools/endnote2bibtex.pl	/^sub parseEndnote$/
+parseIdString	Map/parse_geo_gds.pl	/^sub parseIdString$/
+parseMapEvalAnnotPath	lib/libmap_eval.pl	/^sub parseMapEvalAnnotPath # ($file)$/
+parseRangeSegments	lib/libfile.pl	/^sub parseRangeSegments$/
+parseRanges	lib/libfile.pl	/^sub parseRanges$/
+parseSwissprotHeader	lib/libmap_ncbi.pl	/^sub parseSwissprotHeader # (FILE* $file)$/
+parse_iteration_dsc	bio/bio_copy_to_web2.pl	/^sub parse_iteration_dsc$/
+parse_tree_cpd	bio/bio_convert_to_bicluster.pl	/^sub parse_tree_cpd$/
+pass_filter	Tools/filter.pl	/^sub pass_filter$/
+pathExists	lib/libfile.pl	/^sub pathExists$/
+permutation	lib/liblist.pl	/^sub permutation$/
+permute	lib/libstd.pl	/^sub permute$/
+postProcessTemplate	lib/libattrib.pl	/^sub postProcessTemplate # ($text)$/
+prepInsertTable	lib/libsql.pl	/^sub prepInsertTable # ($dbh, $table, @fields) retu/
+prepare_for_add_attributes_to_table	bio/bio_prepare_default_settings.pl	/^sub prepare_for_add_attributes_to_table$/
+prepare_for_bio_compute_correlations	bio/bio_compute_post_correlations.pl	/^sub prepare_for_bio_compute_correlations$/
+prepare_for_compute_attribute_changes	bio/bio_prepare_default_settings.pl	/^sub prepare_for_compute_attribute_changes$/
+prepare_for_convert_to_bicluster	bio/bio_make_tsc.pl	/^sub prepare_for_convert_to_bicluster$/
+prepare_for_create_prm_dsc	bio/bio_prepare_default_settings.pl	/^sub prepare_for_create_prm_dsc$/
+prepare_for_create_prm_meta	bio/bio_prepare_default_settings.pl	/^sub prepare_for_create_prm_meta$/
+prepare_for_fix_gene_expression_tables	bio/bio_prepare_default_settings.pl	/^sub prepare_for_fix_gene_expression_tables$/
+prepare_for_prepare_gene_expression_data_files	bio/bio_prepare_default_settings.pl	/^sub prepare_for_prepare_gene_expression_data_files/
+prepare_for_run_prm_hidden	bio/bio_prepare_default_settings.pl	/^sub prepare_for_run_prm_hidden$/
+prepare_for_run_prm_observed	bio/bio_prepare_default_settings.pl	/^sub prepare_for_run_prm_observed$/
+prepare_sql_for_next_iteration	bio/bio_run_prm_hidden_dbg.pl	/^sub prepare_sql_for_next_iteration$/
+printAttributes	lib/libattrib.pl	/^sub printAttributes # ($fout, \\%attrib2val)$/
+printEndnote	Tools/endnote2bibtex.pl	/^sub printEndnote$/
+printEndnoteArticle	Tools/endnote2bibtex.pl	/^sub printEndnoteArticle$/
+printEndnoteBook	Tools/endnote2bibtex.pl	/^sub printEndnoteBook$/
+printError	Cassettes/client_cassettes.pl	/^sub printError # ($message)$/
+printFeatures	Map/gbk.pl	/^sub printFeatures$/
+printFilep	lib/libfile.pl	/^sub printFilep$/
+printForm	Cassettes/search_cassette.pl	/^sub printForm$/
+printHierarchy	bio/bio_convert_to_pah.pl	/^sub printHierarchy {$/
+printIndented	bio/bio_convert_to_pah.pl	/^sub printIndented {$/
+printInit	Map/unigene2tab.pl	/^sub printInit$/
+printInteractionsWith	alex/network_matrix_analysis.pl	/^sub printInteractionsWith {$/
+printLethalMatrix	alex/network_matrix_analysis.pl	/^sub printLethalMatrix();$/
+printMapLogErrorFooter	lib/libmap.pl	/^sub printMapLogErrorFooter # (string $message)$/
+printMapLogErrorHeader	lib/libmap.pl	/^sub printMapLogErrorHeader # (string $message)$/
+printMatrix	lib/libfile.pl	/^sub printMatrix$/
+printMatrixHashtable	alex/network_matrix_analysis.pl	/^sub printMatrixHashtable();$/
+printObjList	bio/bio_convert_to_pah.pl	/^sub printObjList {$/
+printResultArray	alex/network_matrix_analysis.pl	/^sub printResultArray(*@) {$/
+printSetOfLists	lib/libset.pl	/^sub printSetOfLists$/
+printSortedResults	alex/network_matrix_analysis.pl	/^sub printSortedResults($);$/
+printSyntax	Db/load_table.pl	/^sub printSyntax$/
+printTable	lib/libtable.pl	/^sub printTable($\\@$$$)$/
+printTableData	web/lists2htmltable.pl	/^sub printTableData$/
+printThis	Tools/uniq.pl	/^sub printThis$/
+printTree	bio/bio_convert_to_pah.pl	/^sub printTree {$/
+printUsage	alex/network_matrix_analysis.pl	/^sub printUsage() {$/
+print_GeneXPress_file	bio/bio_make_tsc.pl	/^sub print_GeneXPress_file$/
+print_attributes	bio/bio_convert_to_bicluster.pl	/^sub print_attributes$/
+print_cluster_matrix	bio/bio_convert_to_bicluster.pl	/^sub print_cluster_matrix$/
+print_data_max	lib/feature_selection.pl	/^sub print_data_max ($\\@$\\@\\@$)$/
+print_edge	GeneXPress/genexpress2dotty.pl	/^sub print_edge$/
+print_experiment_section	GeneXPress/add_experiments_to_gx.pl	/^sub print_experiment_section$/
+print_feature_max	lib/feature_selection.pl	/^sub print_feature_max ($\\@$\\@\\@$)$/
+print_file_link	bio/bio_copy_to_web2.pl	/^sub print_file_link$/
+print_full_matrix	lib/feature_selection.pl	/^sub print_full_matrix ($\\@$\\@\\@$)$/
+print_genexpress_analysis	bio/bio_genexpress_analysis.pl	/^sub print_genexpress_analysis$/
+print_header	Map/collate_evals.pl	/^sub print_header$/
+print_joins	bio/bio_create_prm_dsc.pl	/^sub print_joins$/
+print_kmers	lib/count_kmers.pl	/^sub print_kmers (\\@\\%$$$)$/
+print_link	bio/bio_copy_to_web2.pl	/^sub print_link$/
+print_links_to_runs	bio/bio_copy_to_web2.pl	/^sub print_links_to_runs$/
+print_matrix	lib/bio_sort_vec.pl	/^sub print_matrix (\\@$)$/
+print_motifs	bio/bio_copy_to_web2.pl	/^sub print_motifs$/
+print_node	GeneXPress/genexpress2dotty.pl	/^sub print_node$/
+print_prm_header	bio/bio_create_prm_dsc.pl	/^sub print_prm_header$/
+print_probs	bio/bio_create_prm_dsc.pl	/^sub print_probs$/
+print_raw_data	bio/bio_convert_to_bicluster.pl	/^sub print_raw_data$/
+print_regulators	GeneXPress/extract_regulators.pl	/^sub print_regulators # ($return_cluster,%regulator/
+print_relations	bio/bio_create_prm_dsc.pl	/^sub print_relations$/
+print_run	bio/bio_copy_to_web2.pl	/^sub print_run$/
+processValues	lib/libattrib.pl	/^sub processValues # ($text)$/
+protectFromShell	lib/libfile.pl	/^sub protectFromShell # ($file)$/
+randomizeNetwork	alex/network_matrix_analysis.pl	/^sub randomizeNetwork(\\@) {$/
+rankRelativeToGenes	Map/meg_correspondence.pl	/^sub rankRelativeToGenes$/
+readAnnotations	Cassettes/search_cassette.pl	/^sub readAnnotations # ($organism)$/
+readAttribLines	lib/libattrib.pl	/^sub readAttribLines # ($text)$/
+readAttribText	lib/libattrib.pl	/^sub readAttribText # ($text)$/
+readDataMatrix	lib/libfile.pl	/^sub readDataMatrix$/
+readDataSection	bio/bio_convert_to_pah.pl	/^sub readDataSection {$/
+readEdgeSection	bio/bio_convert_to_pah.pl	/^sub readEdgeSection {$/
+readFile	lib/libfile.pl	/^sub readFile$/
+readFileColumn	lib/libfile.pl	/^sub readFileColumn$/
+readFileName	lib/libfile.pl	/^sub readFileName$/
+readGeneList	Cassettes/search_cassette.pl	/^sub readGeneList$/
+readGeoDataset	lib/libgeo.pl	/^sub readGeoDataset$/
+readGeoGdsHeader	lib/libgeo.pl	/^sub readGeoGdsHeader$/
+readHeader	lib/libfile.pl	/^sub readHeader$/
+readIds	lib/libfile.pl	/^sub readIds$/
+readKeyedTuples	lib/libfile.pl	/^sub readKeyedTuples$/
+readKeyedValues	lib/libfile.pl	/^sub readKeyedValues$/
+readNeighborhoods	Tools/neighborhood_overlaps.pl	/^sub readNeighborhoods$/
+readNodeSection	bio/bio_convert_to_pah.pl	/^sub readNodeSection {$/
+readPlatform	Map/parse_geo_gds.pl	/^sub readPlatform$/
+read_go_flat_file	Map/make_sgd_htmls.pl	/^sub read_go_flat_file$/
+read_motif_file	Map/make_sgd_htmls.pl	/^sub read_motif_file$/
+remExtraSpaces	lib/libstring.pl	/^sub remExtraSpaces$/
+remPathExt	Cassettes/search_cassette.pl	/^sub remPathExt$/
+removeIllegalChars	lib/libmap.pl	/^sub removeIllegalChars$/
+removeIllegalXMLChars	lib/libmap.pl	/^sub removeIllegalXMLChars$/
+removeUnboundBlocks	lib/libattrib.pl	/^sub removeUnboundBlocks # ($text)$/
+remove_illegal_chars	bio/bio_convert_to_bicluster.pl	/^sub remove_illegal_chars$/
+remove_illegal_xml_chars	GeneXPress/tab2gxa.pl	/^sub remove_illegal_xml_chars$/
+remove_scores_from_file	bio/bio_run_prm_hidden.pl	/^sub remove_scores_from_file$/
+replace	Tools/replace.pl	/^sub replace$/
+replaceAttribs	lib/libattrib.pl	/^sub replaceAttribs # (\\%to, \\%from)$/
+replicate	lib/libstring.pl	/^sub replicate # ($str, $num)$/
+report	frog/frog_locks.pl	/^sub report$/
+resolvePath	lib/libfile.pl	/^sub resolvePath # ($file,$pwd)$/
+revCompliment	lib/libseq.pl	/^sub revCompliment$/
+reverseComplement	Map/gbk.pl	/^sub reverseComplement$/
+roman2number	lib/libmap_data.pl	/^sub roman2number # ($chr)$/
+run_cv_iterations	bio/bio_run_prm_cv.pl	/^sub run_cv_iterations$/
+run_doublepcluster	bio/bio_prepare_gene_expression_data_files.pl	/^sub run_doublepcluster$/
+run_em_hide_attribute	bio/bio_run_prm_hidden_dbg.pl	/^sub run_em_hide_attribute$/
+run_pcluster	bio/bio_prepare_gene_expression_data_files.pl	/^sub run_pcluster$/
+sample_normal	lib/libstats.pl	/^sub sample_normal$/
+scrambleGenePositions	Map/scramble_gene_positions.pl	/^sub scrambleGenePositions$/
+seedDataStructs	bio/bio_convert_to_pah.pl	/^sub seedDataStructs {$/
+select_from_file	lib/feature_selection.pl	/^sub select_from_file$/
+sequentialJoin	lib/libtable.pl	/^sub sequentialJoin$/
+set2Assoc	lib/libset.pl	/^sub set2Assoc$/
+set2List	lib/libset.pl	/^sub set2List$/
+setAllAttribs	lib/libattrib.pl	/^sub setAllAttribs # ($text,$value)$/
+setAttribs	lib/libattrib.pl	/^sub setAttribs # ($text,\\%attrib2val,$case)$/
+setAttribsRecursively	lib/libattrib.pl	/^sub setAttribsRecursively # ($text,$attribs,$recur/
+setCombinations	lib/libset.pl	/^sub setCombinations$/
+setCrossSelf	lib/libset.pl	/^sub setCrossSelf$/
+setDifference	lib/libset.pl	/^sub setDifference$/
+setExists	lib/libset.pl	/^sub setExists$/
+setExpand	lib/libset.pl	/^sub setExpand$/
+setIntersection	lib/libset.pl	/^sub setIntersection$/
+setListsPaste	lib/libset.pl	/^sub setListsPaste$/
+setListsPrint	lib/libset.pl	/^sub setListsPrint$/
+setListsRead	lib/libset.pl	/^sub setListsRead$/
+setMembers	lib/libset.pl	/^sub setMembers$/
+setMembersList	lib/libset.pl	/^sub setMembersList$/
+setMissingIfLess	Tools/trimmed_mean.pl	/^sub setMissingIfLess$/
+setOverlap	lib/libset.pl	/^sub setOverlap$/
+setPrint	lib/libset.pl	/^sub setPrint$/
+setRead	lib/libset.pl	/^sub setRead$/
+setReadPairs	lib/libset.pl	/^sub setReadPairs$/
+setReadTuples	lib/libset.pl	/^sub setReadTuples$/
+setReadVec	lib/libset.pl	/^sub setReadVec$/
+setReduce	lib/libset.pl	/^sub setReduce$/
+setRemove	lib/libset.pl	/^sub setRemove$/
+setSize	lib/libset.pl	/^sub setSize$/
+setSubset	lib/libset.pl	/^sub setSubset$/
+setUnion	lib/libset.pl	/^sub setUnion # (\\%set1, \\%set2)$/
+sets2List	lib/libset.pl	/^sub sets2List$/
+sets2Vectors	lib/libset.pl	/^sub sets2Vectors$/
+setsCoMembers	lib/libset.pl	/^sub setsCoMembers$/
+setsCrossSelf	lib/libset.pl	/^sub setsCrossSelf$/
+setsDifference	lib/libset.pl	/^sub setsDifference$/
+setsExpand	lib/libset.pl	/^sub setsExpand$/
+setsExpandSelf	lib/libset.pl	/^sub setsExpandSelf$/
+setsFindBiggest	lib/libset.pl	/^sub setsFindBiggest$/
+setsGetDistinct	lib/libset.pl	/^sub setsGetDistinct$/
+setsIntersection	lib/libset.pl	/^sub setsIntersection$/
+setsIntersectionSelf	lib/libset.pl	/^sub setsIntersectionSelf$/
+setsIntert	lib/libset.pl	/^sub setsIntert$/
+setsJoin	lib/libset.pl	/^sub setsJoin$/
+setsMakeMutEx	lib/libset.pl	/^sub setsMakeMutEx$/
+setsMemberOf	lib/libset.pl	/^sub setsMemberOf$/
+setsOverlap	lib/libset.pl	/^sub setsOverlap$/
+setsPrint	lib/libset.pl	/^sub setsPrint$/
+setsPrintLists	lib/libset.pl	/^sub setsPrintLists$/
+setsPrintMatrix	lib/libset.pl	/^sub setsPrintMatrix$/
+setsPrintTable	lib/libset.pl	/^sub setsPrintTable$/
+setsRead	lib/libset.pl	/^sub setsRead$/
+setsReadLists	lib/libset.pl	/^sub setsReadLists$/
+setsReadMatrix	lib/libset.pl	/^sub setsReadMatrix$/
+setsReadTable	lib/libset.pl	/^sub setsReadTable$/
+setsReduce	lib/libset.pl	/^sub setsReduce$/
+setsReduceBySet	lib/libset.pl	/^sub setsReduceBySet$/
+setsReduceSelf	lib/libset.pl	/^sub setsReduceSelf$/
+setsSizes	lib/libset.pl	/^sub setsSizes$/
+setsSubset	lib/libset.pl	/^sub setsSubset$/
+setsSumSizes	lib/libset.pl	/^sub setsSumSizes$/
+setsUnion	lib/libset.pl	/^sub setsUnion$/
+setsUnionSelf	lib/libset.pl	/^sub setsUnionSelf # (\\%\\%sets)$/
+shannon_entropy	lib/libstats.pl	/^sub shannon_entropy$/
+shortestDistance	Tools/shortest_path.pl	/^sub shortestDistance$/
+sigma	Map/chrom_corr.pl	/^sub sigma$/
+single_vector_manip	lib/vector_manip.pl	/^sub single_vector_manip (\\@\\@$$$$$)$/
+skip	frog/frog_locks.pl	/^sub skip # ($path,@dirs)$/
+smdHeader	Map/smdxls2tab.pl	/^sub smdHeader$/
+sortHashKeysByLinkedValue	lib/libstats.pl	/^sub sortHashKeysByLinkedValue (\\%)$/
+sort_vec	lib/bio_sort_vec.pl	/^sub sort_vec (\\@$$$)$/
+splitKeyAndValue	lib/libtable.pl	/^sub splitKeyAndValue$/
+sql_exec	lib/sql.pl	/^sub sql_exec$/
+sql_to_flat_file	lib/sql_to_flat_file.pl	/^sub sql_to_flat_file$/
+squaredEuclid	lib/libmath.pl	/^sub squaredEuclid$/
+squared_euclid	Tools/knn.pl	/^sub squared_euclid$/
+stddev	lib/libstats.pl	/^sub stddev (\\@)$/
+sumHitsInCommon	alex/network_matrix_analysis.pl	/^sub sumHitsInCommon($$);$/
+sumUpSizes	Tools/mapper.pl	/^sub sumUpSizes$/
+tableRead	lib/libtable.pl	/^sub tableRead$/
+takeLog2	Tools/trimmed_mean.pl	/^sub takeLog2$/
+to_gx_attributes	GeneXPress/tab2gxa.pl	/^sub to_gx_attributes$/
+transform	Tools/transform_matrix.pl	/^sub transform$/
+trim	Tools/trimmed_mean.pl	/^sub trim$/
+trim_all_spaces	bio/bio_prm_tree_to_leaf_selects.pl	/^sub trim_all_spaces$/
+trim_end_spaces	lib/bio_str.pl	/^sub trim_end_spaces$/
+trim_leading_spaces	bio/bio_prm_tree_to_leaf_selects.pl	/^sub trim_leading_spaces$/
+trim_trailing_spaces	lib/bio_str.pl	/^sub trim_trailing_spaces$/
+truncateChar	Db/load_table.pl	/^sub truncateChar$/
+truncateNumber	Db/load_table.pl	/^sub truncateNumber$/
+underBranch	Tools/leaves.pl	/^sub underBranch$/
+union	lib/libstats.pl	/^sub union (\\@\\@)$/
+unlexifyNumber	lib/libstd.pl	/^sub unlexifyNumber$/
+update_description	bio/bio_copy_to_web2.pl	/^sub update_description$/
+upperCaseAttribs	lib/libattrib.pl	/^sub upperCaseAttribs # (\\%attribs)$/
+vec_avg	lib/libstats.pl	/^sub vec_avg$/
+vec_center	lib/libstats.pl	/^sub vec_center (\\@)$/
+vec_count_full_entries	lib/libstats.pl	/^sub vec_count_full_entries$/
+vec_euclid	lib/libstats.pl	/^sub vec_euclid (\\@\\@)$/
+vec_kmeans	Tools/kmeans.pl	/^sub vec_kmeans (\\@\\@$$)$/
+vec_max	lib/libstats.pl	/^sub vec_max (\\@)$/
+vec_min	lib/libstats.pl	/^sub vec_min (\\@)$/
+vec_nth_statistic	lib/libstats.pl	/^sub vec_nth_statistic (\\@$)$/
+vec_pearson	lib/libstats.pl	/^sub vec_pearson (\\@\\@)$/
+vec_stats	lib/libstats.pl	/^sub vec_stats (\\@)$/
+vec_std	lib/libstats.pl	/^sub vec_std$/
+vec_suff_stats	lib/libstats.pl	/^sub vec_suff_stats$/
+vec_sum	lib/libstats.pl	/^sub vec_sum$/
+vector_manip	lib/vector_manip.pl	/^sub vector_manip$/
+whichismax	lib/libstats.pl	/^sub whichismax$/
+whichismin	lib/libstats.pl	/^sub whichismin (\\@)$/
+wordMatch	lib/libmap.pl	/^sub wordMatch$/

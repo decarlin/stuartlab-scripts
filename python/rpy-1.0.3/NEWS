@@ -1,0 +1,569 @@
+CHANGES IN RPY 1.0.3 - 2008-05-12
+---------------------------------
+
+Bug fixes:
+
+- Correct issue with R 2.7.0. (R 2.7.0 exports the symbol 'Rf_KillAllDevices' 
+  instead of 'KillAllDevices')
+
+
+
+CHANGES IN RPY 1.0.2 - 2008-04-02
+---------------------------------
+
+New features:
+
+- The 'Robj' type is now exported.
+
+- Add simple neural net example.
+
+Bug fixes:
+
+- Stack checking code was incorrectly disabled on all platforms,
+  corrected so that it is properly included for R 2.3.0 and later
+  everywhere except Win32.
+
+- Fixes for compatibility with Python 2.4 and later.
+
+- Updates to debian install files (Dirk Eddelbuettel)
+
+- Correct simple line plot example in the documentation
+
+- Minor internal changes to code and tests
+
+- Automatic build tool now uses 'tail -n 1' instead of 'tail -1' when
+  calling 'R RHOME' to make recent versions of tail happy
+
+- Add startup options to prevent initialization of console
+  read/write/showfiles which causes problems with R when run without a
+  controlling console. 
+
+Other changes:
+
+- Deletion of R's temporary directory now uses R's own internal function
+  for this task for R versions after 2.4.0.
+
+CHANGES IN RPY 1.0.1 - 2007-11-29
+---------------------------------
+
+Bug Fixes:
+
+  - Correct silent termination on load on MS-Windows (really this time!)
+
+  - Improve detection of installed R versions during build process 
+    on MS-Windows
+
+CHANGES IN RPY 1.0.0 - 2007-11-15
+---------------------------------
+
+New Features:
+
+  - Complete support for NumPy
+
+  - Add new exception types to provide better information on the
+    source of the error:
+
+      RPyException: Base exception class for all RPy Exceptions
+
+      RPyTypeConversionException: Error in conversion between R
+              and Python
+
+      RPyRException Error raised within R
+
+      (RException is set equal to RPyException for backwards
+	  compatibility)
+
+Bug Fixes:
+
+  - All Numeric and NumPy data types are either properly handled, or
+    an appropriate exception is generated. 
+
+  - Properly handle unicode strings.
+
+  - Fix silent failure to start up on Win32 
+
+Other:
+
+  - Misc improvments to the test code.
+
+CHANGES IN RPY 1.0 RC 3 - 2007-06-26
+------------------------------------
+
+Bug Fixes:
+
+  - Only apply code to fix C Stack Limit error to recent versions of
+    R that require the fix. 
+
+
+CHANGES IN RPY 1.0 RC 2 - 2007-05-18
+------------------------------------
+
+New Features:
+
+  - Initial work to provide support for NumPy
+
+Bug Fixes:
+
+  - Fix "C stack limit" error produced by R in some contexts
+
+  - Moved some code so no longer necessary to have R/bin in PATH
+
+  - Skip tests for features not supported on Win32
+
+CHANGES in RPY 1.0 RC 1 - 2006-08-08
+------------------------------------
+
+Bug Fixes
+
+   - Improve R version parsing to cope with new R startup message
+
+
+
+CHANGES IN RPY 0.99.2 - 2006-03-24
+----------------------------------
+
+Bug fixes: 
+
+  - Windows binaries in 0.99.1 were built without Numeric support.
+    Corrected for 0.99.2
+
+CHANGES IN RPY 0.99.1 - 2006-03-24
+----------------------------------
+
+New features:
+
+  - RPy is now available under the terms of the Mozilla Public
+    License (MPL), the GNU Public License (GPL), or the Library or
+    Lesser GNU Public License (LGPL)
+
+Bug fixes:
+
+  - Fix crash on win32 due to omission (was commented out during
+    debugging!) of explicit dll load.
+
+
+CHANGES IN RPY 0.99.0 - 2006-03-15
+----------------------------------
+
+New features:
+
+  - Dramatically simplify the build process for Win32: The gcc and
+    ld included in MinGW 5.0.2 can now linking directly against DLL's,
+    removing the need for much of the previous complexity. See
+    INSTALL.WINDOWS to see exactly how easy it now is!
+
+  - It is now possible to use setup.cfg to control various aspects
+    of the build process.  'config.in' contains a template
+    containing all available options and what they do.
+
+Bug fixes:
+
+  - RPy compiled with Numeric support will no longer crash when run
+    with Numeric available.
+
+  - 1267731: Crash during import when R is missing from the registry
+
+  - 1247722: Problem using R Wavelets library with RPy
+
+  - 1428256: RPy does not build on OS X, easy fix
+
+  - 1432578: Plotting with RPy crashes Python
+
+Other:
+
+  - The rpy.py now communicates RHOME, RVER, RVERSION, RUSER from
+    python to the _rpy module using environment variables. This
+    avoids the need to have duplicate C code to obtain these values,
+    and makes things both more maintainable and more robust.
+
+
+CHANGES IN RPY 0.4.6 - 2005-07-28 
+---------------------------------
+
+Bug fixes
+
+  - Some unit tests don't properly restore the default conversion
+    mode, causing following tests to fail.  Short term fix: reset
+    the default mode in testall.py before running each test.
+
+  - Fix bug reported by Wei-Hao Lin: missing import and typo in
+    rpy.py for Win32
+
+  - Fix bug reported by Nicolas Lebas: Segfault when accessing R
+    objects via r.<varname>.  The code was was only properly
+    handling
+    R function objects, and failed for other object types.
+
+  - setup.py was always overwriting the <filename><RVER>.c files
+    (used to allow binaries for mulitple R versions to be included
+    in
+    the same package).  setup.py now create/overwrite the
+    <foo><RVER>.c
+    files only if they don't exist or are out of date.
+
+This should be the last release for some time. ;^)
+
+
+CHANGES IN RPY 0.4.5
+--------------------
+
+New features
+
+  - Based on changes suggested by Bo Peng (Thanks Bo!), setup.py can
+    now build and install a version of Rpy which will work with
+    multiple versions of R.  To use this, set the environment
+    varaible 'RHOMES' to a list of R HOME directories.  Look at the
+    file description at the top of setup.py for details.
+
+  - Improved build instructions for Windows by Bo Peng.
+
+Bug fixes
+
+  - Fixed a install bug on Windows.
+
+
+CHANGES IN RPY 0.4.4
+--------------------
+
+New features
+
+  - Rpy now checks for Numeric at runtime and avoids calling it when
+    it is not present.  This allows a single binary library to be
+    used whether or not Numeric is available at runtime,
+    significantly simplyfing creation and distribution of binary
+    packages.
+
+  - Warning messages from R are now properly displayed at the
+    completion of the offending call.
+
+Bug fixes
+
+  - Compilation on Windows and for R versions below 2.1.0 has been fixed.
+
+Unresolved bugs
+
+  - Reception of a SIGINT signal sometimes causes a segfault. Under
+    Linux, I see about 1 segfault per 100 signals. On Solaris, I'm
+    seeing appriximatley 3 out of 4. Help debuging this issue is
+    most welcome.
+
+CHANGES IN RPY 0.4.3
+--------------------
+
+New features
+
+  - R Logical objects (TRUE/FALSE) are now mapped into python
+    Boolean objects.
+
+  - New conversion mode 'VECTOR_CONVERSION'
+
+	In R there is no such thing as a straight scalar.  All
+	values are vectors, and scalars are simple vectors of length
+	one.  In Python, however, there is a representational and
+	conceptual difference between scalars and lists, plus
+	Python's immutable lists (a.k.a. tuples).  
+
+	Thus, An R vector of length one can thus be translated into
+	any of three Python forms :
+
+	r("as.integer(1)")  -->  int(1) 
+        	              -->  [int(1),]
+                	        -->  (int(1),)
+  
+	It is impossible to tell from the R object itself, which of
+	these is correct.  Given that [] and () are almost
+	equivalent, we don't worry about ().  But we still must
+	decide between int(1) and [int(1)].
+
+	As documented in the Rpy manual, BASIC_CONVERSION, simply
+	assumes that a vector of length one should be translated as
+	scalar, and that vectors with other lengths (including 0)
+	should be translated into Python [] lists.
+
+	The new 'VECTOR_CONVERSION' mode always returns a python
+	list, regardless of the length of the R vector.
+
+	EG, 
+	    with_mode( BASIC_CONVERSION,  r.c)(1) --> int(1)
+	    with_mode( VECTOR_CONVERSION, r.c)(1) --> [int(1),]
+
+  - R source headers no longer needed, and are no longer included in
+    the source package (yea!)
+
+  - Previous versions of rpy have permitted multiple copies of the R
+    interpreter wrapper to be instantiated (via "newR = rpy.R()" ).
+    However R's design imposes a limit of one interpreter per python
+    process.  To avoid confusion on this point, attempts to
+    instantiate more than one R interpreter object will now generate
+    RuntimeError exceptions.
+
+  - On Windows, RPy now always looks at the registry to see where to
+    find the R DLL.  This should avoid the nasty popup error message
+    when the DLL isn't on the path.  Patch by Peter
+    (maubp@users.sourceforge.net)
+
+  - The R integer 'NA' value is now accessible as the 'NA' attribute of the
+    Python 'r' object.
+
+  - The R floating point 'NA' value is now accessible as the 'NAN'
+    attribute of the Python 'r' object.
+
+  - The build process now creates version-specific shared libraries,
+    and rpy will load the appropriate version specific library. This
+    should help avoid problems arising from version conflicts, it
+    will also make packaging 'universal' binary packages easier.
+
+Bug fixes:
+
+  - Fix build error for R 2.0.0+ on Mac OSX ('darwin')
+
+  - The R interpreter is now properly shutdown when python exits.
+    This ensures that all temporary directories and files are
+    removed, resolving a long-standing issue.
+
+  - r.help() now works as expected by users. (Some time ago help()
+    started returning an object that had to be explicitly printed to
+    complete the processing.  RPy now special-cases calls to r.help
+    to ensure that this happens properly.)
+
+  - All unit tests now pass.
+
+  - Fix compilation error on Win32 due to a change in field names in
+    R-2.1.1 [ 1238226 ] rpymodule.c needs updating for R 2.1.1 or
+    later.  Bo Peng identified both the bug and the fix.
+
+  - Fix error (potential segfault!) when handling conversion of
+    factor objects containing missing values
+
+  - Fix bug in R.__call__ that could cause problems when the 'r'
+    object is not present.
+
+Behind the scenes:
+
+  - Some work has been done "under the hood" to allow an R
+    interpreter to be shut down and then started up again.  This is
+    *not* currently working.
+
+CHANGES IN RPY 0.4.2
+--------------------
+
+New features:
+
+  - Add headers to enable building for R 2.1.0.
+
+Bug fixes:
+
+  - Fix build error under gcc 4.X
+
+
+CHANGES IN RPY 0.4.1
+--------------------
+
+New features:
+
+  - Headers for R 2.0.1 are now included, allowing build against R
+    2.0.1 without additional effort.
+
+Bug fixes:
+
+  - Provide alternative getstatusoutput for Windows, resolving a build
+    issue there.
+
+
+CHANGES IN RPY 0.4.0
+--------------------
+
+New features:
+
+  - More fixes for R 2.0.0  
+
+  - R header files for R 1.8.0 through R 2.0.0 are now included with 
+    rpy.  This should make it easier to build.
+
+
+CHANGES IN RPY 0.3.6
+--------------------
+
+New features:
+
+  - Compatible with R 2.0.0
+
+  - Better build instructions for Windows
+
+  - New assistant maintaner: Nitin Jain <Nitin.Jain@Pfizer.com>
+
+Bug Fixes:
+
+  - Fix build issue on Windows, due to a path problem.
+
+CHANGES IN RPY 0.3.5
+--------------------
+
+New features:
+
+  - Now compiles cleanly on Mac OS X.
+
+  - Rename io.py to rpy_io.py to avoid conflict with another python package.
+
+  - Some bug fixes for windows.  The Windows port is still not
+    stable. So exercise caution!
+
+
+CHANGES IN RPy 0.3.4
+--------------------
+
+New features:
+
+  - The path to the R shared library (unix) / DLL (win32) is now
+    included in the compiled shared rpy library/DLL so that the R
+    shared library/DLL will be found even when it is not in the
+    library search path (unix:LD_LIBRARY_PATH, win32:PATH).
+
+  - Tests now run against the local build rather than the installed build
+
+Fixed bugs:
+
+  - The unit test for the lcall method was incorrect.
+
+
+CHANGES IN RPy 0.3.3
+--------------------
+
+Fixed bugs
+
+  - Removed link error for 'jump_now' with R 1.8.X
+
+  - Removed redefinition of malloc()
+
+  - Fixes to unit tests 
+
+New features
+
+  - Now works with R 1.8.X
+
+  - Windows changes integrated into the Unix source tree
+
+  - Added lcall() method for calling R functions using a list of
+    (name, value) pairs for the parameters.  This is works around
+    the python (mis-)feature of using unordered python dictonaries
+    for named parameters, resulting in the loss of order for named
+    parameters.
+
+
+
+CHANGES IN RPy 0.3.1
+--------------------
+
+Fixed bugs
+
+  - There was several memory leaks due to bad management of Python
+    refcounts.
+
+  - There was wrong synchronization of the thread running the R event
+    loop and the calls to the R interpreter.
+
+  - There was a bug with signal handling which caused segfault when
+    'Ctrl-C' were pressed.
+
+  - The R event loop shouldn't be run in non-interactive sessions.
+
+  - The i/o Python callbacks were wrong synchronized with the R event
+    loop thread.
+
+New features
+
+  - Added a rpy_version symbol.
+
+
+
+CHANGES IN RPy 0.3
+------------------
+
+Fixed bugs
+
+  - There was a bug in the conversion of factors (when it has duplicate
+    entries).
+
+  - The R computations were unbreakable, due to the interception of
+    the SIGINT signal.  Now, it is working properly; CTRL-C aborts
+    any Python or R evaluation with a KeyboardInterrupt exception.
+
+  - The input/output of the R interpreter was directed to the C
+    stdin/stdout instead of the Python streams.
+
+New features
+
+  - Added functions to manipulate the R event loop.
+
+  - Added functions to customize the input and output of the R
+    interpreter (the default is, now, sys.stdin and sys.stdout).
+    Now, RPy works well with IDLE or other IDE's.
+
+  - The output from the R help command is also customizable.
+
+  - Added the R boolean objects TRUE and FALSE, as attributes of the
+    Python 'r' object.
+
+Documentation
+
+  - Updated (and a bit expanded) the docs to reflect the changes.  Added
+    sections with acknowledgements and known bugs.
+
+Distribution
+
+  - Included a 'setenv.c' for POSIX compliance.
+
+  - Support for Windows platform.
+
+
+
+CHANGES IN RPy 0.2
+------------------
+
+Fixed bugs
+
+  - There were several bugs related to memory and R and Python garbage
+    collectors, which caused Python segfaults.
+
+  - There was a problem with signals traped by R, which made Python crash when
+    <Ctl-C> was pressed.
+
+  - R objects of class 'factor' or 'data.frame' were incorrect converted to
+    Python.
+
+  - Instances of any class converted to R were treated as sequences and made
+    Python segfault.
+
+
+Conversion
+
+  - RPy has now a new system for conversion of types from R to Python (see the
+    docs), which includes user defined conversion functions.
+
+  - The conversion to R types is also customizable.
+
+  - Some utility functions are added.
+
+  - When Numeric (NumPy) is available, it is used for the standard conversion
+    between R arrays and Python objects.
+
+
+Documentation
+
+  - The documentation is converted to texinfo format, updated and enlarged.  In
+    particular, better documentation for the compilation procedure and for the
+    location of libraries is included.
+
+
+Distribution
+
+  - There are now some examples included in the distribution.
+
+  - Regression tests are also included.
+
+
+
+CHANGES IN RPy 0.1
+------------------
+
+Initial release

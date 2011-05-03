@@ -1,0 +1,11 @@
+global-include *.py *.c *.h debian* README TODO Makefile *.texi
+global-exclude *[0-9].[ch] 
+include COPYING ChangeLog INSTALL.UNIX INSTALL.WINDOWS MANIFEST.in 
+include NEWS README TODO
+global-exclude .cvsignore *.pyc *.bak .tnatr* *.tgz *.tar.gz *~ 
+global-exclude core* *patch* *diff* .svn
+include debian/*
+prune debian/.svn
+prune CVS
+prune dist
+prune doc/manual_html

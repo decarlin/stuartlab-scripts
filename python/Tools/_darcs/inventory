@@ -1,0 +1,20 @@
+[This is the initial contribution of Josh Wilcox to the sysbio python/Tools directory.  It consisstts of a little script for mapping two column files , see the doc string of the file for sdetails.
+wicllcox@biology.ucsc.edu**20080205061300] 
+[makemap was lready already used elsewhere, so I changed the name to this less weildieldy beast that reference s the columnar nature of the expected input
+wicllcox@biology.ucsc.edu**20080205061831] 
+[script is named column mathc chmaker.py
+wicllcox@biology.ucsc.edu**20080206204538] 
+[added SVM handling tools
+wilcxoox@biology.ucsc.edu**20080305164350] 
+[intersectfiles.py collects the unique set of elements across a sets of argument files
+wilcxoox@biology.ucsc.edu**20080313081058] 
+[SetORFStatus.py uses the name of the directory to pick a category from the first argument and assigns each ORF in the second argument to a 1 or a 0 based on that argument.
+wilcxoox@biology.ucsc.edu**20080317050926] 
+[SetORFStatus is done
+wilcxoox@biology.ucsc.edu**20080317081245] 
+[Familty y genereatorator script.
+wilcxoox@biology.ucsc.edu**20080317185215] 
+[Beginning script for vagabond sample.
+wilcxoox@biology.ucsc.edu**20080317193912] 
+[EnsureCatMembers maturish
+wilcxoox@biology.ucsc.edu**20080317210836] 

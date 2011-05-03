@@ -1,0 +1,409 @@
+rpy (1.0.1-2) unstable; urgency=low
+
+  * doc/rpy.texi: Corrected R plot() example, also committed to upstream 
+    SVN archive. 					(Closes: #461923)
+  
+  * debian/control: Updated Standards-Version: to current value.
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 21 Jan 2008 10:01:56 -0600
+
+rpy (1.0.1-1) unstable; urgency=low
+
+  * New upstream release announced today
+
+  * debian/control: Update Depends: on r-base-core to (>= 2.6.1)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 29 Nov 2007 20:59:55 -0600
+
+rpy (1.0.0-3) unstable; urgency=low
+
+  * Rebuilt for R 2.6.1
+
+  * debian/control: Updated (Build-)Depends accordingly
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 26 Nov 2007 20:04:09 -0600
+
+rpy (1.0.0-2) unstable; urgency=low
+
+  * debian/control: Add texlive-latex-base to Build-Depends: (Closes: #452675)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Sat, 24 Nov 2007 08:29:14 -0600
+
+rpy (1.0.0-1) unstable; urgency=low
+
+  * New upstream release announced today
+  
+  * debian/control: Update Depends: on r-base-core to (>= 2.6.0) but remove
+    the (<< 2.7.0) so that rpy should not prevent R from entering testing 
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 19 Nov 2007 16:51:59 -0600
+
+rpy (1.0~rc3-3) unstable; urgency=low
+
+  * src/{RPy.h,rpymodule.c},setup.py,tests/test_tor.py: Applied amd64
+    patch posted by Matthew Brett to the rpy list	(Closes: #443147)
+  
+  * debian/control: Update Build-Depends to 'r-base-dev (>= 2.6.0)' and 
+    Depends to 'r-base-core (>= 2.6.0), r-base-core (<< 2.7.0)'
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 25 Oct 2007 10:27:42 -0500
+
+rpy (1.0~rc3-2) unstable; urgency=low
+
+  * Rebuilt for R 2.6.0					(Closes: #443066)
+  
+  * debian/control: Update Build-Depends to 'r-base-dev (>> 2.5.1)' and 
+    Depends to 'r-base-core (>> 2.5.1), r-base-core (<< 2.6.1)'
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 18 Sep 2007 09:19:30 -0500
+
+rpy (1.0~rc3-1) unstable; urgency=low
+
+  * New upstream release
+  
+  * debian/control: Set (Build-)Depends: on 'r-base-core (>= 2.5.1)', 
+    but keep Depends on r-base-core (<< 2.5.2)' 
+  
+  * debian/control: Switch from python-numeric to python-numpy-dev which 
+    is now supported upstream
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 28 Jun 2007 21:56:45 -0500
+
+rpy (1.0~rc2-1) unstable; urgency=low
+
+  * New upstream release, but carry over patch from #401670
+
+  * Rebuilt under release candidate for R 2.5.1		(Closes: #430645)
+
+  * debian/control: Set Built-Depends: on 'r-base-core (>= 2.5.1~20070622)'
+  * debian/control: Set Depends: on 'r-base-core (>= 2.5.1~20070622), 
+    r-base-core (<< 2.5.2)' to prevent breaks with new R versions
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 26 Jun 2007 09:06:14 -0500
+
+rpy (1.0~rc1-6) unstable; urgency=low
+
+  * Rebuilt under R version 2.5.0 released yesterday
+  * debian/control: (Built-)Depends: on (r-base-core >= 2.5.0)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed, 25 Apr 2007 12:53:57 -0500
+
+rpy (1.0~rc1-5) unstable; urgency=low
+
+  * src/rpymodule.c: Applied patch (from rpy-list) created by Andrew
+    McNamara that resolves the C stack limit error produced by R in some
+    contexts, such as resizing the x11() window. 	(Closes: #401670)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 12 Mar 2007 21:06:40 -0500
+
+rpy (1.0~rc1-4) unstable; urgency=low
+
+  * Rebuilt under current R version 2.4.1		(Closes: #404636)
+  * debian/control: (Built-)Depends: on (r-base-core >= 2.4.1)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed, 27 Dec 2006 10:03:08 -0600
+
+rpy (1.0~rc1-3) unstable; urgency=low
+
+  * Rebuilt under current R-patched version of R 2.4.0
+  * debian/control: (Built-)Depends: on (r-base-core >= 2.4.0)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue,  5 Dec 2006 20:59:00 -0600
+
+rpy (1.0~rc1-2) unstable; urgency=low
+
+  * Rebuilt under the release candidate of R 2.4.0
+  * debian/control: (Built-)Depends: on (r-base-core >> 2.3.1)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 28 Sep 2006 20:55:10 -0500
+
+rpy (1.0~rc1-1) unstable; urgency=low
+
+  * New upstream release
+  
+  * debian/control: Build-Depends: now 'python-central (>= 0.5)' [lintian]
+  * debian/python-rpy.preinst: Added debhelper token [lintian]
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 14 Sep 2006 16:32:43 -0500
+
+rpy (0.99.2-5) unstable; urgency=low
+
+  * debian/rules: Call dh_installdeb after dh_pycentral (Closes: #378755)
+  * debian/python-rpy.preinst: Added, remove old instances of .pyc or .pyo 
+    files if found; add stanza for dh_pycentral.
+  * debian/python-rpy.{postinst,prerm}: Added as stanza for dh_pycentral
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed, 19 Jul 2006 18:50:27 -0500
+
+rpy (0.99.2-4) unstable; urgency=low
+
+  * Updated according to http://wiki.debian.org/DebianPython/NewPolicy
+    for the New Python Policy 				(Closes: #373378)
+  * debian/pycompat: created
+  * debian/control:
+    - new fields XS-Python-Version and XB-Python-Version
+    - replaced python2.{3,4}-rpy packages with python-rpy
+    - added ${python:Depends} to Depends:
+    - added python-central to Build-Depends:
+    - updated versioned Depends and Build-Depends:
+    - added Provides: ${python:Provides} 
+  * debian/rules: Added dh_pycentral call
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 20 Jun 2006 20:20:55 -0500
+
+rpy (0.99.2-3) unstable; urgency=low
+
+  * Rebuilt under the pre-release for R 2.3.1 		(Closes: #368624)
+  * debian/control: (Build-)Depends: now on 'r-base-core (>= 2.3.0.svn38119)'
+    and Depends: also on 'r-base-core (<< 2.4.0)' 
+  * debian/control: Upgraded Standards-Version to 3.7.2
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 23 May 2006 10:45:29 -0500
+
+rpy (0.99.2-2) unstable; urgency=low
+
+  * Rebuilt under R 2.3.0
+  * debian/control: Updated Depends: for python2.{3,4}-rpy on r-base-core 
+    to '>= 2.3.0' and '<< 2.3.1'			(Closes: #364893)
+  * debian/control: Updated Build-Depends: for r-base-core to '>= 2.3.0'
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 27 Apr 2006 12:55:18 -0500
+
+rpy (0.99.2-1) unstable; urgency=low
+
+  * New upstream release
+  
+  * rpy_tools.py: Patch reg.exp. for R version to allow R 2.3.0 pre-release
+  * doc/{defs,rpy}.texi: Carry over patches from 0.99.1 
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed,  5 Apr 2006 19:08:52 -0500
+
+rpy (0.99.1-1) unstable; urgency=low
+
+  * New upstream release
+  * doc/{defs,rpy}.texi: Small patches to allow complete Debian build
+  * debian/copyright: Updated to reflect new choice of MPL, GPL or LGPL
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Fri, 24 Mar 2006 16:36:30 -0600
+
+rpy (0.99.0-1) unstable; urgency=low
+
+  * New upstream release, including the debian/rules patch by Greg
+  * debian/rules: Patch by Greg to not require setup.py changes
+  * debian/rules: Small updates for changed names of some documentation files
+  * debian/python-rpy-doc.doc-base: Changed to rpy_html/ directory name
+  * debian/rules: Small updates to clean target
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 16 Mar 2006 13:50:25 -0600
+
+rpy (0.4.6-4) unstable; urgency=low
+
+  * setup.py: Added  os.path.join(RHOME.strip(), '../../share/R/include'), 
+    to include_dirs in 'else' branch for Linux/Solaris as we now have
+    include directories in /usr/share/R/include instead of the previous
+    location of /usr/lib/R/include aka $RHOME/include  (Closes: #356849)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 14 Mar 2006 19:21:52 -0600
+
+rpy (0.4.6-3) unstable; urgency=low
+
+  * Rebuilt for R 2.2.1
+  * debian/control: Depends: for r-base-core updated to (>= 2.2.1), also
+    added (<< 2.2.2) to ensure packages stay in sync with their R version
+  * debian/rules: Set DH_COMPAT=4
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 20 Dec 2005 21:30:07 -0600
+
+rpy (0.4.6-2) unstable; urgency=low
+
+  * Rebuilt for R 2.2.0					(Closes: #330213)
+  * debian/control: Depends: for r-base-core updated to (>= 2.2.0), also
+    added (<< 2.2.1) to ensure packages stay in sync with their R version
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed,  2 Nov 2005 17:51:59 -0600
+
+rpy (0.4.6-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 28 Jul 2005 19:22:37 -0500
+
+rpy (0.4.5-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 25 Jul 2005 19:41:23 -0500
+
+rpy (0.4.4-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Sat, 23 Jul 2005 06:09:11 -0500
+
+rpy (0.4.3-1) unstable; urgency=low
+
+  * New upstream release 
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed, 20 Jul 2005 22:29:21 -0500
+
+rpy (0.4.2.1-2) unstable; urgency=low
+
+  * debian/control: Updated Build-Depends and removed python2.2-numeric 
+    which no longer exists in Debian's unstable distribution (Closes: #318199)
+  * debian/control: Removed entry for Python 2.2 version of rpy
+  * debian/rules: Deactivated invocation of Python 2.2 build
+  * R-2.1.1/src/include/* copied in from current R-2.1.1 sources 
+  * debian/control: Upgraded to 3.6.2.1
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Sat, 16 Jul 2005 22:05:05 -0500
+
+rpy (0.4.2.1-1) unstable; urgency=low
+
+  * New upstream version released today
+  * This version contains the R 2.1.0 headers missing in 0.4.2 
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 24 May 2005 21:50:51 -0500
+
+rpy (0.4.2-1) unstable; urgency=low
+
+  * New upstream version released today
+  * R-2.1.0/src/include/* copied in from current R-2.1.0 sources as an
+    upstream snafu accidently lead to omitting this directory
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 23 May 2005 21:16:38 -0500
+
+rpy (0.4.1-4) unstable; urgency=low
+
+  * src/rpymodules.c: Apply one-line patch from Andreas Jochens to compile
+    under gcc 4.0; patch has long been in upstream CVS (Closes: #288442)
+  * Rebuilt under R 2.1.0
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Sat, 23 Apr 2005 14:25:55 -0500
+
+rpy (0.4.1-3) unstable; urgency=low
+
+  * debian/rules: Add 'cd doc/ && make all' for pdf, html + info versions
+    of the RPy manual, and install all into the -doc package. (Closes: #304498)
+  * debian/control: Added 'texinfo, texi2html, tetex-extra' to Build-Depends
+  * debian/python-rpy-doc.{prerm, postinst}: Added to call install-info for rpy
+  * debian/python-rpy-doc.doc-base: Added to register html files with doc-base 
+  * R-2.1.0/: Copied src/include directory from R 2.1.0 release candidate
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Sun, 17 Apr 2005 18:35:49 -0500
+
+rpy (0.4.1-2) unstable; urgency=low
+
+  * debian/control: Also provide a version for Python 2.4: (Closes: #292556)
+    - Adjusted Build-Depends
+    - Added new section
+  * debian/rules: Adjusted accordingly.
+  * Thanks to Faheem Mitha for an almost complete patch implementing this
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Sat, 29 Jan 2005 22:49:23 -0600
+
+rpy (0.4.1-1) unstable; urgency=low
+
+  * New upstream release pre-release with R 2.0.1 support (Closes: #287191)
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 27 Dec 2004 09:04:43 -0600
+
+rpy (0.4.0-1) unstable; urgency=low
+
+  * New upstream release, incorporating some changes we suggested after 0.3.6
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon,  8 Nov 2004 21:25:38 -0600
+
+rpy (0.3.6-1) unstable; urgency=low
+
+  * New upstream release
+  
+  * This upstream release now requires access to the header files in the
+    R source tree, not only those include in the binary packages
+  * For this reason, we added $R_SRC/src/include/ as R-2.0.0/src/include/
+  * debian/rules: Add the new required R_SRC=R-2.0.0/
+  
+  * setup.py: Apply the same patch from the previous release to look for
+    libR.so in $R_HOME/lib, not in $R_HOME/bin as for pre-2.0.0 R
+  
+  * debian/watch: Added watch file
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Sat,  6 Nov 2004 21:27:56 -0600
+
+rpy (0.3.5-5) unstable; urgency=low
+
+  * Rebuilt under R 2.0.0 per Graham Williams' suggestion (Closes: #276055)
+  * debian/control: Updated Depends: and Build-Depends: accordingly
+  * setup.py: Set  r_libs = os.path.join(RHOME, 'lib')  to build under R 2.0.0
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon, 11 Oct 2004 18:33:52 -0500
+
+rpy (0.3.5-4) unstable; urgency=low
+
+  * debian/rules: Added dh_python call
+  * debian/control: Added python to Build-Depends
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 27 Jul 2004 18:19:28 -0500
+
+rpy (0.3.5-3) unstable; urgency=low
+
+  * debian/control: Added "python2.2-numeric, python2.3-numeric" to
+    Build-Depends to enable direct array transfer (Closes: #261744)
+  * debian/control: Also added accordingly to Depends for 2.2 and 2.3
+  * debian/control: Upgraded Standards-Version to 3.6.1.1
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 27 Jul 2004 17:33:20 -0500
+
+rpy (0.3.5-2) unstable; urgency=low
+
+  * debian/control: Depends: r-base-core for python2.*-rpy (Closes: #250071)
+  * debian/control: Section for python-rpy-doc changed to doc per override
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 17 Jun 2004 21:17:43 -0500
+
+rpy (0.3.5-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue,  2 Mar 2004 20:52:43 -0600
+
+rpy (0.3.4-2) unstable; urgency=low
+
+  * io.py: Renamed to rpyio.py
+  * setup.py, rpy.py: Adjusted to import and call rpyio instead of io 
+  * These changes should resolve the clash with python-stats (Closes: #231051)
+  
+  * debian/control: Renamed doc package to python-rpy-doc and set appropriate
+    Provides:, Conflicts: and Replaces: entries for python-rpy-docs for upgrade
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed,  4 Feb 2004 10:48:49 -0600
+
+rpy (0.3.4-1) unstable; urgency=low
+
+  * New upstream release
+  
+  * The upstream releases now links with -rpath so that /usr/lib/R/bin/libR.so
+    will be found without requiring either editing /etc/ld.so.conf or setting 
+    LD_LIBRARY_PATH which enables the package to work as is on Debian.
+  
+  * Converted the previously unpublished private package 'rpy' into a set of 
+    four (hopefully :) Python Policy conformant packages python-rpy, 
+    python-rpy-docs, python2.2-rpy and python2.3-rpy. Building with python2.1
+    did not work as expected, and a package may be added at a future date.
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 22 Jan 2004 22:36:06 -0600
+
+rpy (0.3.3-1) unstable; urgency=low
+
+  * New upstream release [ not uploaded to Debian ]
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Sat, 17 Jan 2004 10:31:11 -0600
+
+rpy (0.3.1-1) unstable; urgency=low
+
+  * Initial Debianisation [ not actually uploaded to Debian ]
+  * src/{RPy.h,R_eval.c}: s/jump_now(void)/Rf_onintr(void)/ 
+    to reflect an internal change in R 
+  * Still needs LD_LIBRARY_PATH / ld.so.conf to point to /usr/lib/R/bin
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Wed, 17 Sep 2003 20:36:43 -0500
+

@@ -1,0 +1,1538 @@
+\input texinfo  @c -*-texinfo-*-
+
+@c %**start of header
+@setfilename rpy.info
+@include defs.texi
+@settitle @RPy{} Reference Manual
+@c %**end of header
+@dircategory Programming
+@direntry
+* RPy: (rpy).               RPy, Python extension module for R.
+@end direntry
+
+@macro version
+0.3.3
+@end macro
+
+@ifinfo
+This file documents @RPy{} @version{}
+
+Copyright 2002-2004 Walter Moreira
+Copyright 2004-2006 Walter Moriera and Pfizer, Inc.
+Copyright 2006-     Walter Moriera, Pfizer, Inc., University of Rochester 
+
+Permission is granted to make and distribute verbatim
+copies of this manual provided the copyright notice and
+this permission notice are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX
+and print the results, provided the printed document
+carries a copying permission notice identical to this
+one except for the removal of this paragraph (this
+paragraph not being relevant to the printed manual).
+@end ignore
+
+Permission is granted to copy and distribute modified
+versions of this manual under the conditions for
+verbatim copying, provided also that the sections
+entitled ``Copying'' and ``GNU General Public License''
+are included exactly as in the original, and provided
+that the entire resulting derived work is distributed
+under the terms of a permission notice identical to this
+one.
+
+Permission is granted to copy and distribute
+translations of this manual into another language,
+under the above conditions for modified versions,
+except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+@end ifinfo
+
+@titlepage
+@title @RPy{} Reference Manual
+@subtitle (version @version{})
+@author Walter Moreira and Gregory R. Warnes
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2002-2004 Walter Moreira, @copyright{} 2004-
+Walter Moreira and Pfizer
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that
+the sections entitled ``Copying'' and ``GNU General Public License''
+are included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+@end titlepage
+
+@ifnottex
+@node Top, Overview, (dir), (dir)
+@top @RPy{} Reference Manual (version @version{})
+
+This is the reference manual for @RPy{} version @version{}, a @Python{}
+extension module for using the @R{} programming language.
+@end ifnottex
+
+@menu
+* Overview::
+* Starting up::
+* Interface description::
+* Conversion system::
+* Input/Output functions:: @emph{(new in 0.3)}
+* Miscellaneous::
+* Caveat and bugs::
+* Acknowledgements::
+@end menu
+
+
+@iftex
+@contents
+@end iftex
+
+
+@node Overview, Starting up, Top, Top
+@chapter Overview
+
+
+@RPy{} is a very simple, yet robust, @uref{http://www.python.org,
+@Python{}} interface to the @uref{http://www.r-project.org, @R{}
+Programming Language}.  It can manage all kinds of @R{} objects and
+can execute arbitrary @R{} functions (including the graphic
+functions).  All the errors from the @R{} language are converted to
+@Python{} exceptions.  Any module that later were installed on the
+@R{} system, can easily be used from within @Python{}, without
+introducing any changes.  Starting from version 0.3, @RPy{} works on any
+POSIX system and Windows.
+
+The @RPy{} code is initially inspired in RSPython, which is part of
+the @uref{http://www.omegahat.org/RSPython, Omegahat project}.
+The main goals of @RPy{} are:
+
+@enumerate
+@item
+It should provide a very robust @Python{} interface to @R{} (segfaults
+shouldn't happen [tm]).
+@item 
+It should be as transparent and easy to use as possible.
+@item
+It should be usable for real scientific and statistical computations.
+@end enumerate
+
+Currently, @RPy{} has a good degree of stability (in spite of the low
+version number).  It provides a very
+customizable conversion system between @Python{} and @R{} types
+(@pxref{Conversion system}), user defined I/O functions and a complete
+handling of the @R{} errors via @Python{} exceptions.
+
+
+Since version 0.2, @RPy{} uses the @uref{http://numpy.sourceforge.net,
+Numeric} extension module for the conversion of arrays.  However, if it
+is not available, @RPy{} converts @R{} arrays to @Python{} lists.
+
+Many things are still to be done (@pxref{To do}), but priority one
+is the porting to Windows.
+
+@menu
+* To do::
+* Contact info and contributing::
+@end menu
+
+
+
+@node  To do, Contact info and contributing, Overview, Overview
+@section To do
+
+@itemize @bullet
+@item
+Possibility to pass @Python{} functions to @R{} functions (and, perhaps,
+to make @RPy{} a bidirectional @Python{}-@R{} interface).
+
+@item
+More builtin classes for conversion of @R{} classes.
+
+@item
+Add real examples and applications.
+@end itemize
+
+
+
+@node Contact info and contributing,  , To do, Overview
+@section Contact info and contributing
+
+Please, submit any bug, comment or suggestion to the address below.  
+When submitting bugs, it would be preferable to fill the Sourceforge
+form, because it can be read by many people.
+
+If you have used @RPy{} in a real world application or have some
+interesting examples of use, please, drop me a line. They can be linked
+from the @RPy{} website or included in the distribution, in order to
+make easier to grasp the @RPy{} capabilities.
+@table @asis
+@item Original author:
+Walter Moreira
+
+@item Current maintainer
+Gregory Warnes
+
+@item Web:
+@uref{http://rpy.sourceforge.net}
+
+@item Email:
+@email{gregory.r.warnes@@pfizer.com}
+@end table
+
+
+
+@node Starting up, Interface description, Overview, Top
+@chapter Starting up
+
+After installation, you are able to execute, almost verbatim, most of
+the code from the @R{} manuals.  This section should be enough to
+start playing.  @xref{Interface description}, for a detailed
+description; @ref{Conversion system}, for details on the conversion
+of types and names; and @ref{Input/Output functions} for the
+customization of I/O routines.
+
+@menu
+* Installation::
+* Invocation::
+* Small example::
+@end menu
+
+
+
+@node Installation, Invocation, Starting up, Starting up
+@section Installation
+
+See the installation procedure in the file @file{README}, which is
+provided with the @RPy{} distribution.  (Should the @file{README}
+instructions appear in this place?)
+
+
+@node Invocation, Small example, Installation, Starting up
+@section Invocation
+
+Once installed, the module can be imported with:
+
+@example
+>>> from rpy import *
+@end example
+
+@noindent
+If an error occurs, refer to the section TROUBLESHOOTING on the @file{README}
+file.
+
+The module @code{rpy} imports a @Python{} object named @code{r}, from
+which all the @R{} functions and objects can be retrieved, see @ref{R
+objects look up}.  This module also implements a new @Python{} type:
+@code{Robj}, which represents an arbitrary @R{} object, see @ref{Robj
+type}.  For example:
+
+@example
+>>> r.wilcox_test
+<Robj object at 0x8a9e120>
+@end example
+
+@noindent
+is the @R{} function @code{wilcox.test} which computes the Wilcoxon
+statistical test.  An object of type @code{Robj} is always callable as
+long as the corresponding @R{} object is:
+
+@example
+>>> r.wilcox_test([1,2,3], [4,5,6])
+@{'p.value': 0.10000000000000001, 'statistic': @{'W': 0.0@},
+ 'null.value': @{'mu': 0.0@}, 'data.name': 'c(1, 2, 3) and c(4, 5, 6)',
+ 'alternative': 'two.sided', 'parameter': None, 'method': 
+ 'Wilcoxon rank sum test'@}
+@end example
+
+The arguments are translated automatically to @R{} objects and the
+return value is translated back to @Python{}, when this is possible
+(@pxref{Conversion system}).  This autoconversion can be customized at
+several levels or disabled at all.
+
+Objects of type @code{Robj} also support keyword arguments, in the
+same way as normal @Python{} functions:
+
+@example
+>>> r.seq(1, 3, by=0.5)
+[1.0, 1.5, 2.0, 2.5, 3]
+@end example
+
+The module @code{rpy} defines a new exception type derived from the
+base class @code{Exception}, called @code{RException}, see
+@ref{R exceptions}.  When any kind of error in the @R{} interpreter
+occurs, an exception of this type is raised:
+
+@example
+>>> r.plot()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+rpy.RException: Error in function (x, ...)  : Argument "x" is missing,
+with no default
+@end example
+
+
+
+@node  Small example,  , Invocation, Starting up
+@section Small example
+
+Here we present a very small example.  Some other bigger examples can
+be found in the @file{examples} directory of the @RPy{} distribution.
+See also @ref{Useful examples}.  If you want to contribute some
+code that you find interesting as an example of use, please, write to
+me (@pxref{Contact info and contributing}).
+
+This lines of code draw the density of a chi-squared distribution:
+
+@example
+>>> from rpy import *
+>>>
+>>> degrees = 4
+>>> grid = r.seq(0, 10, length=100)
+>>> values = [r.dchisq(x, degrees) for x in grid]
+>>> r.par(ann=0)
+>>> r.plot(grid, values, type='l')
+@end example
+
+
+
+@node Interface description, Conversion system, Starting up, Top
+@chapter Interface description
+
+In general, @R{} functions can be accessed transparently via
+attributes of the @code{r} object.  Parameters and return values are
+converted to and from @R{} automatically.  However, some @R{}
+functions, such us @code{$} or @code{[[}, need special syntax, and
+sometimes objects of type @code{Robj} need to be manipulated.
+
+@menu
+* R objects look up::
+* Robj type::
+* R exceptions::
+* R boolean objects:: @emph{(new in 0.3)}
+@end menu
+
+
+
+@node R objects look up, Robj type, Interface description, Interface description
+@section R objects look up
+
+There are two ways of retrieving a @R{} object via the @Python{}
+@code{r} object:
+
+@itemize @bullet
+@item
+as attributes
+
+@item
+as keywords
+@end itemize
+
+The two ways are completely equivalent, the only difference is that
+some names cannot be used as attributes, so in some cases you must use
+the second way.  The first time that a @R{} object is required, it is
+looked up in the @R{} global environment and it is cached in a
+dictionary in the @code{r} object.  After then, retrieving the same
+object is only a look up in a @Python{} dictionary.
+
+The first way of retrieving a @R{} object is as attributes of the
+@code{r} object.  For example:
+
+@example
+r.seq
+r.as_data_frame
+r.print_
+@end example
+
+@noindent
+refer to the @R{} functions @code{seq}, @code{as.data.frame} and
+@code{print} respectively.  Note that some kind of name conversion is
+required in order to make the attributes valid @Python{} identifiers.
+But the rules of name conversions are pretty simple; namely, the
+following conversions are applied to @Python{} identifiers
+
+@quotation
+@multitable @columnfractions .5 .5
+@item
+@Python{} name @tab @R{} name
+@item ---- @tab ----
+@item
+Underscore (@samp{_}) @tab dot (@samp{.})
+@item
+Double underscore (@samp{__}) @tab arrow (@code{<-})
+@item
+Final underscore (preceded by a letter) @tab is removed
+@end multitable
+@end quotation
+
+@noindent
+The final rule is used to allow the retrieving of @R{} objects whose
+names are @Python{} keywords.  Some additional examples:
+
+@quotation 
+@multitable @columnfractions .5 .5
+@item @Python{} name @tab @R{} name
+@item ---- @tab ----
+@item @code{t_test} @tab @code{t.test}
+@item @code{attr__} @tab @code{attr<-}
+@item @code{parent_env__} @tab @code{parent.env<-}
+@item @code{class_} @tab @code{class}
+@end multitable
+@end quotation
+
+The second way of retrieving a @R{} object is as keywords of the
+@code{r} object.  In this form, no name conversion is required.  The
+string used as keyword must be, exactly, the @R{} name of the object.
+For example:
+
+@example
+r['as.data.frame']
+r['print']
+r['$']
+@end example
+
+@noindent
+refer to the corresponding @R{} functions.  Note that with this
+syntax you can retrieve functions such as @code{$}, @code{$<-} or
+@code{[[}, which are impossible to express with the attribute syntax.
+However, the attributes are more appealing to the eyes.
+
+Due to the dynamic nature of the look up, when installing additional
+modules in the @R{} system, it is @strong{not} necessary to make
+changes in the interface.  All you have to do is to load the module in
+the same way as in @R{}:
+
+@example
+>>> r.library('splines')
+['splines', 'ctest', 'base']
+@end example
+
+@node Robj type, R exceptions, R objects look up, Interface description
+@section Robj type
+
+The new type @code{Robj} represents an arbitrary @R{} object.  All the
+@R{} functions retrieved via the @code{r} object (@pxref{R objects
+look up}) are of type @code{Robj}:
+
+@example
+>>> type(r.seq)
+<type 'Robj'>
+@end example
+
+@noindent
+If you use the standard conversion of types, you'll probably never find
+another object of type @code{Robj}.  However, there are reasons for,
+sometimes, manipulating these objects (@pxref{Conversion system}).
+
+@menu
+* Calling R objects::
+* Methods of Robj type::
+* Sequence protocol::
+@end menu
+
+
+
+@node  Calling R objects, Methods of Robj type, Robj type, Robj type
+@subsection Calling R objects
+
+An object of type @code{Robj} is always callable.  When it represents
+a @R{} function, that function is invoked; if it is not a @R{}
+function, an exception is raised (@pxref{R exceptions}):
+
+@example
+>>> callable(r.seq)
+1
+>>> callable(r.pi)
+1
+>>> r.pi()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+rpy.RException: Error: attempt to apply non-function
+@end example
+
+The arguments passed to the @code{Robj} object can be any @Python{}
+object, including another @code{Robj} object.  When an object of a standard
+@Python{} type is passed, it is converted to a @R{} type according to
+the rules described in @ref{Python to R}.  When a @code{Robj}
+object is passed, the @R{} function receives the corresponding @R{}
+object unchanged.  Usually, you don't need to think on these things,
+because the conversion works as one expects.
+
+A @code{Robj} also supports keyword arguments, if the corresponding
+@R{} function does it.  The names of the keyword arguments are also
+under the name conversion rules described in @ref{R objects look up}.
+
+For example:
+
+@example
+>>> r.seq(1, 3)
+[1, 2, 3]
+>>> r.seq(1, 3, by=0.5)
+[1.0, 1.5, 2.0, 2.5, 3.0]
+>>> r['options'](show_coef_Pvalues=0)
+@{'show.coef.Pvalues': 1@}
+>>> r.print_(r.seq)
+function (...) 
+UseMethod("seq")
+<Robj object at 0x8acb010>
+@end example
+
+Return values of the call to a @code{Robj} object are also converted
+from @R{} to @Python{}.  When no conversion is possible, an
+@code{Robj} object is returned, which holds a reference to the @R{}
+object.  This behavior is completely customizable (@pxref{R to Python}).
+
+Note that python uses a python dictionary to store named arguments.  As
+a consequence the order named arguments will be lost in calls to R
+functions, and hence may not produce what an R programmer expects:
+@example
+>>> set_default_mode(NO_CONVERSION)
+>>> r.print_(r.c(0,a=1,b=2,c=3))
+  a c b 
+0 1 3 2
+<Robj object at 0xbc89d0>
+>>> set_default_mode(BASIC_CONVERSION)
+@end example
+
+To work around this problem, @code{RObj} provides the @code{lcall}
+method which expects a list containing 2 element (name, value) tuples
+instead of a list of named and unnamed arguments.  Unnamed arguments are
+indicated by using None or '' as for the name element of the tuple.
+While this form is unwieldy, it is functional and is occasionally
+necessary:
+@example
+>>> set_default_mode(NO_CONVERSION)
+>>> r.print_(r.c.lcall( (('',0),('a',1),('b',2),('c',3)) ) )
+  a b c 
+0 1 2 3 
+<Robj object at 0xbc89b8>
+>>> set_default_mode(BASIC_CONVERSION)
+@end example
+
+[See @pxref{Conversion system} for the meaning of
+@code{set_default_mode}.  It is used here to prevent python from
+translating the output of @code{c} into a python dictionary (which loses
+element order) before @code{print_} displays it.]
+
+@node Methods of Robj type, Sequence protocol, Calling R objects, Robj type
+@subsection Methods of Robj type
+
+An object of type @code{Robj} has three methods:
+
+@table @code
+@item as_py([mode])
+This method forces the conversion of a @code{Robj} object to a
+classical @Python{} object, whenever possible.  If it is not possible,
+the same object is returned.  The optional parameter is the mode from
+which to apply the conversion, see @ref{Modes}.  The default value
+for this parameter is the @dfn{global mode} (@pxref{R to Python}).
+
+@item autoconvert([mode])
+@itemx local_mode([mode])
+This method sets the local conversion mode for each object,
+which is used when the default mode is set to @samp{NO_DEFAULT},
+(@pxref{Python to R}).  When no argument is passed to this method, it
+displays the current local conversion mode of the object. (The two
+names are synonyms for compatibility with version 0.1.)
+
+@item lcall([argument list])
+This method calls the R object (if callable) using the parameters
+provided as a single list containing a 2 element (name, value) tuple for
+each arguments.  Unnamed arguments may have None or '' as the name
+element.
+@end table
+
+For example:
+
+@example
+>>> r.seq.local_mode(NO_CONVERSION)
+>>> a = r.seq(3, 5)
+>>> a
+<Robj object at 0x814c2e8>
+>>> a.as_py()
+[3, 4, 5]
+>>> set_default_mode(NO_CONVERSION)
+>>> r.print_(r.c.lcall( (('',0),('a',1),('b',2),('c',3)) ) )
+  a c b 
+0 1 3 2
+<Robj object at 0xbc89d0>
+>>> set_default_mode(BASIC_CONVERSION)
+@end example
+
+
+
+@node Sequence protocol,  , Methods of Robj type, Robj type
+@subsection Sequence protocol
+
+An object of type @code{Robj} supports (partially at the moment, slices
+are not supported yet) the sequence protocol.  You can retrieve or set
+the n-th item of a @code{Robj} object, and you can take its length with
+the usual @Python{} function @code{len}.
+
+Every @R{} object is a vector, so this protocol can be applied to any
+@code{Robj} object; although it can raise an exception when an index
+is out of bounds.  Note that in this case, the exception is
+@code{IndexError} instead of @code{RException}; this is done to allow
+a @code{for} loop to iterate over a @code{Robj} object.
+
+The return values of the sequence functions are converted to @Python{}
+according to the default mode.  If the default mode is set to
+@samp{NO_DEFAULT}, the sequence functions use the @samp{PROC_MODE}
+conversion mode.
+
+@example
+>>> r.seq.local_mode(NO_CONVERSION)
+>>> a = r.seq(3, 5)
+>>> a[0]
+3
+>>> a[2]
+5
+>>> a[-1]
+5
+>>> a[4]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+IndexError: R object index out of range
+>>>
+>>> for i in a:
+...     print i
+... 
+3
+4
+5
+@end example
+
+@noindent
+The behavior of the setting of items is different from that of
+@Python{}, mainly, when you try to set an item out of bounds.
+Remember, in these cases, that the setting is done via @R{} functions,
+which have different semantic from the @Python{} sequence functions.
+
+@example
+(following the previous example)
+>>> b = r.seq(1, 3)
+>>> dummy = r.print_(b)
+[1] 1 2 3
+>>> b[0] = -1
+>>> dummy = r.print_(b)
+[1] -1  2  3
+>>> b[6] = 4
+>>> dummy = r.print_(b)
+[1] -1  2  3 NA NA NA  4
+@end example
+
+
+@noindent
+Also, be careful with the different index convention between @Python{}
+and @R{}: in @Python{}, indices start at 0; in @R{}, they start at 1.
+
+@example
+(following the previous example)
+>>> a[0]
+3
+>>> r['['](a, 1)
+3
+@end example
+
+@noindent
+Function @code{len} can also be applied to any @code{Robj} object:
+
+@example
+(following the previous example)
+>>> len(a)
+3
+>>> len(r.seq)
+1
+>>> len(r.pi)
+1
+@end example
+
+
+
+@node R exceptions, R boolean objects, Robj type, Interface description
+@section R exceptions
+
+@RPy{} implements a new exception type, called @code{RException},
+which is derived from the base class of all exceptions
+@code{Exception}.  This exception is raised when an error in the @R{}
+interpreter occurred.  The error message included in the exception is
+the message given by the @R{} interpreter.  For example:
+
+@example
+>>> RException
+<class rpy.RException at 0x8a72b44>
+>>>
+>>> r.t_test(1)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+rpy.RException: Error in t.test.default(1) : not enough x observations
+@end example
+
+Note that not all operations with @code{Robj} objects raise this
+exception.  When using the sequence protocol on @code{Robj} objects,
+the exceptions raised are @code{IndexError}, in order to properly use
+the @code{for} loop (@pxref{Sequence protocol}).  Other functions,
+such as mode functions, raise @code{ValueError} (@pxref{Modes}).
+
+
+@node R boolean objects,  , R exceptions, Interface description
+@section R boolean objects
+
+The @RPy{} module provides, as a convenience, the @code{TRUE} and
+@code{FALSE} R objects, as attributes to the @code{r} Python object
+(i.e.: @code{r.TRUE} and @code{r.FALSE}). For example:
+@example
+>>> r.TRUE
+<Robj object at 0x8b3a498>
+>>> r.typeof(r.TRUE)
+'logical'
+@end example
+
+Note that the @code{T} and @code{F} names from R are variables bounded
+to the logical objects; however, they can be rebound. So, @code{r.T} and
+@code{r.F} may not be the objects you expect. Use @code{r.TRUE} and
+@code{r.FALSE} instead.
+
+
+@node Conversion system, Input/Output functions, Interface description, Top
+@chapter Conversion system
+
+Usually, automatic conversion from and to @R{} objects works as
+expected.  However, the system is very customizable; you can
+define your own conversion rules.  Some useful examples are shown.
+
+@menu
+* R to Python::
+* Python to R::
+* Useful examples::
+@end menu
+
+
+
+@node R to Python, Python to R, Conversion system, Conversion system
+@section R to Python
+
+@RPy{} has four different @dfn{conversion modes}.  A mode can be
+@dfn{global} or @dfn{local} to every @code{Robj} object. When a global
+mode is active, the output from every @code{Robj} is converted
+according to that mode (@pxref{Modes}). (We'll use @dfn{default} as a
+synonym of global.)
+
+The local mode is an attribute of the @code{Robj} objects, which can
+be retrieved with the @code{local_mode} method (@pxref{Methods of Robj
+type}).  When the global mode is not active, the local mode is looked
+up to convert the output of a given @code{Robj} object.
+
+@menu
+* Modes::
+* Proc conversion::
+* Class conversion::
+* Basic conversion::
+* Vector conversion::
+* No conversion::
+* Notes::
+@end menu
+
+
+
+@node Modes, Proc conversion, R to Python, R to Python
+@subsection Modes
+
+There are five different conversion modes, identified by the
+following constants (provided by the @code{rpy} module) and another
+constant to indicate the absence of a global mode:
+
+@itemize @bullet
+@item @code{PROC_CONVERSION}
+@item @code{CLASS_CONVERSION}
+@item @code{BASIC_CONVERSION}
+@item @code{VECTOR_CONVERSION}
+@item @code{NO_CONVERSION}
+@item @code{NO_DEFAULT}
+@end itemize
+
+The @code{rpy} module provides three functions for manipulating the
+conversion modes:
+
+@table @code
+@item get_default_mode()
+Get the default conversion mode.  It returns some of the previous
+constants (actually, an integer from the set @{-1,0,1,2@}, but you
+should use the literal constant rather than the numeric value).
+
+@item set_default_mode(m)
+Set the default conversion mode to @code{m}.
+
+@item with_mode(m, fun)
+Wrap the function @code{fun} in the conversion mode @code{m}.  It
+returns a new function which accepts the same parameters as @code{fun}
+but, when called, it is evaluated in the conversion mode @code{m}.
+For example:
+
+@example
+>>> set_default_mode(BASIC_CONVERSION)
+>>> r.seq(1,3)
+[1, 2, 3]
+>>> with_mode(NO_CONVERSION, r.seq)(1,3)
+<Robj object at 0x8acb2a0>
+@end example
+@end table
+
+The result of a call to a @code{Robj} object is converted according to
+the following rules:
+
+@enumerate
+@item
+If the default mode has a value in the set @{@code{PROC_CONVERSION},
+@code{CLASS_CONVERSION}, @code{BASIC_CONVERSION},
+@code{NO_CONVERSION}@}, that mode is used.
+
+@item
+If the default mode has the value @code{NO_DEFAULT}, then the object's
+local mode is used.
+
+@item
+When an object cannot be converted in some mode (global or local), the
+object fall through to the next mode.  The @code{NO_CONVERSION} mode
+always succeed returning a ``pure'' @code{Robj} object.
+@end enumerate
+
+At startup the default mode is set to @code{NO_DEFAULT}, which means
+that each object has its own conversion mode, and every @code{Robj}
+object is retrieved with a local mode set to @code{PROC_CONVERSION}.
+
+
+
+@node Proc conversion, Class conversion, Modes, R to Python
+@subsection Proc conversion
+
+This mode converts a @code{Robj} object according to a @Python{}
+dictionary, named @code{proc_table}, whose keys and values are
+functions of one parameter.  The keys are applied sequentially to the
+@code{Robj} object: 
+
+@itemize @bullet
+@item
+if no function returns a true value, then the
+conversion mode fails; 
+
+@item
+if some function returns a true value, then the corresponding value of
+the dictionary is applied to the @code{Robj} object, and the result is
+returned as the converted object.
+@end itemize
+
+For example:
+
+@example
+>>> set_default_mode(PROC_CONVERSION)
+>>> def check_str(o):
+...     return r.is_character(o)
+...
+>>> def f(o):
+...     o_py = o.as_py(BASIC_CONVERSION)
+...     if o_py == 'foo':
+...          return 'cannot return "foo"'
+...     return o_py
+...
+>>> proc_table[check_str] = f
+>>> r.c('bar')
+'bar'
+>>> r.c('foo')
+'cannot return "foo"'
+>>> r.c(['bar','foo'])
+['bar', 'foo']
+@end example
+
+Note that the conversion is not applied recursively.  This mode is
+applied only before returning the final result to @Python{}.
+
+This conversion mode can be used for many purposes (@pxref{Useful
+examples}); but, mainly, it is used to test whether a @R{} object has
+some attribute, and to act in consequence.
+
+Note that this conversion mode is not efficient if the
+@code{proc_table} dictionary has many keys, because, usually, all of
+them must be checked.  On the other hand, with only one key which always
+returns true, it can be used to completely intercept the conversion
+system (@pxref{Enhanced Robj}).
+
+
+@node Class conversion, Basic conversion, Proc conversion, R to Python
+@subsection Class conversion
+
+This mode converts a @code{Robj} object according to a @Python{}
+dictionary, named @code{class_table}, whose keys are strings or tuples
+of strings and its values are functions of one parameter.  If a
+@code{Robj} object matches this table (see below), the corresponding
+value of the dictionary is applied to the @code{Robj} object and the
+result is returned as the converted object.  If the @code{Robj} object
+has no class attribute or the class attribute does not match in
+@code{class_table}, then this conversion mode fails.
+
+In order to a @code{Robj} object match the @code{class_table}
+dictionary, one of the following cases must be satisfied:
+
+@enumerate
+@item
+the @code{class} @R{} attribute of the object is a string and it is
+found in the @code{class_table} dictionary; or
+
+@item
+the @code{class} @R{} attribute of the object is a vector of strings
+and it is found in the @code{class_table} dictionary; or
+
+@item
+the @code{class} @R{} attribute of the object is a tuple of strings
+and one of the tuple's elements is found in the @code{class_table}
+dictionary.
+@end enumerate
+
+For example:
+
+@example
+>>> set_default_mode(CLASS_CONVERSION)
+>>> def f(o):
+...     return 5
+... 
+>>> class_table['data.frame'] = f
+>>> r.as_data_frame([1,2,3])
+5
+@end example
+
+This table is used, mainly, to translate @R{} objects of some class,
+to @Python{} objects of a class which mimics the @R{} original class
+behavior. @xref{DataFrame class}.
+
+Note that this mode is far more efficient than the
+@code{PROC_CONVERSION} mode.  It only needs a look up in a @Python{}
+dictionary.
+
+
+@node Basic conversion, Vector conversion, Class conversion, R to Python
+@subsection Basic conversion
+
+This mode tries to convert a @code{Robj} object to a basic @Python{}
+object.  It can convert most of the @R{} types to an adequate
+@Python{} type; but, sometimes, some information is lost.
+
+The following table shows the conversion of types.  When converting
+lists of objects, the rules are applied recursively.
+
+@quotation
+@multitable @columnfractions .2 .5 .3
+@item @R{} object @tab @Python{} object @tab Notes
+@item ----- @tab ----- @tab -----
+@item NULL @tab None
+@item Logical @tab Boolean @tab (1)(2)
+@item Integer @tab Plain integer @tab (1)(2)
+@item Real @tab Float @tab (1)(3)
+@item Complex @tab Complex (1)
+@item String @tab String (1)
+@item Vector @tab list or dictionary @tab (1)(4)
+@item List @tab list or dictionary @tab (1)(4)
+@item Array @tab Array or list @tab (5)
+@item Other @tab (fails)
+@end multitable
+@end quotation
+
+@noindent
+Notes:
+
+@table @asis
+
+@item (1)
+
+In the R system there are no true scalar types.  All values are vectors,
+with scalars represented by vectors of length one.  In Python, however,
+there is a representational and conceptual difference between scalars
+immutable lists (tuples), and mutable lists. Thus, An R vector of length
+one could potentially be translated into any of three Python forms :
+
+@example
+        r("as.integer(1)")  -->  int(1) 
+                            -->  [int(1),]
+                            -->  (int(1),)
+@end example
+
+It is impossible to tell which of these is best from the R object
+itself.  With @code{BASIC_CONVERSION}, @R assumes that a vector of
+length one should be translated as scalar, and that vectors with other
+lengths (including 0) should be translated into Python [] lists.
+
+@RPy{} 0.4.3 introduced the new @code{VECTOR_CONVERSION} mode
+(@pxref{Vector conversion}), which always returns a python list
+regardless of the length of the @R{} vector.
+
+@item (2)
+The @R{} programming language has an integer value represented by
+@samp{NA} (not applicable) which is converted to and from @Python{} as
+the minimum integer (which is the actual value in @R{}).  Be careful,
+because the semantic is completely different:
+
+@table @asis
+@item @Python{}:
+@code{NA/100} --> @code{(-sys.maxint-1)/100 != NA}
+
+@item @R{}:
+@code{NA/100} --> @code{NA}
+@end table
+
+@item (3)
+The @acronym{IEEE} float values @code{NaN} (not a number) and
+@code{Inf} (infinite) are also converted between @Python{} and @R{}.
+
+@item (4)
+Vectors and lists from @R{} may have an attribute @code{names}, which
+are the names of the elements of the sequence.  In those cases, the
+sequence is translated to a @Python{} dictionary whose keys are the
+names, and the values are the corresponding values of the sequence.
+When there are no names, the vector or list is translated to a normal
+@Python{} list.
+
+@item (5)
+When Numeric is installed, a @R{} array is converted to a Numeric
+array.  Otherwise, a list of nested lists is returned.
+@end table
+
+When converting @R{} arrays, the column and row names are discarded.
+Also, for @R{} data frames, row names are discarded while column names
+are kept.  And many other @R{} objects with complex attribute
+structure may loose some of its attributes when converted to @Python{}
+objects.  When it is necessary to keep all the information of an @R{}
+object, it is better to use the @code{CLASS_CONVERSION} mode with
+proper classes (@pxref{Useful examples}), or to use the
+@code{NO_CONVERSION} mode (@pxref{No conversion}).
+
+@node Vector conversion, No conversion, Basic conversion, R to Python
+@subsection Vector conversion
+
+The @code{VECTOR_CONVERSION} differs from the @code{BASIC_CONVERSION}
+mode (@pxref{Basic conversion}) in only one way.  It always returns a
+Python list [] object regardless of the length of the original R vector.
+
+@node No conversion, Notes, Vector conversion, R to Python
+@subsection No conversion
+
+This mode simply returns a @code{Robj} object which is a reference
+to the @R{} object under conversion.  @xref{Robj type}.
+
+This mode always succeed.
+
+
+
+@node Notes,  , No conversion, R to Python
+@subsection Notes
+
+@strong{Warning:} In order to avoid infinite recursion with the user
+conversion functions, the value functions in the @code{class_table}
+and the key and value functions in the @code{proc_table}, are
+evaluated in the @code{BASIC_CONVERSION} mode (@pxref{Basic
+conversion}).  This allows the @R{} functions, called inside the
+conversion functions, to return @Python{} values, without consulting
+the tables again.  You may force other conversion modes with the
+@code{as_py()} method of the @code{Robj} type (@pxref{Methods of Robj
+type}), but you should be careful.
+
+
+
+@node Python to R, Useful examples, R to Python, Conversion system
+@section Python to R
+
+The conversion from @Python{} objects to @R{} objects is automatic.
+It is done when passing parameters in @code{Robj} objects.  Normal
+@Python{} objects are converted to @R{} objects according to the table
+given in @ref{Basic conversion}.  A @code{Robj} object is converted to
+the @R{} reference which it represents.
+
+In addition, every @Python{} object which defines a @code{as_r()}
+method, is converted to @R{} as the result of calling that method.
+
+If none of this apply, an exception is raised.
+
+For example:
+
+@example
+>>> class Foo:
+...     def as_r(self):
+...             return 5
+...
+>>> a = Foo()
+>>> dummy = r.print_(a)
+[1] 5
+>>>
+>>> r.print_(range)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+rpy.RException: cannot convert from type 'builtin_function_or_method'
+@end example
+
+
+@node Useful examples,  , Python to R, Conversion system
+@section Useful examples
+
+We present two examples which can be useful in real applications.
+They also show the use of the @code{PROC_CONVERSION} and
+@code{CLASS_CONVERSION} modes.  These examples are provided with the
+@RPy{} distribution in the directory @file{examples/useful}.
+
+@menu
+* Enhanced Robj::
+* DataFrame class::
+@end menu
+
+
+
+@node Enhanced Robj, DataFrame class, Useful examples, Useful examples
+@subsection Enhanced Robj
+
+This example shows an extended @code{Robj} type which supports
+@R{} attribute look up via normal @Python{} attribute access.  It also
+supports the representation given by the @R{} interpreter, and it
+implements the @code{as_r()} method for converting itself to @R{}.
+
+In Python 2.2 you can take advantage of the possibility to subclass
+types, and the examples can be rewritten in a more powerful way.
+However, these examples are Python 2.1 and 2.2 compatible.
+
+File @file{erobj.py}:
+
+@example
+from rpy import *
+
+class ERobj:
+
+    def __init__(self, robj):
+        self.robj = robj
+
+    def as_r(self):
+        return self.robj
+
+    def __str__(self):
+        a = with_mode(NO_CONVERSION,
+                      lambda: r.textConnection('tmpobj', 'w'))()
+        r.sink(file=a, type='output')
+        r.print_(self.robj)
+        r.sink()
+        r.close_connection(a)
+        str = with_mode(BASIC_CONVERSION,
+                        lambda: r('tmpobj'))()
+        return '\n'.join(as_list(str))
+
+    def __getattr__(self, attr):
+        e = with_mode(BASIC_CONVERSION,
+                      lambda: r['$'](self.robj, attr))()
+        if e:
+            return e
+        return self.__dict__[attr]
+@end example
+
+The @code{__str__} method makes the @R{} interpreter print to the
+@code{tmpobj} @R{} variable.  Then, it is retrieved and returned as
+the string representation of the object.  Note the use of the
+@code{with_mode} function for not changing the mode in use.  Note,
+also, the use of the utility functions @code{as_list} and
+@code{r} (@pxref{Miscellaneous}).
+
+An example of use:
+
+@example
+>>> from rpy import *
+>>> from erobj import *
+>>> proc_table[lambda o: 1] = ERobj
+>>> set_default_mode(PROC_CONVERSION)
+>>>
+>>> e = r.t_test([1,2,3])
+>>> e
+<erobj.ERobj instance at 0x8ad4ea4>
+>>> print e
+
+        One Sample t-test
+
+data:  c(1, 2, 3) 
+t = 3.4641, df = 2, p-value = 0.07418
+alternative hypothesis: true mean is not equal to 0 
+95 percent confidence interval:
+ -0.4841377  4.4841377 
+sample estimates:
+mean of x 
+        2 
+
+>>>
+>>> e.statistic
+@{'t': 3.4641016151377548@}
+@end example
+
+
+
+@node DataFrame class,  , Enhanced Robj, Useful examples
+@subsection DataFrame class
+
+This example is a subclass of the Enhanced Robj (@pxref{Enhanced
+Robj}), which can be used to mimic the @samp{Data Frame} class of the
+@R{} language.
+
+It overrides the @code{__getattr__} method for retrieving the columns
+of the data frame object.  It adds a method for accessing the rows
+and it inherits the representation and @code{as_r} method.
+
+File @file{dataframe.py}:
+
+@example
+from rpy import *
+import erobj
+
+class DataFrame(erobj.ERobj):
+    def __init__(self, robj):
+        erobj.ERobj.__init__(self, robj)
+
+    def rows(self):
+        return r.attr(self.robj, 'row.names')
+    
+    def __getattr__(self, attr):
+        o = self.__dict__['robj']
+        if attr in as_list(r.colnames(o)):
+            return r['$'](o, attr)
+        return self.__dict__[attr]
+@end example
+
+An example of use:
+
+@example
+>>> from rpy import *
+>>> from dataframe import *
+>>> class_table['data.frame'] = DataFrame
+>>> set_default_mode(CLASS_CONVERSION)
+>>>
+>>> e = r.as_data_frame(@{'foo': [4,5,6], 'bar': ['X','Y','Z']@})
+>>> e
+<dataframe.DataFrame instance at 0x8156e34>
+>>> print e
+  foo bar
+1   4   X
+2   5   Y
+3   6   Z
+>>>
+>>> e.foo
+[4, 5, 6]
+>>> e.bar
+['X', 'Y', 'Z']
+>>> e.rows()
+['1', '2', '3']
+@end example
+
+
+@node Input/Output functions, Miscellaneous, Conversion system, Top
+@chapter Input/Output functions
+
+@RPy{} provides three functions for customizing the input and output
+from the @R{} interpreter. 
+
+In versions 0.1 and 0.2, the input/output from/to @R{} was connected
+to the C stdin/stdout, which don't necessarily coincides with the
+Python sys.stdin/sys.stdout. These was noticeable if you run those
+versions over IDLE or other IDE (probably, you don't see the output of
+@code{r.print_(5)}). Now, the R input/output is connected, by default, to
+the Python streams. But you can insert your own functions for reading,
+writing and displaying files.
+
+@table @code
+@item get_rpy_input()
+@itemx set_rpy_input(f)
+Get/set the function used by the @R{} interpreter to require input.
+
+The parameter for @code{set_rpy_input} must be a function with signature
+@code{f(prompt, size)}. The parameter @var{prompt} is a string to be
+displayed and @var{size} is an integer which denotes the maximum length of
+the input buffer.
+
+@item get_rpy_output()
+@itemx set_rpy_output(f)
+Get/set the function used by the @R{} interpreter to output data.
+
+The parameter for @code{set_rpy_output} must be a function with
+signature @code{f(s)}, where @var{s} is the string to be displayed.
+
+@item get_rpy_showfiles()
+@itemx set_rpy_showfiles(f)
+@strong{[Not available on Windows]}
+Get/set the function used by the @R{} interpreter to display files,
+including the output from the @code{help} command. 
+
+The parameter for @code{set_rpy_showfiles} must be a function with
+signature @code{f(files, headers, title, delete)}. Parameters
+@var{files} and @var{headers} are lists of filenames and strings,
+respectively, to be displayed sequentially. Parameter @var{title} is the
+overall title and parameter @var{delete} signals whether the files
+should be deleted after displaying.
+@end table
+
+The default values for the input/output/showfiles functions are in the
+@file{io} module. That is, when @RPy{} is imported, the following
+instructions are executed:
+
+@example
+import io
+set_rpy_input(io.rpy_input)
+set_rpy_output(io.rpy_output)
+set_rpy_showfiles(io.rpy_showfiles)
+@end example
+
+For input and output, the functions @code{io.rpy_input} and
+@code{io.rpy_output} just use the sys.stdin and sys.stdout streams of
+Python. For displaying files, the @file{io} module provides two
+functions: @code{io.showfiles_common} and @code{io.showfiles_tty}, and
+the default @code{io.rpy_showfiles} is an alias for the former. Function
+@code{io.showfiles_common} displays the files using the
+@code{io.rpy_output} function, while function @code{io.showfiles_tty}
+displays the files using a pager (namely @code{less}, you may need to
+customize it).
+
+@heading Notes
+
+@itemize @bullet
+@item
+When an exception is raised inside I/O functions, the exception is
+ignored, although it is displayed normally.
+
+@item
+On Windows, the output of the @code{help} command is always displayed on
+a separate window. The @R{} event loop (see @ref{Miscellaneous}) must be
+running for the window to be functional.
+@end itemize
+
+
+
+@node Miscellaneous, Caveat and bugs, Input/Output functions, Top
+@chapter Miscellaneous
+
+The @code{rpy} module includes some utility functions:
+
+@table @code
+@item as_list(obj)
+If @code{obj} is a list or an object which supports the list protocol,
+it returns @code{obj}.  Otherwise, it returns the one element list
+@code{[obj]}.
+@c @end table
+
+@noindent
+This function is useful when testing whether a @code{Robj} has some
+given attribute.  For example:
+
+@example
+>>> 'class' in as_list(r.attributes(robj))
+@end example
+
+The reason for not doing @code{'class' in r.attributes(robj)} is that
+@code{r.attributes} can return either @code{None} (when @code{robj} has no
+attributes), a string (when @code{robj} has only one attribute) or a
+list of strings (when it has several attributes).  Function
+@code{as_list} unify these three cases to allow the @code{in} test.
+
+@c @table @code
+@item r(s)
+Parameter @code{s} is a string containing arbitrary @R{} code.
+Function @code{r} evaluates the string @code{s} in the @R{}
+interpreter and returns its result.
+@c @end table
+
+This function is useful when working with @R{} constructions which
+have no parallel @Python{} syntax, such as linear models, for example.
+
+@example
+>>> set_default_mode(NO_CONVERSION)
+>>> d = r.data_frame(x=[1,2,3], y=[4,5,6])
+>>>
+>>> model = r("y ~ x")
+>>> fitted_model = r.lm(model, data = d)
+@end example
+
+Complete fragments of @R{} code can also be evaluated (note that the
+value returned by the function @code{r} is the value of the last
+expression):
+
+@example
+>>> r("""
+... print(5)
+... x <- "foo"
+... print(x)
+... """)
+[1] 5
+[1] "foo"
+'foo'
+@end example
+
+This function is useful, also, when a changing R object is
+required. Since the expression @code{r.foo} is cached in a Python
+dictionary, later changes in the object pointed by @code{r.foo} are not
+seen. In that case, the proper expression to use is @code{r('foo')},
+which evaluates @code{foo} and returns its result every time it is
+called.
+
+@item start_r_eventloop()
+@itemx stop_r_eventloop()
+@emph{(new in 0.3)}
+@strong{[Not available on Windows]}
+These functions start and stop the @R{} event loop. When @RPy{} is
+imported, the @code{start_r_eventloop} function is executed. Normally,
+in interactive use, you needn't stop it.
+
+The @R{} event loop keeps running in a daemonic thread. In case you need
+finer control over that loop, you can use the @code{r_events} function.
+
+@item r_events([usec])
+@emph{(new in 0.3)}
+@strong{[parameter @var{usec} not available on Windows]}
+This function processes a pending @R{} event or blocks with a @var{usec}
+microseconds timeout. The default value for @var{usec} is 10000
+microseconds.
+
+If, for some reason, you don't want to use the threaded event loop and
+you want to manually use @code{r_events}, you can do some loop like the
+following:
+
+@example
+>>> r.plot([1])
+>>> while 'X11' in as_list(r('.Devices')):
+...     r_events()
+@end example
+
+The @code{while} loop will run until the graphics window is closed.
+
+@end table
+
+
+@node Caveat and bugs, Acknowledgements, Miscellaneous, Top
+@chapter Caveat and bugs
+
+You should be warned about some ``corners'':
+@itemize @bullet
+@item
+In some situations, the @R{} interpreter uses the name bound to an
+object for displaying or for taking some action. For example, if you
+eval in @R{} the expression:
+
+@example
+var <- c(1,2,3)
+plot(var)
+@end example
+
+you obtain a plot with the y-axis labeled by @code{var}. However, in
+@Python{} there is no standard way to know a name bound to an object,
+so, even when an @code{Robj} has a @Python{} name, the @R{} interpreter
+doesn't see that information.  The practical consequence is that the @R{}
+plots made from @Python{} are labeled with the @emph{entire} vector of
+data, usually cluttering up the graphic. I really don't see an elegant
+way to solve this.
+
+Of course, the immediate and pragmatic solution is to write
+@code{r.par(ann=0)} for disabling the automatic label annotations, or to
+set the labels explicitly.
+
+Another solution (a bit trickier) is:
+
+@example
+>>> r.assign("var", [1,2,3])
+>>> r("plot(var)")
+@end example
+
+@item
+The conversion between the @acronym{IEEE} values, @code{NaN} and
+@code{Inf}, depends highly on the operating system, since that is what
+happens with the @Python{} interpreter (AFAIK). I have no access to a
+platform other than Linux, so I may be wrong.
+
+@sp 1
+
+@item
+At the present moment, it is not possible to pass @Python{} functions to
+those @R{} functions which requires callables as arguments, such as
+@code{integrate}, for example. It would be necessary to embed the
+@Python{} interpreter in @R{} (and only a step forward: an @R{} package
+for calling @Python{} :-)
+@end itemize
+
+Now, some Windows' specific notes. Most of these are due to my ignorance
+on the Windows OS; if you have suggestions for solving some of these
+points, please, contact me (see @ref{Contact info and contributing}).
+
+@itemize @bullet
+@item
+The interruption from keyboard (Ctrl-C) when @RPy{} is imported in a
+@Python{} instance running on a console, is completely
+non-operational. I tried to deal with the @code{SIGINT} and
+@code{SIGBREAK} signals in a similar fashion than with Linux, but I
+failed. So, the code you run in a console is uninterruptible.
+
+@sp 1
+
+@item
+Running the @R{} event loop in a separate thread doesn't work. This
+point, together with the previous one, means that if you want to use a
+console and you need to make a plot, you must do something like the
+following:
+
+@example
+>>> r.plot(data)
+>>> while 'windows' in r_events():
+...     pass
+@end example
+
+Then, the loop is unbreakable with Ctrl-C. The only way to stop it is to
+close the graphic window.
+
+@sp 1
+
+@item
+The Windows version of @R{} always displays the output from the
+@code{help} command in a separate window. This window must be refreshed
+by the @R{} event loop. But, now, the problem is that the device of that
+window doesn't appear listed on the return value of @code{r_events}; so,
+there is no way to make a loop like the previous one.
+@end itemize
+
+@strong{Suggestion for Windows users:} the problems listed before
+@emph{only} occur when @Python{} runs on a console (a @acronym{MS-DOS}
+window). I strongly suggest that, for interactive sessions, you use the
+@acronym{IDLE} shell instead. With @acronym{IDLE}, the keyboard
+interruption works as expected and the graphics and help windows are
+completely functional without the need to use the @code{r_events}
+function.
+
+
+@node Acknowledgements,  , Caveat and bugs, Top
+@chapter Acknowledgements
+
+I want to thank to these people for their feedback and help on the
+@RPy{} project:
+
+@table @asis
+@item Tim Churches
+for his advocacy, suggestions and for contributing with the
+@code{faithful} demo.
+
+@item Gregory Warnes
+for his many patches and help with the compilation and testing of @RPy{}
+in the Solaris system.
+
+@item Rene Hagendoorn
+for his patches and help for making the Windows version of @RPy{}. Also,
+for the idea of the @R{} event loop functions.
+
+@item Duncan Temple Lang
+for his work on @acronym{RSPython} and for detecting bugs in the initial
+version of @RPy{}.
+@end table
+
+@bye

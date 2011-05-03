@@ -1,0 +1,18 @@
+
+C=Critical, I=Important, U=Useful, O=Optional
+
+I* Update install instructions to include information about use of 'RHOMES'
+
+I* Ensure that either Numarray, Numeric, or NumPy can be used
+
+C* Properly clean up R when python exits, even if the user hasn't called 'q()'
+
+U* Posibility to pass Python functions to R functions
+
+U* More builtin classes for conversion of R classes
+
+I* More examples and a tutorial
+
+U* Modify setup.py for Mac OSX (darwin) to automagically set RHOMES and
+   appropriately modify (and then restore) the Current symlink durin
+   iteration of RHOMES 

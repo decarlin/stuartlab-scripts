@@ -1,0 +1,26 @@
+This directory contains the main documentation for RPy.  It is in texinfo
+format in the file 'rpy.texi'.  Several formats derived from this file are
+provided.  If you need another format, please, ask me.
+
+Formats provided:
+
+rpy.dvi
+rpy.info
+rpy.pdf
+rpy.html [directory]
+
+
+If you need to rebuild the documentation, you can do:
+
+    make dvi         (to build the dvi file)
+    make pdf	     (to build the pdf file)
+    make html	     (to build the directory 'manual_html')
+    make info	     (to build the info file)
+
+    make all	     (to build all the formats)
+    make clean       (to remove auxiliary files)
+    make dist-clean  (to remove all formats)
+
+You must have the correspondig tools to build the different formats, see the
+Makefile.
+

@@ -1,0 +1,51 @@
+This is the Debian GNU/Linux r-noncran-rpy package of RPy, a package
+providing an interface between the R and the Python languages and
+environments. RPy was initially written by Walter Moreira, and is now
+maintained by Gregory R. Warnes.
+
+This package was created by Dirk Eddelbuettel <edd@debian.org>.
+The sources where downloaded from a sourceforge mirror website at 
+	http://umn.dl.sourceforge.net/sourceforge/rpy/
+
+RPy is copyright by Walter Moreira and Gregory R. Warnes and was
+originally licensed under the GPL as described.
+
+As of version 0.99.1, RPy is now licensed under a choice of MPL, GPL
+and LGPL.  The following code is provided in the upstream sources as
+section 7 of the top-level README, as well as in HEADER.c and HEADER.py:
+
+    RPy is subject to the Mozilla Public License Version 1.1 (the
+    "License"); you may not use RPy except in compliance with the
+    License. You may obtain a copy of the License at
+    http://www.mozilla.org/MPL/ (or see the file MPL_LICENSE)
+    
+    Software distributed under the License is distributed on an "AS IS"
+    basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+    the License for the specific language governing rights and
+    limitations under the License.
+    
+    The Original Code is the RPy python module.
+    
+    The Initial Developer of the Original Code is Walter Moreira.
+    Portions created by the Initial Developer are Copyright (C) 2002 the
+    Initial Developer. All Rights Reserved.
+    
+    Contributor(s):
+       Gregory R. Warnes <greg@warnes.net> (Maintainer)
+    
+    Alternatively, RPy may be used under the terms of either the GNU
+    General Public License Version 2 or later (the "GPL", see the file
+    GPL_LICENSE), or the GNU Lesser General Public License Version 2.1
+    or later (the "LGPL", see the file LGPL_LICENSE), in which case the
+    provisions of the GPL or the LGPL are applicable instead of those
+    above. If you wish to allow use of your version of this file only
+    under the terms of either the GPL or the LGPL, and not to allow
+    others to use your version of this file under the terms of the MPL,
+    indicate your decision by deleting the provisions above and replace
+    them with the notice and other provisions required by the GPL or the
+    LGPL. If you do not delete the provisions above, a recipient may use
+    your version of this file under the terms of any one of the MPL, the
+    GPL or the LGPL.
+    
+On a Debian GNU/Linux system, the MPL, GPL and LGPL licenses are
+included under their names in the directory /usr/share/common-licenses/ .

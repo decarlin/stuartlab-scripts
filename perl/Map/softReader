@@ -1,0 +1,184 @@
+#!/usr/bin/perl -w 
+
+#softReader                                                                    
+#Dan Carlin                                                                     
+#11/7/08                                                                        
+
+use strict;
+use English;
+use Getopt::Long;
+use Pod::Usage;
+  
+my $name = 'NAME';
+
+GetOptions( "name=s" => \$name
+	);
+
+=pod                                                                            
+                                                                                
+=head1 NAME
+
+readSoft
+   
+=head2 AUTHOR                                                                  
+Dan Carlin                                                                     
+
+=head3 DESCRIPTION
+
+This script takes in a GEO GDS soft file and outputs a tab deliminated
+    "clinical" for the cancer/stem cell browser.  It also creates an
+    "assist" file that produces the text to be added to the various
+    .ra files required to tell the browser to look for the data.
+
+=head4 OPTIONS
+
+=over 4
+
+=item <-name>
+
+Specify the name of the dataset.  A rational choice here is the first
+    author's name followed by the year of publication, e.g. Krivtsov06.
+
+=cut
+
+my $platform;
+my $gds;
+my %features;
+my $feature_name;
+my $feature_value;
+my @subset_IDs;
+my @IDs;
+my $state= 'header';
+my %all_features;
+my $type;
+
+my $input = $ARGV[0];
+my $clinical = $ARGV[1];
+my $assist = $ARGV[2];
+
+open (GDS, "<$input");
+open (CLIN, ">$clinical");
+
+while (my $line = <GDS>)
+{
+    if ($state eq 'header')
+    {
+	if ($line =~ /DATASET = (\S*)\n/)
+	{
+		$gds=$1;
+	}
+	elsif ($line =~ /!dataset_platform = (\S*)\n/)
+	{
+		$platform=$1;
+	}
+	elsif ($line =~ /SUBSET/)
+	  {
+	    $state = 'subgroup';
+	    next;
+	  }
+    }
+    elsif ($state eq 'subgroup')
+      {
+	if ($line =~ /!subset_description = (.*)\n/)
+	{
+	    ($feature_value = $1) =~ s/ /_/g;
+	}
+	elsif ($line =~ /!subset_sample_id = (.*)\n/)
+	  {
+	    @subset_IDs = split(/,/, $1);
+	  }
+	elsif ($line =~ /!subset_type = (.*)\n/)
+	  {
+	      ($type=$1) =~ s/ /_/;
+	    if (!defined $all_features{$type})
+	      {
+		$all_features{$type} = 1;
+	      }
+	    foreach my $array (@subset_IDs)
+	      {
+		$features{$array}{$type}=$feature_value;
+	      }
+	  }
+	elsif ($line =~ /SUBSET/)
+	  {
+	    next;
+	  }
+	elsif ($line =~ /!dataset_table_begin/)
+	  {
+	    $state = 'data';
+	    next;
+	  }
+      }
+    elsif ($state eq 'data')
+      {
+	if ($line =~ /^ID_REF\tIDENTIFIER\t(.*)\n/)
+	  {
+	    @IDs = split(/\t/, $1);
+	    next;
+	  }
+      }
+  }
+
+print CLIN "array";
+
+foreach my $feature1 (keys %all_features)
+  {
+    print CLIN "\t$feature1";
+  }
+
+print CLIN "\n";
+
+foreach my $array1 (@IDs)
+  {
+    print CLIN "$array1";
+    foreach my $feature (keys %all_features)
+      {
+	if (defined($features{$array1}{$feature}))
+	  {
+	    print CLIN "\t$features{$array1}{$feature}";
+	  }
+	else
+	  {
+	    print CLIN "\tNA";
+	  }
+      }
+    print CLIN "\n";
+  }
+
+close(CLIN);
+	  
+open (ASSIST, ">$assist");
+
+print ASSIST "For columnDb.ra_$name:\n\n";
+
+my $counter1 = 1;
+
+foreach my $feature3 (keys %all_features)
+{
+    print ASSIST "name ".$feature3."\nshortLable ".$feature3."\nlongLabel ".$feature3."\npriority ".$counter1."\nvisibility on\ntype lookup ".$name."Features SampleID ".$feature3."\nfilterType coded\n\n";
+}
+
+print ASSIST "For microarrayGroups.ra:\n\nname ".$name."Groups\ntype groupings\nall ".$name."All\n\nname ".$name."All\ntype all\ndescription All Arrays\nexpIds ";
+
+my $counter = 0;
+foreach my $array2 (@IDs)
+{
+    print ASSIST "$counter,";
+    $counter++;
+}
+
+print ASSIST "\ngroupSizes ";
+
+foreach my $array3 (@IDs)
+{
+    print ASSIST "1,";
+}
+
+print ASSIST "\nnames ";
+
+foreach my $array4 (@IDs)
+{
+    print ASSIST "$array4,";
+}
+
+close(ASSIST);

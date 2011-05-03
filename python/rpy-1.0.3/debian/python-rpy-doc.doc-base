@@ -1,0 +1,10 @@
+Document: python-rpy-doc.doc-base
+Title: The RPy Reference Manual in html format
+Author: Walter Moreira and Gregory R. Warnes
+Abstract: This is the reference manual for RPy, a Python extension module for 
+  using the R programming language.
+Section: Apps/Math
+
+Format: HTML
+Index: /usr/share/doc/python-rpy-doc/rpy_html/index.html
+Files: /usr/share/doc/python-rpy-doc/rpy_html/*.html	

@@ -1,0 +1,1534 @@
+2008-05-13 03:32  warnes
+
+	* [r513] setup.py: Add notes on what is necessary to build against
+	  multiple versions of R on OSX
+
+2008-05-09 21:17  warnes
+
+	* [r511] TODO: Add to TODO.
+
+2008-05-09 21:16  warnes
+
+	* [r510] src/rpymodule.c: Patch to correct link problem with
+	  R-2.7.0
+
+2008-04-16 14:19  warnes
+
+	* [r489] rpy.py: Fix R.__repr__() bug.
+
+2008-04-10 16:51  warnes
+
+	* [r487] NEWS, rpy_version.py: Update for RPy release 1.0.2
+
+2008-04-10 16:50  warnes
+
+	* [r486] examples/nnet.py: Add simple neural net example
+
+2008-04-10 16:49  warnes
+
+	* [r485] src/rpymodule.c: Use R's internal function to clean up R
+	  temporary directory for R 2.4.0 and later
+
+2008-04-10 13:45  warnes
+
+	* [r484] src/rpymodule.c: Correct the handling of CStackLimit code.
+
+2008-04-03 23:26  warnes
+
+	* [r475] tests/test_robj.py: Use failUnless / failUnlessRaises
+	  instead of assertTrue / assertRaises in test_robj.py for
+	  compatibility with python 2.3
+
+2008-01-29 19:41  lgautier
+
+	* [r403] src/rpymodule.c: changed function types form ssizeargfunc
+	  to intargfunc,
+	  and ssizessizeargfunc to intintargfunc (for
+	  compatibility with Python 2.4).
+	  It compiles with Python 2.5 with warnings. Conditional
+	  definitions will probably have to be made for Python 2.6 (or
+	  before
+	  to clear up the warnings).
+
+2008-01-27 14:15  lgautier
+
+	* [r402] src/rpymodule.c, tests/test_robj.py: - Added getslice
+	  methods for Robject
+	  - Added unit-tests for it
+	  - Added unit-tests for getItem
+
+2008-01-25 20:14  warnes
+
+	* [r401] rpy_tools.py: Correct name of runtime exception
+
+2008-01-21 16:08  eddelbuettel
+
+	* [r400] debian/changelog, debian/control: Updated debian/ to
+	  current upload 1.0.1-2
+
+2008-01-21 16:00  eddelbuettel
+
+	* [r399] doc/rpy.texi: corrected simple line plot example
+
+2008-01-21 15:59  eddelbuettel
+
+	* [r398] debian/changelog, debian/control, debian/overrides,
+	  debian/rules: updated to current version
+
+2008-01-07 17:16  warnes
+
+	* [r397] src/rpymodule.c: Correct mismatch between declaration and
+	  definition of init_embedded_win32
+
+2008-01-07 16:03  warnes
+
+	* [r396] src/rpymodule.c: Add ability to pass command-line
+	  argumnents to init_embedded_win32
+
+2008-01-07 16:01  warnes
+
+	* [r395] tests/test_sigint.py: Add 1 second sleep to interrupt test
+	  to allow time for interrupt delivery
+
+2008-01-02 17:57  warnes
+
+	* [r394] rpy.py, src/rpymodule.c: Add code to export 'Robj' type
+
+2008-01-02 17:34  warnes
+
+	* [r393] src/io.c: Minor code reformatting in io.c
+
+2008-01-02 17:33  warnes
+
+	* [r392] rpy_tools.py: Use 'tail -n 1' instead of 'tail -1' when
+	  calling 'R RHOME' to make recent versions of tail happy
+
+2008-01-02 17:29  warnes
+
+	* [r391] rpy.py, rpy_options.py: Add startup options to prevent
+	  initialization of console read/write/showfiles
+
+2007-11-30 01:44  warnes
+
+	* [r390] NEWS: Update NEWS for 1.0.1
+
+2007-11-30 01:27  warnes
+
+	* [r389] rpy_version.py: Update version to 1.0.1
+
+2007-11-30 01:00  warnes
+
+	* [r388] doc/defs.texi, doc/rpy.texi: Update copyright notice in
+	  documentation
+
+2007-11-30 00:57  warnes
+
+	* [r387] rpy.py: Remove debug print statments
+
+2007-11-30 00:56  warnes
+
+	* [r386] rpy_wintools.py: Improve detection of R installation
+	  directories on Win32
+
+2007-11-30 00:55  warnes
+
+	* [r385] setup.bat: Improve Win32 setup.bat build script
+
+2007-11-30 00:40  warnes
+
+	* [r384] src/RPy.h, src/rpymodule.c: Add appropriate cleanup shell
+	  command for Win32
+
+2007-11-29 16:12  warnes
+
+	* [r383] INSTALL.WINDOWS, setup.bat: Update windows compile
+	  instructions and batch file
+
+2007-11-29 16:07  warnes
+
+	* [r382] rpy.py: Move rpy module load back inside try:except block
+
+2007-11-29 16:06  warnes
+
+	* [r381] setup.py: ensure RHOMES is in ascii, since most command
+	  line tools are unhappy with unicode...
+
+2007-11-29 15:59  warnes
+
+	* [r380] src/RPy.h, src/rpymodule.c: Apply tiny patch to fix Win32
+	  startup problem.
+
+2007-11-20 02:18  eddelbuettel
+
+	* [r379] debian/changelog, debian/compat, debian/control,
+	  debian/overrides, debian/rules: sync with files of Debian 1.0.0-1
+	  release of rpy
+
+2007-11-15 05:24  warnes
+
+	* [r378] NEWS: Update for v 1.0.0
+
+2007-11-15 04:59  warnes
+
+	* [r377] rpy_version.py: update version to 1.0.0 (after thinking
+	  about it)
+
+2007-11-15 04:17  warnes
+
+	* [r376] rpy_version.py: update version to 1.1-Beta1
+
+2007-11-15 04:08  warnes
+
+	* [r375] tests/test_modes.py: Comment out gc code, only needed when
+	  debugging
+
+2007-11-15 03:47  warnes
+
+	* [r374] tests/test_numeric.py: Change function to_r used in tests
+	  to make it more reliable
+
+2007-11-15 03:22  warnes
+
+	* [r373] tests/test_io.py: Add code to test_io to return io
+	  redirection to initial state after each test
+
+2007-11-13 16:24  warnes
+
+	* [r372] tests/testall.py: Add ability to loop over test cases
+
+2007-11-13 15:41  warnes
+
+	* [r371] tests/test_numeric.py: Improve display of messages about
+	  tests being skipped (more)
+
+2007-11-13 15:37  warnes
+
+	* [r370] tests/test_numeric.py: Improve display of messages about
+	  tests being skipped
+
+2007-11-13 15:35  warnes
+
+	* [r369] tests/test_numeric.py: Numeric.Character isn't handled
+	  (yet?), so modify test appropriately
+
+2007-11-13 15:28  warnes
+
+	* [r368] tests/test_numeric.py: Minor reformatting of
+	  test_numeric.py
+
+2007-11-13 06:43  warnes
+
+	* [r367] tests/test_numeric.py: Select which syntax variant to use
+	  by which library was loaded, rather than using try:except to try
+	  a second variance after the first failed.
+
+2007-11-13 06:27  warnes
+
+	* [r366] tests/test_array.py, tests/test_numeric.py: Fix array test
+	  to explicitly check elements of 3 dimensional objects for
+	  equality.
+
+2007-11-13 06:26  warnes
+
+	* [r365] src/rpymodule.c: More work on handling Numeric/NumPy array
+	  and scalar objects. Only NumPy string/unicode/char objects are
+	  still unhandled, AFAIK.
+
+2007-11-13 06:13  warnes
+
+	* [r364] setup.py: Add /usr/share/R/include path for Ubuntu
+	  (?Debian?) R include files
+
+2007-11-12 23:27  warnes
+
+	* [r363] TODO, rpy.py, setup.py, src/RPy.h, src/R_eval.c,
+	  src/rpymodule.c, tests/test_array.py, tests/test_numeric.py,
+	  tests/test_robj.py, tests/test_tor.py, tests/test_util.py: - Add
+	  three new exceptions:
+	  RPyException Base exception class for all RPy Exceptions
+	  RPyTypeConversionException Error in conversion between R and
+	  Python
+	  RPyRException Error raised within R
+	  
+	  (RException is set equal to RPyException for backwards
+	  compatibility)
+	  
+	  - Properly handle all Numeric/NumPy array types
+	  
+	  - Solve 64 bit problems converting Numeric/NumPy arrays
+
+2007-11-06 16:49  warnes
+
+	* [r362] src/RPy.h, src/rpymodule.c: Apply patch submitted by
+	  Matthew Brett to resolve array size issues on 64 bit platforms
+
+2007-10-18 19:40  warnes
+
+	* [r361] src/rpymodule.c: More fixes for handling of Unicode
+	  strings. Suggested by Toby Dylan Hocking.
+
+2007-10-18 01:54  warnes
+
+	* [r359] src/rpymodule.c: Remove unneeded comment
+
+2007-10-18 01:36  warnes
+
+	* [r358] rpy_wintools.py: Apply patch [ 1808836 ] Install-script
+	  tweaking for Windows
+
+2007-10-18 01:26  warnes
+
+	* [r357] src/rpymodule.c: Handle python unicode strings in calls to
+	  R by first converting to python ascii strings
+
+2007-10-08 20:35  warnes
+
+	* [r356] setup.py: Testing whewther Numeric is present was broken.
+	  Fixed.
+
+2007-10-08 20:33  warnes
+
+	* [r355] rpy_options.py: Change default for rpy_options.VERBOSE to
+	  False
+
+2007-10-08 20:26  warnes
+
+	* [r354] src/rpymodule.c: Use proper test for whether R_CStackLimit
+	  can/should be set
+
+2007-10-08 19:09  warnes
+
+	* [r353] tests/testall.py: Show modules to be tested
+
+2007-05-18 15:41  warnes
+
+	* [r351] rpy_version.py: Update version number
+
+2007-03-24 21:40  warnes
+
+	* [r344] src/rpymodule.c: R_CStackLimit is only present on
+	  Unix-like systems, so omit it on Win32.
+
+2007-03-12 22:50  warnes
+
+	* [r343] src/rpymodule.c: Applied patch created by Andrew McNamara
+	  that resolves the C stack limit error produced by R in some
+	  contexts, such as resizing the x11() window.
+
+2007-02-20 16:41  warnes
+
+	* [r342] rpy.py, setup.py, src/RPy.h, src/rpymodule.c,
+	  tests/test_array.py, tests/test_numeric.py, tests/test_topy.py:
+	  Initial attempt to apply Numpy support patch provided by
+	  Alexander Belopolsky
+
+2006-12-11 18:59  alain001
+
+	* [r341] rpy_version.py: Added config for other R versions.
+
+2006-09-16 00:37  eddelbuettel
+
+	* [r340] debian/changelog, debian/control, debian/pycompat,
+	  debian/python-rpy.postinst, debian/python-rpy.preinst,
+	  debian/python-rpy.prerm, debian/rules: updated debian/* files
+
+2006-08-18 14:19  alain001
+
+	* [r339] rpy.py: Moved some code so no longer necessary to have
+	  R/bin in PATH
+
+2006-08-08 19:29  alain001
+
+	* [r338] rpy_version.py: 1.0-RC1
+
+2006-08-08 19:27  alain001
+
+	* [r337] setup.py: Changed contact info.
+
+2006-08-07 19:04  alain001
+
+	* [r336] tests/testall.py: Better filtering of module names
+
+2006-08-07 15:05  alain001
+
+	* [r335] tests/test_topy.py: Removed some tests related to NA and
+	  NAN
+
+2006-08-04 16:35  alain001
+
+	* [r334] tests/test_io.py: Skip tests involving set_rpy_showfiles()
+	  for win32
+
+2006-06-21 12:52  eddelbuettel
+
+	* [r333] debian/changelog, debian/control, debian/rules: updated
+	  debian/ to the 'New Debian Python Policy'
+
+2006-04-06 02:03  eddelbuettel
+
+	* [r304] debian/changelog, debian/rules, doc/rpy.texi,
+	  rpy_tools.py: - rpy_tools.py: Render regular expression for R
+	  version less strict to
+	  cope with switch from 'R x.y.z' to 'Version x.y.z' as in the
+	  current
+	  R 2.3.0 alpha release
+	  - doc/rpy.texi: Move include of defs.texi up so that RPy is
+	  defined in title
+	  - debian/rules: Additional removals in clean target
+	  - debian/changelog: Entry for 0.99.2-1
+
+2006-04-04 18:28  warnes
+
+	* [r303] NEWS: Clarify text.
+
+2006-04-04 18:23  warnes
+
+	* [r302] NEWS, rpy_version.py, setup.bat: Bump up version number
+	  and NEWS for new build to correct lack of Numeric support in
+	  Windows distribution.
+
+2006-03-25 01:35  warnes
+
+	* [r300] debian/changelog, debian/copyright,
+	  debian/python-rpy-doc.doc-base, debian/rules, doc/defs.texi,
+	  doc/rpy.texi: Changes submitted by Dirk Eddelbuettel:
+	  
+	  The documentation wouldn't build in all the forms I needed. See
+	  the
+	  attached diff, esp at the end -- in rpy.texi I 'pulled' defs.texi
+	  a
+	  few lines higher so that the RPy macro is known, and for some odd
+	  reason I also needed to edit your email address in the comment
+	  header of defs.texi. Same behaviour on Debian testing and in the
+	  Debian unstable chroot the packages are built in. There are a few
+	  more debian/ changes in the diff that you sync to the archive.
+
+2006-03-22 22:13  warnes
+
+	* [r299] COPYING, GPL_LICENSE, LGPL_LICENSE, MPL_LICENSE, README,
+	  doc/Makefile, doc/defs.texi, doc/rpy.texi, rpy_wintools.py,
+	  setup.Win32, setup.bat, setup.in, src/RPy.h, src/R_eval.c,
+	  src/io.c, src/robjobject.h, src/rpy_Rinterface.h,
+	  src/rpy_Startup.h, src/rpymodule.c, src/setenv.c, src/setenv.h:
+	  Add tri-way license: MPL, GPL, LGPL
+
+2006-03-22 22:07  warnes
+
+	* [r298] rpy_version.py: - Fix startup crash on win32
+	  - Allow use of MPL, GPL, or LGPL.
+
+2006-03-22 22:05  warnes
+
+	* [r297] rpy.py: Fix crash on win32 due to omission (was commented
+	  out!) of explicit dll load.
+
+2006-03-16 16:32  warnes
+
+	* [r293] MANIFEST.in: Update MANIFEST.in to exclude svn files.
+
+2006-03-16 15:22  warnes
+
+	* [r292] debian/rules: My bad. Add compile flags to the build
+	  section, not the install section!
+
+2006-03-16 00:10  warnes
+
+	* [r291] debian/python-rpy-doc.doc-base,
+	  debian/python-rpy-doc.postinst, debian/python-rpy-doc.prerm,
+	  debian/watch: debian build changes per Dirk Eddelbuettel
+	  <edd@debian.org>
+
+2006-03-16 00:07  warnes
+
+	* [r290] debian/changelog, debian/control, debian/rules: debian
+	  build changes per Dirk Eddelbuettel <edd@debian.org>
+
+2006-03-16 00:03  warnes
+
+	* [r289] NEWS, rpy_version.py: Update version numer and NEWS file
+	  for 0.99.0 release
+
+2006-03-15 23:43  warnes
+
+	* [r288] INSTALL.WINDOWS, rpy_wintools.py, setup.Win32, setup.bat,
+	  setup.cfg, setup.py: Dramatically simplify the build process for
+	  Win32. The gcc and ld
+	  included in MinGW 5.0.2 can now linking directly against DLL's,
+	  removing the need for much of the previous complexity.
+
+2006-03-15 23:29  warnes
+
+	* [r287] setup.in: Add comments showing full set of configuration
+	  options
+
+2006-03-15 23:27  warnes
+
+	* [r286] debian/rules: Provide explicit path to R include files
+
+2006-03-15 19:01  warnes
+
+	* [r285] setup.cfg: Add setup.cfg template to allow users to more
+	  easily customize build/install options.
+
+2006-03-10 21:34  warnes
+
+	* [r284] MANIFEST.in, setup.py, src/rpymodule.c: This code now
+	  works on both Linux and Windows.
+	  
+	  For windows:
+	  - libpythonXX.a must be in C:/pythonXX/libs
+	  - R.dll, R.def, and libR.a need to be in the rpy directory
+	  
+	  Otherwise, a badly mangled version of the full path to the dll
+	  gets
+	  inserted into the binary. Grrr. This is probably a bug in the
+	  mingw version of ld, but it seems to be longstanding.
+
+2006-03-10 13:42  warnes
+
+	* [r283] rpy_wintools.py, setup.py: Remove partially working win32
+	  changes
+
+2006-03-10 12:56  warnes
+
+	* [r281] setup.py: Revert a couple of minor changes
+
+2006-03-10 06:18  warnes
+
+	* [r280] mingw_buildrpy.bat, rpy.py, rpy_option.py, rpy_options.py,
+	  rpy_tools.py, rpy_wintools.py, setup.py, src/RPy.h,
+	  src/rpy_Rinterface.h, src/rpy_Startup.h, src/rpymodule.c,
+	  win_tools.py: More modifications. For some reason, with
+	  MinGW,using -L<PATH> causes the names
+	  of dlls required by the generated dll to get mangled. This
+	  prevents
+	  the correct DLL from being found at run time.
+	  
+	  I'm not sure how to get around this.
+
+2006-03-06 22:22  warnes
+
+	* [r279] INSTALL.WINDOWS, MANIFEST.in, rpy.py, setup.py,
+	  win_tools.py: More win32 work. DLL error on load.
+
+2006-03-03 22:10  warnes
+
+	* [r278] INSTALL.WINDOWS, mingw_buildrpy.bat, rpy.py,
+	  rpy_option.py, rpy_tools.py, setup.py, src/RPy.h,
+	  src/rpy_Rinterface.h, src/rpymodule.c, win_tools.py: `cat
+	  commit.txt`
+
+2006-03-02 19:32  warnes
+
+	* [r277] rpy.py, rpy_tools.py, src/rpymodule.c: Communicate RHOME,
+	  RVER, RVERSION, RUSER from python to C code using
+	  environment variables. This avoids the need to have duplicate C
+	  code to obtain these values.
+
+2006-03-02 17:34  warnes
+
+	* [r276] src/rpymodule.c: Undo recent changes to rpymodule. Decided
+	  to use a different approach.
+
+2006-03-01 21:24  warnes
+
+	* [r275] src/rpymodule.c: Remove code to determine location of R
+	  shared library. Instead realy on RPy.py to pass these in.
+
+2006-02-28 23:24  warnes
+
+	* [r274] rpy.py, rpy_tools.py: More fixes for win32
+
+2006-02-28 14:57  warnes
+
+	* [r271] setup.py: Correct 'RHOME' to 'RHOMES' in introductory help
+	  text.
+
+2006-02-28 14:51  warnes
+
+	* [r270] rpy.py: Fix bugs on windows.
+
+2006-02-28 14:34  warnes
+
+	* [r269] doc/Makefile, doc/README, doc/manual.texi, doc/rpy.texi:
+	  rename manual.text to rpy.texi to better match standard usage of
+	  info files
+
+2006-02-27 23:23  warnes
+
+	* [r268] setup.py, src/rpymodule.c: Hopefully, these changes fix
+	  run-time testing for the absence of
+	  Numeric when the code was compiled with Numeric present.
+
+2006-02-27 23:15  warnes
+
+	* [r267] rpy.py: Add workaround for windows plotting issue. Correct
+	  fix is to get
+	  the eventloop working properly.
+
+2006-02-27 22:36  warnes
+
+	* [r266] setup.py: OSX is now using an external BLAS library, so
+	  remove Rlapack link
+	  option.
+
+2006-02-27 22:32  warnes
+
+	* [r265] INSTALL.WINDOWS: Update text regarding need to install
+	  Numeric and add URL.
+
+2006-02-27 21:59  warnes
+
+	* [r259] INSTALL.WINDOWS: Make instructions more clear about the
+	  need for the 'Numeric'
+	  package.
+
+2005-11-04 06:13  andrewmcnamara
+
+	* [r258] tests/test_tor.py: Add test for bug ID 1277392.
+
+2005-11-04 05:50  andrewmcnamara
+
+	* [r257] src/rpymodule.c: Fixed bug 1277392 - if an Robj was
+	  encounted as the first item in a
+	  sequence being converted to an R object, then seq_to_R would
+	  return NULL
+	  (without setting the python error flag). Prior to revision 1.26,
+	  an
+	  "any" would be returned. This change reinstates the old behavior.
+
+2005-10-10 20:51  warnes
+
+	* [r256] rpy.py, rpy_version.py: Fix bug in __repr__
+
+2005-10-10 19:59  warnes
+
+	* [r255] rpy.py: Attempt to set the binary path for Windows
+
+2005-10-10 19:58  warnes
+
+	* [r254] NEWS: old changes.
+
+2005-10-07 01:54  andrewmcnamara
+
+	* [r253] rpy.py: At exit, attempt to stop the event loop before
+	  Python dismantles everything
+	  (which causes the event loop to throw an exception).
+
+2005-10-06 05:35  andrewmcnamara
+
+	* [r252] src/rpymodule.c, tests/test_robj.py: Additional error
+	  checking for keyword arguments (and associated tests).
+
+2005-10-06 05:31  andrewmcnamara
+
+	* [r251] setup.py: setup.py's "mtime()" function was not returning
+	  the modification time.
+	  Changed to simply alias sys.path.getmtime().
+
+2005-07-28 14:25  warnes
+
+	* [r232] NEWS, rpy_version.py, src/rpymodule.c: For version 0.4.6
+
+2005-07-28 04:55  warnes
+
+	* [r230] rpy_tools.py, setup.py: - Strip leading and trailing
+	  spaces from RHOME.
+	  - Display contents of RHOMES
+
+2005-07-28 02:23  warnes
+
+	* [r229] NEWS, tests/test_noninteractive.py: Fix typo.
+
+2005-07-27 17:59  warnes
+
+	* [r228] tests/test_noninteractive.py: Add testcase to catch R
+	  terminating rather than raising the
+	  exception when run non-interactively via stdin redirection.
+
+2005-07-27 17:56  warnes
+
+	* [r227] rpy.py: Wait for all threads to exit before doing R clean
+	  up.
+
+2005-07-27 16:01  warnes
+
+	* [r226] tests/test_boolean.py, tests/test_numeric.py,
+	  tests/test_tor.py, tests/test_vars.py, tests/testall.py: Make
+	  sure default mode is set back to NO_DEFAULT before running each
+	  test. Otherwise some tests will fail if a previous test didn't
+	  changed the mode.
+
+2005-07-27 13:42  warnes
+
+	* [r225] rpy.py: Fix missing import and typo for Win32 reported by
+	  Wei-Hao Lin
+
+2005-07-27 03:05  warnes
+
+	* [r224] rpy.py, src/RPy.h, src/R_eval.c, src/rpymodule.c,
+	  tests/test_vars.py: Fix bug reported by Nicolas Lebas: Segfault
+	  when accessing r objects
+	  via r.<varname>. It turns out the code was only properly handling
+	  this for R function objects.
+	  
+	  Resolution:
+	  
+	  1) Rename get_from_name to get_fun_from_name and get to get_fun
+	  to
+	  show that these calls should only be used for R function objects.
+	  
+	  2) Modify the R class to call R's 'get' function instead of using
+	  get_fun().
+	  
+	  3) Add comments to get_fun_from_names to elucidate the
+	  non-obvious
+	  code there.
+
+2005-07-27 02:59  warnes
+
+	* [r223] setup.py: Create/overwrite <foo><RVer>.c files only if
+	  they don't exist or are
+	  out of date.
+
+2005-07-25 14:45  warnes
+
+	* [r222] NEWS: Fix version number typo
+
+2005-07-25 14:29  warnes
+
+	* [r221] NEWS: Update for 0.4.5
+
+2005-07-25 14:20  warnes
+
+	* [r220] setup.py: setup.py doesn't seem to like an author without
+	  an email.
+
+2005-07-25 14:20  warnes
+
+	* [r219] MANIFEST.in: We need to exclude version-specific source
+	  files created by the
+	  multi-R changes.
+
+2005-07-25 14:09  warnes
+
+	* [r218] rpy_version.py: Update version number.
+
+2005-07-25 14:07  warnes
+
+	* [r217] setup.py: Modify setup.py to build & install for multiple
+	  R versions,
+	  following Bo Peng's contributions.
+
+2005-07-25 13:15  warnes
+
+	* [r216] INSTALL.WINDOWS, mingw_buildrpy.bat, rpy_version.py:
+	  Update windows build instructions. Provide mingw_buildrpy.bat
+
+2005-07-25 13:06  warnes
+
+	* [r215] src/rpy_Rinterface.h: Add rpy_Rinterface.h, which is used
+	  for R versions before 2.1.0.
+
+2005-07-23 04:41  warnes
+
+	* [r213] NEWS: Document changes to warning message display.
+
+2005-07-23 04:39  warnes
+
+	* [r212] src/rpymodule.c: Show warnign messages after each R
+	  evaluation.
+
+2005-07-23 04:34  warnes
+
+	* [r211] NEWS: Update for 0.4.4
+
+2005-07-23 04:17  warnes
+
+	* [r210] rpy.py, rpy_version.py, src/RPy.h, src/rpy_Startup.h,
+	  src/rpymodule.c: Avoid calling numeric when it is not available
+	  at runtime.
+
+2005-07-23 02:59  warnes
+
+	* [r209] MANIFEST.in: Omit core files!
+
+2005-07-23 00:03  warnes
+
+	* [r208] MANIFEST.in: Trying to remove tidla terminated files
+	  resulted in no files.
+
+2005-07-21 17:35  warnes
+
+	* [r206] setup.py: Windows doesn't know what to do with
+	  runtime_libs.
+
+2005-07-21 03:33  warnes
+
+	* [r205] setup.py: Win32 requires that the quotes around DEFINE's
+	  are escaped.
+
+2005-07-21 03:23  warnes
+
+	* [r204] rpy_tools.py: - Raise RuntimeError instead of Distutils
+	  error.
+	  - Quote R command so that embedded spaces won't cause problems.
+
+2005-07-20 06:51  warnes
+
+	* [r202] NEWS: Spelling!
+
+2005-07-20 06:35  warnes
+
+	* [r201] doc/manual.texi: Update documentation to reflect new
+	  'VECTOR_CONVERSION' mode.
+
+2005-07-20 05:38  warnes
+
+	* [r200] NEWS, rpy.py, rpy_tools.py, setup.py, src/rpymodule.c:
+	  Complete work for version-specific shared libraries.
+
+2005-07-20 05:29  warnes
+
+	* [r199] tests/logit.r: Add logit.r required by
+	  test_lapack_load.py.
+
+2005-07-19 20:40  warnes
+
+	* [r198] tests/test_lapack_load.py: Add test that we can load the
+	  Rlapack library.
+
+2005-07-19 20:39  warnes
+
+	* [r197] NEWS, rpy.py, src/RPy.h, src/rpymodule.c,
+	  tests/test_array.py, tests/test_modes.py, tests/test_numeric.py,
+	  tests/test_robj.py, tests/test_topy.py, tests/test_tor.py,
+	  tests/test_util.py: - Add support for python boolean objects. R
+	  Logicals are now
+	  converted to/from Python booleans.
+	  
+	  - New translation mode 'VECTOR_CONVERSION', which differs from
+	  'BASIC_CONVERSION' in that R objects are always returned as
+	  vectors
+	  even if length 1.
+
+2005-07-15 18:44  warnes
+
+	* [r196] src/RPy.h: Changes to avoid redefinition errors on Win32.
+
+2005-07-15 17:36  warnes
+
+	* [r195] src/rpymodule.c: - Fix error (potential segfault!) when
+	  handling conversion of
+	  factor objects contining missing values
+
+2005-07-15 17:28  warnes
+
+	* [r194] tests/test_topy.py: Minor whitespace reformatting.
+
+2005-07-15 17:28  warnes
+
+	* [r193] rpy.py: - Fix bug in R.__call__ that could cause problems
+	  when the 'r'
+	  object is not present.
+
+2005-07-15 17:23  warnes
+
+	* [r192] tests/test_topy.py: Add tests for NA values.
+
+2005-07-15 15:00  warnes
+
+	* [r191] rpy.py: - The R integer 'NA' value is now accessible as
+	  the 'NA' attribute of the
+	  Python 'r' object.
+	  - The R floating point 'NA' value is now accessible as the 'NAN'
+	  attribute of the Python 'r' object.
+
+2005-07-15 07:07  warnes
+
+	* [r190] setup.py: Explicitly link to libRlapack to ensure this
+	  library is found at
+	  runtime. (Oddly simply adding -R<path> doesn't do the trick.)
+
+2005-07-15 06:15  warnes
+
+	* [r189] doc/Makefile: Explicitly call tex / makeinfo / pdflatex
+	  twice to ensure that
+	  toc/index are properly built.
+
+2005-07-15 06:06  warnes
+
+	* [r188] setup.py: - Display R path and version
+	  - Append version string ('2010') to shared library/dll name so
+	  that
+	  multiple versions can colocate. This should ease packaging for
+	  windows.
+
+2005-07-15 05:35  warnes
+
+	* [r187] rpy.py: Add code to try loading R-version specific _rpy
+	  module on Win32.
+	  This should make it easier to support multiple R versions with a
+	  single distributed package.
+
+2005-07-14 19:14  warnes
+
+	* [r186] rpy.py: - On Windows, always look at the registry to see
+	  where to
+	  find the R DLL. This should avoid the nasty popup error message
+	  when the DLL isn't on the path. Patch by Peter
+	  (maubp@users.sourceforge.net)
+
+2005-07-14 18:55  warnes
+
+	* [r185] src/rpymodule.c: Fixes bug "[ 1238226 ] rpymodule.c needs
+	  updating for R 2.1.1 or
+	  later" (win32-specific)
+
+2005-07-14 18:46  warnes
+
+	* [r184] INSTALL.UNIX, INSTALL.WINDOWS, README: Move installation
+	  instructions to separate files.
+
+2005-07-14 17:45  warnes
+
+	* [r183] tests/test_cleanup.py, tests/testall.py: Fix typo in
+	  test_cleanup, remove special case for test_cleanup in testall.py
+
+2005-07-14 17:43  warnes
+
+	* [r182] rpy.py, src/rpymodule.c, tests/test_cleanup.py,
+	  tests/test_init.py, tests/testscript_cleanup.py: - Move cleanup
+	  call to python finalization rather than R object deletion.
+	  - Split out testing of R init function from cleanup.
+	  - Improve cleanup testing by using a separate python script.
+
+2005-07-14 06:37  warnes
+
+	* [r181] NEWS, rpy.py, rpy_io.py, rpy_version.py, setup.py,
+	  src/RPy.h, src/io.c, src/rpymodule.c, tests/README,
+	  tests/test_cleanup.py, tests/test_io.py, tests/testall.py: New
+	  features
+	  
+	  - R source headers no longer needed, and are no longer included
+	  in the source package
+	  
+	  - The R interpreter is propely shutdown on python exit or
+	  deletion
+	  all references. This ensures that all temporary directories and
+	  files are removed
+	  
+	  Bug fixes:
+	  
+	  - Fix build error for R 2.0.0+ on Mac OSX ('darwin')
+	  
+	  - Previous versions of rpy have permitted multiple copies of the
+	  R
+	  interpreter wrapper to be instantiated (via "newR = rpy.R()" ).
+	  However R's design imposes a limit of one interpreter per python
+	  process. To avoid confusion on this point, attempts to
+	  instantate more than one R interpreter object will now generate
+	  RuntimeError exceptions.
+	  
+	  - r.help() now works as expected by users.
+	  
+	  Behind the scenes:
+	  
+	  - Some work has been done "under the hood" to allow an R
+	  interpreter to be shut down and then started up again. This is
+	  *not* currently working.
+
+2005-01-04 15:12  warnes
+
+	* [r174] src/rpymodule.c: - Remove 'statichere' prefix of Robj_Type
+	  definition to resolve build
+	  error under gcc 4.0. ('staticforward' and 'statichere' are used
+	  for
+	  defining and referencing static forward definitions,
+	  respectively. Here, however, the definition of Robj_Type is the
+	  first and only definitition.)
+
+2004-12-23 00:13  warnes
+
+	* [r172] TODO: Add a couple of items, enhance format.
+
+2004-12-23 00:01  warnes
+
+	* [r171] rpy.py, rpy_version.py, setup.py: - Provide version of
+	  getstatuscommands for windows. Other trivial changes.
+
+2004-11-08 18:03  warnes
+
+	* [r160] rpy_version.py: Make that version 0.4.0!
+
+2004-11-08 18:02  warnes
+
+	* [r159] NEWS: Update for 0.4.0
+
+2004-11-08 17:59  warnes
+
+	* [r158] rpy_version.py: Update version number for 0.4.0.
+
+2004-11-08 17:58  warnes
+
+	* [r157] README, setup.py: We now attempt to bundle the R header
+	  files needed to compile rpy.
+
+2004-11-08 15:43  warnes
+
+	* [r156] setup.py: One more change for R 2.0.0: libR.so now lives
+	  in $RHOME/lib rather than
+	  $RHOME/bin.
+
+2004-11-02 00:27  nj7w
+
+	* [r152] rpy_version.py: Update version number
+
+2004-11-02 00:09  nj7w
+
+	* [r151] NEWS: Update for release 0.3.6.
+
+2004-11-01 23:56  nj7w
+
+	* [r150] README, setup.py: Improve Windows installation
+	  instructions & fix minor build problem.
+
+2004-10-23 01:55  warnes
+
+	* [r149] rpy_version.py, src/RPy.h, src/rpymodule.c: Second attempt
+	  to get support for R 2.0.0 working.
+
+2004-10-22 13:06  warnes
+
+	* [r148] src/R_eval.c, src/rpymodule.c: Commit changes for
+	  compatibility with (bug? in) R 2.0.0
+
+2004-10-08 15:52  warnes
+
+	* [r147] src/RPy.h, src/rpymodule.c: - Remove some redundant
+	  includes from rpymodule.c
+	  - Add 'getRHOME' function (not yet used).
+
+2004-09-13 21:27  warnes
+
+	* [r144] setup.py: Fix new typo.
+
+2004-09-13 21:22  warnes
+
+	* [r143] README, setup.py, src/rpymodule.c: - Changes to fix
+	  compilation under Windows.
+	  - Fix for typo in rpymodule.c
+
+2004-08-23 21:18  warnes
+
+	* [r142] doc/manual.texi: Fixed typos.
+
+2004-06-14 20:59  warnes
+
+	* [r141] src/RPy.h: Add Startup.h to unix build as well.
+
+2004-06-14 20:56  warnes
+
+	* [r140] src/rpymodule.c: Replace Python comment character with C
+	  comment character. grrr.
+
+2004-06-14 20:08  warnes
+
+	* [r139] setup.py, src/rpymodule.c: Fix segfault on run due to
+	  strangeness in quoting C DEFINES at build time.
+
+2004-04-22 18:42  warnes
+
+	* [r138] setup.py: Add configuration case for OSF to resolve linker
+	  problem reported by Andrew Hill <ahill@wyeth.com>.
+
+2004-02-27 17:05  warnes
+
+	* [r137] rpy_io.py: Undelete.
+
+2004-02-27 04:48  warnes
+
+	* [r135] undelete.csh: Remove extraneous file.
+
+2004-02-27 04:47  warnes
+
+	* [r134] COPYING, MANIFEST.in, README, TODO, debian/changelog,
+	  debian/control, debian/copyright, debian/rules, doc/Makefile,
+	  doc/README, doc/defs.texi, doc/manual.texi, examples/README,
+	  examples/animation.py, examples/chisquared.py,
+	  examples/faithful.dat, examples/faithful.py,
+	  examples/useful/dataframe.py, examples/useful/erobj.py, rpy.py,
+	  rpy_io.py, rpy_version.py, setup.py, src/RPy.h, src/R_eval.c,
+	  src/io.c, src/robjobject.h, src/rpymodule.c, src/setenv.c,
+	  src/setenv.h, tests/README, tests/table.txt, tests/test_array.py,
+	  tests/test_boolean.py, tests/test_io.py, tests/test_modes.py,
+	  tests/test_numeric.py, tests/test_robj.py, tests/test_sigint.py,
+	  tests/test_topy.py, tests/test_tor.py, tests/test_util.py,
+	  tests/testall.py: - Remove windows line endings from files.
+	  - Fix incorrect code for darwin build include in the windows
+	  changes.
+	  - It appears that PRE_2_2 needs to be set for 2.3 as well as 2.1
+	  for
+	  rpy to pass its unit tests. Does it need to be set for 2.2 as
+	  well?
+	  (I don't have a 2.2 hand to test with.)
+
+2004-02-27 03:32  warnes
+
+	* [r133] NEWS: Correct NEWS file for 0.3.5.
+
+2004-02-27 03:08  warnes
+
+	* [r132] README.sav, rpy_version.pyc, src/io.c.bak,
+	  src/rpymodule.c.bak: Delete a few files accidentaly 'undeleted'
+
+2004-02-27 03:01  warnes
+
+	* [r131] rpy_version.pyc, src/io.c.bak, src/rpymodule.c.bak:
+	  Undelete File
+
+2004-02-27 02:58  warnes
+
+	* [r130] COPYING, MANIFEST.in, NEWS, README, TODO, debian,
+	  debian/changelog, debian/control, debian/copyright, debian/rules,
+	  doc, doc/Makefile, doc/README, doc/defs.texi, doc/manual.texi,
+	  examples/README, examples/animation.py, examples/chisquared.py,
+	  examples/faithful.dat, examples/faithful.py,
+	  examples/useful/dataframe.py, examples/useful/erobj.py, rpy.py,
+	  rpy_io.py, rpy_version.py, setup.py, src, src/RPy.h,
+	  src/R_eval.c, src/io.c, src/robjobject.h, src/rpymodule.c,
+	  src/setenv.c, src/setenv.h, tests, tests/README, tests/table.txt,
+	  tests/test_array.py, tests/test_boolean.py, tests/test_io.py,
+	  tests/test_modes.py, tests/test_numeric.py, tests/test_robj.py,
+	  tests/test_sigint.py, tests/test_topy.py, tests/test_tor.py,
+	  tests/test_util.py, tests/testall.py: Undelete file
+
+2004-02-27 02:41  warnes
+
+	* [r126] README.sav, undelete.csh: Initial revision
+
+2004-02-27 02:08  warnes
+
+	* [r125] README: Undelete.
+
+2004-02-19 22:13  warnes
+
+	* [r124] README: Add note that all Windows specific code has been
+	  integrated into the
+	  main rpy tree.
+
+2004-02-19 22:12  warnes
+
+	* [r123] .cvsignore, COPYING, MANIFEST.in, NEWS, README, TODO,
+	  debian, doc, rpy.py, rpy_io.py, rpy_version.py, setup.py, src,
+	  tests: The Windows code is now integrated into the main RPy tree,
+	  so these
+	  files are no longer necessary.
+
+2004-02-19 18:10  warnes
+
+	* [r121] NEWS: Updated NEWS entries for 0.3.5.
+
+2004-02-18 03:02  warnes
+
+	* [r113] rpy_version.py: Update version number for 0.3.5 release.
+
+2004-02-18 03:01  warnes
+
+	* [r112] MANIFEST.in: Exclude .tgz and .tar.gz files from being
+	  included in the distributed
+	  packages.
+
+2004-02-17 18:48  warnes
+
+	* [r111] src/R_eval.c, src/rpymodule.c: - Fix defintions of symbols
+	  used by other modules. These were
+	  incorrectly marked 'extern'.
+
+2004-02-17 18:45  warnes
+
+	* [r110] tests/test_sigint.py: Force win32 to pass test_signint
+	  test.
+
+2004-02-17 18:15  warnes
+
+	* [r109] setup.py: Jan de Leeuw recommends against -Xlinker -m, and
+	  indicates that
+	  -dynamic is the default.
+
+2004-02-17 15:37  warnes
+
+	* [r108] setup.py: Add linker flags that should enable rpy to build
+	  on Mac OS X (darwin).
+
+2004-02-12 17:12  warnes
+
+	* [r107] rpy_version.py, setup.py: More changes to allow building
+	  on Mac OSX.
+
+2004-02-12 17:11  warnes
+
+	* [r106] NEWS: Belated checkin of changes for RPy 0.3.4.
+
+2004-02-12 02:37  warnes
+
+	* [r105] src/RPy.h, src/R_eval.c, src/rpymodule.c: - Mark all
+	  variable definitions in headers 'extern', and place actual
+	  definitions in the appropriate source file. This should permit
+	  compilation on Max OSX.
+
+2004-02-10 20:57  warnes
+
+	* [r104] setup.py: Patch to add build info for Mac OSX, submitted
+	  by Christopher
+	  Fonnesbeck <chris@fonnesbeck.org>. Its not yet quite right, but a
+	  step in the right direction.
+
+2004-02-04 21:26  warnes
+
+	* [r95] rpy.py, setup.py: Finish renaming io.py to rpy_io.py.
+
+2004-02-04 21:20  warnes
+
+	* [r94] rpy.py: Fix crash on startup under win32 due to a typo that
+	  caused the wrong
+	  event-loop code to be executed..
+
+2004-02-04 21:10  warnes
+
+	* [r93] io.py, rpy_io.py: Renamed io.py to rpy_io.py to prevent
+	  conflict with a file in the
+	  python-stats package.
+
+2004-02-04 21:06  warnes
+
+	* [r92] debian, debian/changelog, debian/control, debian/copyright,
+	  debian/rules: Add debian packaging files provided by Dirk
+	  Eddelbuettel.
+
+2004-01-21 06:25  warnes
+
+	* [r86] MANIFEST.in: - Add a couple of trash file types to be
+	  excluded from build packages
+
+2004-01-21 06:18  warnes
+
+	* [r85] MANIFEST.in: Make sure that the dist/ subdirectory doesn't
+	  get included in the
+	  source packages, otherwise we get HUGE packages because they
+	  include
+	  all previous packages.
+
+2004-01-21 05:59  warnes
+
+	* [r84] tests/test_robj.py: Fix test of lcall.
+
+2004-01-21 05:53  warnes
+
+	* [r83] rpy_version.py: - Update version number for release.
+
+2004-01-21 05:50  warnes
+
+	* [r82] src/RPy.h: Undo last change: remove #undef because it
+	  caused compile faulures in
+	  older python versions.
+
+2004-01-21 05:42  warnes
+
+	* [r81] tests/test_array.py, tests/test_boolean.py,
+	  tests/test_io.py, tests/test_modes.py, tests/test_numeric.py,
+	  tests/test_robj.py, tests/test_sigint.py, tests/test_topy.py,
+	  tests/test_tor.py, tests/test_util.py: Modify tests so that they
+	  operate on the local rpy rather than the
+	  system installed copy. This makes it a lot easier to test
+	  changes.
+
+2004-01-21 05:40  warnes
+
+	* [r80] src/RPy.h: Avoid warning message by undefining
+	  _FILE_OFFSET_BITS to avoid
+	  conflict between system defintion and python's definition.
+
+2004-01-21 05:34  warnes
+
+	* [r79] setup.py: Added runtime_library_dirs so that the rpy shared
+	  library _rpy.so
+	  includes the ncessary path to the R shared library Rlib.so. This
+	  ensures that Rlib.so will be found even if it is not in
+	  LD_LIBRARY_PATH.
+
+2004-01-16 06:43  warnes
+
+	* [r64] NEWS, README, TODO: Update text documentation files.
+
+2004-01-16 06:43  warnes
+
+	* [r63] doc/Makefile: Expand shell alternative patterns
+	  "foo.{bar,baz}" to "foo.bar foo.baz"
+	  because some shells used by make don't handle the former properly
+	  (eg,
+	  sh on Solaris 9).
+	  
+	  Add ignore return value flag (prepend '-') to "rm" commands,
+	  since
+	  absence of the file to be deleted is not a problem.
+
+2004-01-16 06:38  warnes
+
+	* [r62] doc/manual.texi: *** empty log message ***
+
+2004-01-16 06:33  warnes
+
+	* [r61] tests/test_robj.py: Improve documentation for lcall. Modify
+	  unit test for lcall to be simpler.
+
+2004-01-16 05:06  warnes
+
+	* [r60] doc/manual.texi: Fix typos in manual.texi.
+
+2004-01-16 05:04  warnes
+
+	* [r59] doc/manual.texi: Add documentation of lcall method.
+
+2004-01-16 05:00  warnes
+
+	* [r58] src/rpymodule.c, tests/test_robj.py: Integrate patch
+	  #720222: new RObj method 'lcall', which provides an
+	  'lcall' method for calling objects with a list of (name,value)
+	  arguments. This allows the programmer to work around Python's use
+	  of
+	  *unordered* dictionaries for named arguments.
+
+2004-01-15 22:55  warnes
+
+	* [r57] rpy_version.py, src/R_eval.c, src/rpymodule.c,
+	  src/setenv.c: Minor changes for release of version 3.3.
+
+2004-01-15 22:54  warnes
+
+	* [r56] setup.py: Add quotes to allow for special characters in
+	  RHOME path.
+
+2004-01-15 22:51  warnes
+
+	* [r55] tests/test_sigint.py: Rewrite to put signal sender code
+	  into a function. Works now ?!
+
+2004-01-15 22:45  warnes
+
+	* [r54] tests/test_modes.py: Fix error in unit test.
+
+2004-01-15 18:14  warnes
+
+	* [r51] README, doc/Makefile: Added the creating of manual_html.tgz
+	  for the web site.
+
+2004-01-08 16:56  warnes
+
+	* [r46] rpy_version.py, src/rpymodule.c: Fix bug under Unix due to
+	  Win32 changes.
+
+2004-01-08 16:18  warnes
+
+	* [r45] README, rpy.py, rpy_version.py, setup.py, src/R_eval.c,
+	  src/io.c, src/robjobject.h, src/rpymodule.c, src/setenv.c,
+	  src/setenv.h, win, win/.cvsignore, win/readme, win/setup.py,
+	  win/src/RPy.h, win/src/R_eval.c, win/src/setenv.c, win/version: -
+	  Changes to work with R 1.8.X
+	  - First attempt to integrate Windows changes into Unix source
+	  tree
+	  - Additional information for building under windows
+
+2003-03-17 23:46  wall_m
+
+	* [r44] src/rpymodule.c: Fixed a bug with the R's gc. It solves the
+	  problems with large chunks of data.
+
+2003-02-15 20:05  wall_m
+
+	* [r42] README: Fixed wrong version
+
+2003-02-15 19:52  wall_m
+
+	* [r40] NEWS: Updated
+
+2003-02-15 19:23  wall_m
+
+	* [r38] src/rpymodule.c: Changed the sync mechanism to a lock.
+
+2003-02-15 19:19  wall_m
+
+	* [r37] doc/manual.texi: Some explanations about r('...') and
+	  r_events.
+
+2003-02-15 19:18  wall_m
+
+	* [r36] setup.py: Using the rpy_version module.
+
+2003-02-15 19:17  wall_m
+
+	* [r35] VERSION, rpy_version.py: Changed VERSION for a module,
+	  easier to import.
+
+2003-02-15 19:16  wall_m
+
+	* [r34] rpy.py: Now, using a lock to sync with R_eval. A lot
+	  faster.
+
+2003-02-15 19:15  wall_m
+
+	* [r33] README: Added Kelley's contrib and fixed the minimum R
+	  version.
+
+2003-02-10 23:32  wall_m
+
+	* [r27] src/io.c: * Fixed thread problems with Python i/o
+	  callbacks.
+	  * Enabled the event loop when reading input.
+
+2003-02-10 23:29  wall_m
+
+	* [r26] src/RPy.h: Added declarations.
+
+2003-02-10 23:17  wall_m
+
+	* [r25] MANIFEST.in: Some fixes.
+
+2003-02-10 23:10  wall_m
+
+	* [r24] setup.py: When building a source distro, substitute
+	  $VERSION$ with the VERSION file
+	  content.
+
+2003-02-10 23:08  wall_m
+
+	* [r23] src/R_eval.c: * Events are disables before entering R and
+	  enabled after leaving R.
+	  * If the event loop is stopped, the enable/disable doesn't
+	  happen, which speed
+	  up things a lot.
+	  * Fixed a bug in do_eval_expr (executing Python code after
+	  changing the SIGINT
+	  handler).
+
+2003-02-10 22:52  wall_m
+
+	* [r22] src/rpymodule.c: * Fixed a bug about executing Python code
+	  with a wrong SIGINT handler, in
+	  do_eval_expr.
+	  * Added handling of the event loop before and after the
+	  evaluation of R
+	  expresions.
+	  * Speed up in the evaluation of R expresion when the event loop
+	  is off.
+	  * Disable the event loop when R is not interactive.
+	  * Imported the rpy namespace, for easier access to the Python
+	  functions.
+
+2003-02-10 22:46  wall_m
+
+	* [r21] rpy.py: Fixed the start/stop_r_eventloop problems.
+
+2003-02-10 21:40  wall_m
+
+	* [r20] README: Added win32all URL.
+
+2002-11-19 20:43  wall_m
+
+	* [r19] MANIFEST, MANIFEST.in, NEWS, README, TODO, VERSION,
+	  doc/README, doc/manual.texi, io.py, rpy.py, setup.py, src/RPy.h,
+	  src/R_eval.c, src/io.c, src/robjobject.h, src/rpymodule.c,
+	  src/setenv.c, src/setenv.h, tests/test_boolean.py,
+	  tests/test_io.py, tests/test_sigint.py, tests/test_topy.py:
+	  Release 0.3, see the release notes or the NEWS file for changes
+	  since 0.2.
+	  Modified Files:
+	  NEWS README TODO VERSION rpy.py setup.py doc/README
+	  doc/manual.texi src/RPy.h src/R_eval.c src/robjobject.h
+	  src/rpymodule.c tests/test_topy.py
+	  Added Files:
+	  MANIFEST.in io.py src/io.c src/setenv.c src/setenv.h
+	  tests/test_boolean.py tests/test_io.py tests/test_sigint.py
+	  Removed Files:
+	  MANIFEST
+
+2002-04-12 16:20  wall_m
+
+	* [r18] NEWS, VERSION, tests, tests/.cvsignore: Added Files: NEWS
+	  VERSION tests/.cvsignore
+
+2002-04-12 16:18  wall_m
+
+	* [r17] MANIFEST, README, RPy.h, R_eval.c, TODO, USING, doc,
+	  doc/Makefile, doc/README, doc/defs.texi, doc/manual.texi,
+	  examples, examples/README, examples/animation.py,
+	  examples/chisquared.py, examples/faithful.dat,
+	  examples/faithful.py, examples/useful,
+	  examples/useful/dataframe.py, examples/useful/erobj.py,
+	  robjobject.h, rpy.py, rpymodule.c, setup.py, src, src/RPy.h,
+	  src/R_eval.c, src/robjobject.h, src/rpymodule.c, test-array.py,
+	  test-numeric.py, test.py, tests, tests/README, tests/table.txt,
+	  tests/test_array.py, tests/test_modes.py, tests/test_numeric.py,
+	  tests/test_robj.py, tests/test_topy.py, tests/test_tor.py,
+	  tests/test_util.py, tests/testall.py: Big changes and
+	  reorganization. Due to being working in my own repository,
+	  history is not available.
+
+2002-03-18 18:02  wall_m
+
+	* [r16] test-array.py, test-numeric.py: Fixed nested_scopes for
+	  version 2.1
+
+2002-03-18 17:59  wall_m
+
+	* [r15] rpymodule.c: Fixed a C function call which is not in the
+	  2.1 API
+
+2002-03-18 17:21  wall_m
+
+	* [r14] rpymodule.c: Lot of changes.
+	  
+	  * Added conversion from/to Numeric when available
+	  * Fixed the conversion of data frames
+	  * Added the conversion of R arrays from/to list of lists of ...
+	  in the
+	  case when Numeric is not available
+
+2002-03-18 14:03  wall_m
+
+	* [r13] rpy.py, rpymodule.c: Import Numeric when available
+	  Fixed a bug in conversion of names.
+
+2002-03-18 14:01  wall_m
+
+	* [r12] setup.py: Added the detection of Numeric.
+
+2002-03-18 13:58  wall_m
+
+	* [r11] USING: Fixed minor typo.
+
+2002-03-18 13:53  wall_m
+
+	* [r10] RPy.h: Added the include of Numeric header when available.
+	  Added the declaration of Rf_initEmbeddedR.
+
+2002-03-18 13:35  wall_m
+
+	* [r9] robjobject.h, test-array.py, test-numeric.py, test.py: Added
+	  Files: robjobject.h test-array.py test-numeric.py test.py
+
+2002-03-13 18:38  wall_m
+
+	* [r8] rpymodule.c: * Fixed several important bugs.
+	  
+	  o Added a list for saving anonymous R objects
+	  o Added several PROTECT's which were missing
+	  o Fixed a bug related to signals that, when catch by R, makes
+	  Python seg
+	  fault
+
+2002-03-09 03:01  wall_m
+
+	* [r4] ., .cvsignore, COPYING, MANIFEST, README, RPy.h, R_eval.c,
+	  TODO, USING, rpy.py, rpymodule.c, setup.py: Initial revision
+

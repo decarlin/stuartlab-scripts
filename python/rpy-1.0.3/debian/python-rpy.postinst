@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# postinst script for the Debian GNU/Linux python-rpy package
+#
+# Copyright 2006 by Dirk Eddelbuettel <edd@debian.org>
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+    configure)     
+       ;;
+    abort-upgrade|abort-remove|abort-deconfigure)
+        ;;
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        ;;
+esac
+
+exit 0                 

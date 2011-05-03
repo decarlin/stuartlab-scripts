@@ -1,0 +1,21 @@
+Examples.
+
+This is a small collection of examples.  All contributions are welcome.
+To run the scripts do (for example):
+
+    python animation.py
+
+Here is a list of the scripts:
+
+faithful.py          make very nice graphs from the 'Old faithful'
+		     data. (Contributed by Tim Churches.)
+chisquared.py	     plotting of the chi-squared density.
+animation.py	     plotting of the chi-squared density with different
+		     degrees of freedom.
+
+These are small examples of the use of conversion modes.  See the manual for
+details.
+
+useful/erobj.py      Enhanced version of the Robj type, using the
+		     PROC_CONVERSION mode.
+useful/dataframe.py  DataFrame Python class to mimic the data frame R class.

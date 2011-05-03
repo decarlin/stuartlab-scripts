@@ -1,0 +1,16 @@
+/ar2ld.pl/1.2/Thu Feb 10 01:42:56 2005//
+/combine.pl/1.2/Thu Feb 10 01:42:56 2005//
+/cygwin2leland.pl/1.1.1.1/Wed Jun 23 06:49:57 2004//
+/cygwin_directories.pl/1.4/Thu Feb 10 01:42:56 2005//
+/fix_cygwin_makefiles.pl/1.2/Thu Feb 10 01:42:56 2005//
+/fix_frog_makefiles.pl/1.2/Thu Feb 10 01:42:56 2005//
+/frog2leland.pl/1.1.1.1/Wed Jun 23 06:49:57 2004//
+/frog_directories.txt/1.1.1.1/Wed Jun 23 06:49:57 2004//
+/frog_links.pl/1.3/Wed Aug 11 13:25:48 2004//
+/frog_locks.pl/1.4/Thu Feb 10 01:42:56 2005//
+/ld2ar.pl/1.2/Thu Feb 10 01:42:56 2005//
+/leland2cygwin.pl/1.4/Thu Feb 10 01:42:56 2005//
+/leland2frog.pl/1.4/Thu Feb 10 01:42:56 2005//
+/make_dir.pl/1.3/Wed Aug 11 13:25:48 2004//
+/update_makefiles.pl/1.1.1.1/Wed Jun 23 06:49:57 2004//
+D

@@ -1,0 +1,32 @@
+
+# randomises the last column in a nested list/array
+# for csv prior to conversion to an .arff file for weka
+
+#!/usr/bin/env python
+
+import random
+import sys
+import csv
+
+header_list = []
+
+for line in csv.reader(open(sys.argv[1]).readlines()[0:1]):
+   header_list.append(line)
+
+data_list = []
+class_labels_list = []
+
+for line in csv.reader(open(sys.argv[1]).readlines()[1:]):
+   data_list.append(line)
+   class_labels_list.append(line[-1])
+   random.shuffle(class_labels_list)
+
+for x in range (len (class_labels_list)):
+   data_list[x][-1] = class_labels_list[x]
+
+data_list.insert(0,header_list[0])
+
+writer = csv.writer(open('weka_random_class', 'wb'))
+writer.writerows(data_list)
+
+

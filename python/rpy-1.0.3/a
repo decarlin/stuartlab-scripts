@@ -1,0 +1,234 @@
+RHOMES= []
+DEBUG= True
+Setting RHOMES to  ['/usr/lib64/R']
+### Using R verion 2.11.1 installed at /usr/lib64/R ###
+RHOME= /usr/lib64/R
+copying src/rpymodule.c -> src/rpymodule2111.c
+copying src/R_eval.c -> src/R_eval2111.c
+copying src/io.c -> src/io2111.c
+running install
+running build
+running build_py
+running build_ext
+building '_rpy2111' extension
+gcc -pthread -fno-strict-aliasing -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fPIC -DRPY_SHNAME=_rpy2111 -DINIT_RPY=init_rpy2111 -UPRE_2_2 -UWITH_NUMERIC -I/usr/lib64/R/include -Isrc -I/usr/share/R/include -I/usr/include/python2.5 -c src/rpymodule2111.c -o build/temp.linux-x86_64-2.5/src/rpymodule2111.o -shared
+src/rpymodule2111.c:42:23: error: Rversion.h: No such file or directory
+src/rpymodule2111.c:43:28: error: missing binary operator before token "("
+In file included from src/rpymodule2111.c:51:
+src/RPy.h:51:15: error: R.h: No such file or directory
+src/RPy.h:52:22: error: Rdefines.h: No such file or directory
+src/RPy.h:53:24: error: Rinternals.h: No such file or directory
+src/RPy.h:57:28: error: R_ext/Rdynload.h: No such file or directory
+src/RPy.h:58:29: error: R_ext/eventloop.h: No such file or directory
+In file included from src/RPy.h:71,
+                 from src/rpymodule2111.c:51:
+src/rpy_Rinterface.h:51:27: error: R_ext/Boolean.h: No such file or directory
+In file included from src/rpy_Rinterface.h:61,
+                 from src/RPy.h:71,
+                 from src/rpymodule2111.c:51:
+src/rpy_Startup.h:70: error: expected specifier-qualifier-list before ‘Rboolean’
+In file included from src/RPy.h:71,
+                 from src/rpymodule2111.c:51:
+src/rpy_Rinterface.h:70: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘R_Interactive’
+src/rpy_Rinterface.h:71: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘R_Quiet’
+src/rpy_Rinterface.h:72: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘R_Slave’
+src/rpy_Rinterface.h:73: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘R_Verbose’
+src/rpy_Rinterface.h:76: error: expected declaration specifiers or ‘...’ before ‘Rboolean’
+src/rpy_Rinterface.h:112: warning: parameter names (without types) in function declaration
+In file included from src/rpymodule2111.c:51:
+src/RPy.h:77:51: error: Rdevices.h: No such file or directory
+In file included from src/RPy.h:108,
+                 from src/rpymodule2111.c:51:
+src/robjobject.h:47: error: expected specifier-qualifier-list before ‘SEXP’
+src/robjobject.h:62: error: expected ‘)’ before ‘int’
+In file included from src/rpymodule2111.c:51:
+src/RPy.h:115: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘to_Robj’
+src/RPy.h:116: warning: parameter names (without types) in function declaration
+src/RPy.h:117: warning: parameter names (without types) in function declaration
+src/RPy.h:118: error: expected ‘)’ before ‘int’
+src/RPy.h:129: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘do_eval_expr’
+src/RPy.h:130: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘do_eval_fun’
+src/RPy.h:131: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘get_fun_from_name’
+src/RPy.h:208: error: expected ‘)’ before ‘robj’
+src/RPy.h:209: error: expected ‘)’ before ‘robj’
+src/RPy.h:210: error: expected ‘)’ before ‘robj’
+src/RPy.h:211: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:77: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘get_item’
+src/rpymodule2111.c:78: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘set_item’
+src/rpymodule2111.c:79: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘length’
+src/rpymodule2111.c:80: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘aperm’
+src/rpymodule2111.c:113: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘R_References’
+src/rpymodule2111.c:116: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘RecursiveRelease’
+src/rpymodule2111.c: In function ‘Robj_dealloc’:
+src/rpymodule2111.c:133: error: ‘R_References’ undeclared (first use in this function)
+src/rpymodule2111.c:133: error: (Each undeclared identifier is reported only once
+src/rpymodule2111.c:133: error: for each function it appears in.)
+src/rpymodule2111.c:133: warning: implicit declaration of function ‘RecursiveRelease’
+src/rpymodule2111.c:133: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:134: warning: implicit declaration of function ‘SET_SYMVALUE’
+src/rpymodule2111.c:134: warning: implicit declaration of function ‘install’
+src/rpymodule2111.c: At top level:
+src/rpymodule2111.c:140: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:207: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘seq_to_R’
+src/rpymodule2111.c:292: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘dict_to_R’
+src/rpymodule2111.c:510: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘to_Robj’
+src/rpymodule2111.c:627: error: expected declaration specifiers or ‘...’ before ‘SEXP’
+src/rpymodule2111.c: In function ‘to_PyDict’:
+src/rpymodule2111.c:641: warning: implicit declaration of function ‘CHAR’
+src/rpymodule2111.c:641: warning: implicit declaration of function ‘STRING_ELT’
+src/rpymodule2111.c:641: error: ‘names’ undeclared (first use in this function)
+src/rpymodule2111.c:641: warning: assignment makes pointer from integer without a cast
+src/rpymodule2111.c: At top level:
+src/rpymodule2111.c:751: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:774: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:901: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:939: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:977: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:999: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:1016: error: expected ‘)’ before ‘robj’
+src/rpymodule2111.c:1048: error: expected declaration specifiers or ‘...’ before ‘SEXP’
+src/rpymodule2111.c: In function ‘make_args’:
+src/rpymodule2111.c:1050: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1050: error: expected ‘;’ before ‘r’
+src/rpymodule2111.c:1054: error: ‘r’ undeclared (first use in this function)
+src/rpymodule2111.c:1054: warning: implicit declaration of function ‘to_Robj’
+src/rpymodule2111.c:1057: warning: implicit declaration of function ‘SETCAR’
+src/rpymodule2111.c:1057: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1058: warning: implicit declaration of function ‘CDR’
+src/rpymodule2111.c: At top level:
+src/rpymodule2111.c:1092: error: expected declaration specifiers or ‘...’ before ‘SEXP’
+src/rpymodule2111.c: In function ‘make_kwds’:
+src/rpymodule2111.c:1094: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1094: error: expected ‘;’ before ‘r’
+src/rpymodule2111.c:1108: error: ‘r’ undeclared (first use in this function)
+src/rpymodule2111.c:1113: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1125: warning: implicit declaration of function ‘SET_TAG’
+src/rpymodule2111.c:1125: warning: implicit declaration of function ‘Rf_install’
+src/rpymodule2111.c: In function ‘Robj_call’:
+src/rpymodule2111.c:1142: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1142: error: expected ‘;’ before ‘exp’
+src/rpymodule2111.c:1155: warning: implicit declaration of function ‘PROTECT’
+src/rpymodule2111.c:1155: warning: implicit declaration of function ‘allocVector’
+src/rpymodule2111.c:1155: error: ‘LANGSXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1155: error: invalid lvalue in assignment
+src/rpymodule2111.c:1156: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1157: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:1160: error: too many arguments to function ‘make_args’
+src/rpymodule2111.c:1161: warning: implicit declaration of function ‘UNPROTECT’
+src/rpymodule2111.c:1164: error: too many arguments to function ‘make_kwds’
+src/rpymodule2111.c:1169: error: ‘res’ undeclared (first use in this function)
+src/rpymodule2111.c:1169: warning: implicit declaration of function ‘do_eval_expr’
+src/rpymodule2111.c:1176: error: ‘RobjObject’ has no member named ‘conversion’
+src/rpymodule2111.c:1180: warning: implicit declaration of function ‘to_Pyobj_with_mode’
+src/rpymodule2111.c:1180: warning: assignment makes pointer from integer without a cast
+src/rpymodule2111.c: At top level:
+src/rpymodule2111.c:1191: error: expected declaration specifiers or ‘...’ before ‘SEXP’
+src/rpymodule2111.c: In function ‘make_argl’:
+src/rpymodule2111.c:1193: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1193: error: expected ‘;’ before ‘rvalue’
+src/rpymodule2111.c:1239: error: ‘rvalue’ undeclared (first use in this function)
+src/rpymodule2111.c:1247: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c: In function ‘Robj_lcall’:
+src/rpymodule2111.c:1279: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1279: error: expected ‘;’ before ‘exp’
+src/rpymodule2111.c:1308: error: ‘LANGSXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1308: error: invalid lvalue in assignment
+src/rpymodule2111.c:1309: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1310: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:1314: error: too many arguments to function ‘make_argl’
+src/rpymodule2111.c:1320: error: ‘res’ undeclared (first use in this function)
+src/rpymodule2111.c:1328: error: ‘RobjObject’ has no member named ‘conversion’
+src/rpymodule2111.c:1332: warning: assignment makes pointer from integer without a cast
+src/rpymodule2111.c: In function ‘Robj_autoconvert’:
+src/rpymodule2111.c:1359: error: ‘RobjObject’ has no member named ‘conversion’
+src/rpymodule2111.c:1361: error: ‘RobjObject’ has no member named ‘conversion’
+src/rpymodule2111.c: In function ‘Robj_as_py’:
+src/rpymodule2111.c:1388: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:1388: warning: assignment makes pointer from integer without a cast
+src/rpymodule2111.c: In function ‘Robj_len’:
+src/rpymodule2111.c:1406: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1406: error: expected ‘;’ before ‘e’
+src/rpymodule2111.c:1408: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1408: error: ‘LANGSXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1409: error: ‘length’ undeclared (first use in this function)
+src/rpymodule2111.c:1410: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:1412: error: ‘robj’ undeclared (first use in this function)
+src/rpymodule2111.c:1418: warning: implicit declaration of function ‘INTEGER_DATA’
+src/rpymodule2111.c:1418: error: subscripted value is neither array nor pointer
+src/rpymodule2111.c: In function ‘Robj_ass_item’:
+src/rpymodule2111.c:1425: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1425: error: expected ‘;’ before ‘e’
+src/rpymodule2111.c:1427: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1427: error: ‘LANGSXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1428: error: ‘ri’ undeclared (first use in this function)
+src/rpymodule2111.c:1428: warning: implicit declaration of function ‘NEW_INTEGER’
+src/rpymodule2111.c:1429: error: subscripted value is neither array nor pointer
+src/rpymodule2111.c:1430: error: ‘set_item’ undeclared (first use in this function)
+src/rpymodule2111.c:1431: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:1438: error: ‘robj’ undeclared (first use in this function)
+src/rpymodule2111.c:1443: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c: In function ‘Robj_item’:
+src/rpymodule2111.c:1452: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1452: error: expected ‘;’ before ‘ri’
+src/rpymodule2111.c:1463: error: ‘ri’ undeclared (first use in this function)
+src/rpymodule2111.c:1464: error: subscripted value is neither array nor pointer
+src/rpymodule2111.c:1465: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1465: error: ‘LANGSXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1466: error: ‘get_item’ undeclared (first use in this function)
+src/rpymodule2111.c:1467: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:1470: error: ‘robj’ undeclared (first use in this function)
+src/rpymodule2111.c:1482: warning: assignment makes pointer from integer without a cast
+src/rpymodule2111.c: In function ‘Robj_slice’:
+src/rpymodule2111.c:1493: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1493: error: expected ‘;’ before ‘robj’
+src/rpymodule2111.c:1532: error: ‘INTSXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1532: error: invalid lvalue in assignment
+src/rpymodule2111.c:1535: warning: implicit declaration of function ‘INTEGER_POINTER’
+src/rpymodule2111.c:1535: error: subscripted value is neither array nor pointer
+src/rpymodule2111.c:1538: error: ‘e’ undeclared (first use in this function)
+src/rpymodule2111.c:1538: error: ‘LANGSXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1539: error: ‘get_item’ undeclared (first use in this function)
+src/rpymodule2111.c:1540: error: ‘RobjObject’ has no member named ‘R_obj’
+src/rpymodule2111.c:1543: error: ‘robj’ undeclared (first use in this function)
+src/rpymodule2111.c:1555: warning: assignment makes pointer from integer without a cast
+src/rpymodule2111.c: At top level:
+src/rpymodule2111.c:1565: warning: initialization from incompatible pointer type
+src/rpymodule2111.c:1568: warning: ‘intargfunc’ is deprecated
+src/rpymodule2111.c:1568: warning: initialization from incompatible pointer type
+src/rpymodule2111.c:1569: warning: ‘intintargfunc’ is deprecated
+src/rpymodule2111.c:1569: warning: initialization from incompatible pointer type
+src/rpymodule2111.c:1570: warning: initialization from incompatible pointer type
+src/rpymodule2111.c: In function ‘get_fun’:
+src/rpymodule2111.c:1668: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1668: error: expected ‘;’ before ‘robj’
+src/rpymodule2111.c:1675: error: ‘robj’ undeclared (first use in this function)
+src/rpymodule2111.c:1675: warning: implicit declaration of function ‘get_fun_from_name’
+src/rpymodule2111.c:1679: warning: implicit declaration of function ‘Robj_new’
+src/rpymodule2111.c:1679: warning: cast to pointer from integer of different size
+src/rpymodule2111.c: In function ‘r_events’:
+src/rpymodule2111.c:1727: warning: implicit declaration of function ‘R_checkActivity’
+src/rpymodule2111.c:1727: warning: assignment makes pointer from integer without a cast
+src/rpymodule2111.c:1728: warning: implicit declaration of function ‘R_runHandlers’
+src/rpymodule2111.c:1728: error: ‘R_InputHandlers’ undeclared (first use in this function)
+src/rpymodule2111.c: In function ‘r_finalize’:
+src/rpymodule2111.c:1778: warning: implicit declaration of function ‘R_dot_Last’
+src/rpymodule2111.c:1779: warning: implicit declaration of function ‘R_RunExitFinalizers’
+src/rpymodule2111.c:1781:28: error: missing binary operator before token "("
+src/rpymodule2111.c:1784: warning: implicit declaration of function ‘KillAllDevices’
+src/rpymodule2111.c:1787:28: error: missing binary operator before token "("
+src/rpymodule2111.c:1798: warning: implicit declaration of function ‘R_system’
+src/rpymodule2111.c:1803: warning: implicit declaration of function ‘R_gc’
+src/rpymodule2111.c: In function ‘init_rpy2111’:
+src/rpymodule2111.c:1980: error: ‘SEXP’ undeclared (first use in this function)
+src/rpymodule2111.c:1980: error: expected ‘;’ before ‘interact’
+src/rpymodule2111.c:2070: error: ‘get_item’ undeclared (first use in this function)
+src/rpymodule2111.c:2071: error: ‘set_item’ undeclared (first use in this function)
+src/rpymodule2111.c:2072: error: ‘length’ undeclared (first use in this function)
+src/rpymodule2111.c:2075: error: ‘aperm’ undeclared (first use in this function)
+src/rpymodule2111.c:2078: error: ‘R_References’ undeclared (first use in this function)
+src/rpymodule2111.c:2078: error: ‘R_NilValue’ undeclared (first use in this function)
+src/rpymodule2111.c:2085: error: ‘interact’ undeclared (first use in this function)
+src/rpymodule2111.c:2085: warning: implicit declaration of function ‘do_eval_fun’
+src/rpymodule2111.c:2086: warning: implicit declaration of function ‘INTEGER’
+src/rpymodule2111.c:2086: error: subscripted value is neither array nor pointer
+error: command 'gcc' failed with exit status 1

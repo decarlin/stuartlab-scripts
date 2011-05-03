@@ -1,0 +1,3 @@
+python-rpy: script-not-executable ./usr/share/pycentral/python-rpy/site-packages/rpy_options.py
+python-rpy: binary-or-shlib-defines-rpath ./usr/lib/python2.4/site-packages/_rpy2061.so /usr/lib/R/bin:/usr/lib/R/lib
+python-rpy: binary-or-shlib-defines-rpath ./usr/lib/python2.5/site-packages/_rpy2061.so /usr/lib/R/bin:/usr/lib/R/lib

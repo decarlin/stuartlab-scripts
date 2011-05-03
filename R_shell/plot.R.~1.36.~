@@ -1,0 +1,1247 @@
+#!/usr/bin/env Rgetopt.py
+library(Rgetopt)
+library(CommandLinePlots)
+
+# Note that the files for scatter, bar, heatmap, and box are located in:
+#     $(CVS_ROOT)/cvaske/R/lib/CommandLinePlots/R/scatter.prepplot.R
+# (They are included with the command "library(CommandLinePlots)"
+
+library(RColorBrewer)
+library(Cairo)
+
+##
+## ORGANIZATION OF THIS SCRIPT
+##  1. High level options
+##  2. Helper functions for all modules
+##  3. Definition of module options and functions
+##  4. Start of execution: argument parsing
+##  5. Component processing
+##  6. Combine parameters
+##  7. Plot
+
+##
+## 1. High level options
+##
+
+global.options <- c("plot.R - create plots using R's facilities
+  Each plot is composed of one or more components, where each component
+  adds one more type of data source to the blot.  For example, a scatterplot
+  would consist of a single component.  A combination scatterplot line plot
+  wolud have two component.
+
+Usage:
+  plot.R [global options] [module1 [module options]] [module2 [options]] ...
+
+By default, the plot will be made to a new x11 window. If you redirect it to 
+a file, it will be output as PDF format be default.
+
+Example command to make a scatterplot from two columns of data points:
+
+   plot.R scatter -h 0 -x 1 -y 2 TWO-COLUMNS-OF-DATA.tab  >   OUTPUT-SCATTERPLOT.pdf
+
+Available modules (for details use --help, like this:  plot.R heatmap --help):
+  bars         - creates barplots
+  scatter      - scatter plot of points
+  boxplot      - boxplots for each column of a matrix
+  heatmap      - matrix of a heatmap
+  pairsscatter - all pairwise scatter plots between matrix columns
+  legend       - a boxed legend
+  abline       - lines by slope/intercept, or horizontal and vertical
+  box          - a rectangle (not a boxplot!)
+  text         - text on plot
+  mtext        - text in the margins
+  axis         - an axis, with labels
+  histogram    - break data into buckets and plot frequencies or probabilities
+  arrows       - draw arrows on the plot
+  prcurve      - precision-recall curves from auc.pl --pr
+  density2d    - color the plane by density of points
+  dendrogram   - plot a tree, e.g. from a clustering
+
+  Important Note: Headers are ASSUMED for every file. You must also specify the number of header lines for EVERY file. So you should call \"scatter -h 0\" if you have no header lines in your scatterplot source file.
+
+
+Global Options:",
+                    "title|t=s             plot title",
+                    "xlab|x=s            x-axis label",
+                    "ylab|y=s            y-axis label",
+                    "xlim=lf             x-axis bounds (2 numbers): Example:  --xlim 10,100  <-- remember the comma",
+                    "ylim=lf             y-axis bounds (2 numbers): Example:  --ylim 4,10",
+                    "lex=f               label text size expansion factor (>1.0 bigger , <1.0 smaller.)",
+                    "lgap=f              lines of text space between axis and label",
+                    "pointsize=i         pointsize of font (default 12)",
+                    "dev=s               output device. Options are... pdf, x11, png, jpeg, ps, eps, svg",
+                    "res=i               for raster devices (png, jpeg) the DPI of the image",
+                    "out-file|o=s        output file.  If no device is specifed, then uses extension to guess",
+                    "width|w=f           width of plot area (inches). Default is probably 4",
+                    "height|h=f          height of plot area (inches). Default is probably 5.",
+                    "margins=lf          override margins (inches). Specify Bottom,Left,Top,Right, with NA
+      to keep existing margin. Example: --margins 3,5,NA,2",
+                    "prettyX             use an X11 device that can use transparent colors, but is slower")
+
+# these are common options for all data files
+
+datafile.options <- c("header|h=i      number of header lines. Default is 1",
+                      "delim=s       field delimiter")
+
+##
+## 2. Helper functions for all modules
+##
+
+tabFilePool <- list()
+getTabFile <- function(filename, options) {
+  delim <- if (is.null(options$delim)) "\t" else options$delim
+  hlines <- if (is.null(options$header)) 1 else options$header
+  if (is.character(filename)) {
+    if (is.null(tabFilePool[[filename]])) {
+      tabFilePool[[filename]] <- readTabFile(filename, delim, hlines)
+    }
+    return(tabFilePool[[filename]])
+  }
+  return(readTabFile(filename, delim, hlines))
+}
+
+checkNumericCols <- function(df, cols, filename) {
+  checkCols(df, cols, filename, is.numeric, "Non-numeric data in column ")
+}
+
+checkColsExist <- function(df, cols, filename) {
+  checkCols(df, cols, filename, function(x) TRUE, "")
+}
+
+checkCols <- function(df, cols, filename, colcheckfun,
+                      errStr="Data does not match expected type in col ") {
+  passcolcheck <- cols %in% 1:ncol(df)
+  if (!all(passcolcheck)) {
+    stop("Specified columns, ", paste(cols[!passcolcheck], collapse=", "),
+         ", are out of bounds for file ", filename, call.=FALSE)
+  }
+  passcolcheck <- sapply(df[cols], colcheckfun)
+  if (!all(passcolcheck)) {
+    stop(errStr, paste(cols[!passcolcheck], collapse=","),
+         " of file ", filename, call.=FALSE)
+  }
+}
+
+##
+## 3. Module Definitions of options and functions
+##
+legend.prepplot <- function(argv) {
+  result <- list()
+  argspec <- c("legend module - adds a legend to the plot.  This can take
+either one or two location arguments, like the R version, and can consist
+of keywords, such as \"top\" or \"bottomright\".  Parameters function
+as they do in the R function.",
+               "text=ls    comma separated list of legend text",
+               "ncol=i     number of columns",
+               "pch=li     plot characters",
+               "color=ls   colors",
+               "lty=li     line types",
+               "lwd=lf     line widths",
+               "fillcol=ls fill color",
+               "bg=s       background color",
+               "nobox      don't draw a box",
+               "title=s    legend title",
+               "xjust=f    where the specified coordinate should be in the legend",
+               "yjust=f    where the specified coordinate should be in the legend")
+
+  o <- Rgetopt(argspec=argspec, argv=argv)
+
+  if (length(o$argv) > 2) {
+    usage("Error: at most two location parameters accepted", argspec)
+  } else if (length(o$argv) == 0) {
+    usage("Error, need at least one location parameter", argspec)
+  }
+
+  if (is.null(o$ncol)) o$ncol <- 1
+  if (is.null(o$color)) o$color <- "black"
+
+  xjust <- if(is.null(o$xjust)) 0 else o$xjust
+  yjust <- if(is.null(o$yjust)) 1 else o$yjust
+
+  xlocation <- o$argv[1]
+  ylocation <- NULL
+  if (length(o$argv) == 2) {
+    xlocation <- as.numeric(o$argv[1])
+    ylocation <- as.numeric(o$argv[2])
+  }
+
+  lwd <- if (is.null(o$lwd)) par("lwd") else o$lwd
+
+  result$plotFun <- function() {
+    par.xpd <- par("xpd")
+    par(xpd=TRUE)
+    box.lty <- if (is.null(o$nobox)) par("lty") else 0
+
+    if (!is.null(o$fillcol)) {
+      legend(xlocation,ylocation, legend=o$text, fill=o$fillcol, title=o$title,
+             box.lty=box.lty, ncol=o$ncol, xjust=xjust, yjust=yjust, bg=o$bg)
+    } else if (!is.null(o$lty)) {
+      legend(xlocation,ylocation, legend=o$text, title=o$title,
+             col=o$color, lty=o$lty, lwd=lwd, box.lty=box.lty, ncol=o$ncol,
+             xjust=xjust, yjust=yjust, bg=o$bg)
+    } else if (!is.null(o$pch)) {
+      legend(xlocation,ylocation, legend=o$text, title=o$title,
+             pch=o$pch, col=o$color, box.lty=box.lty, ncol=o$ncol,
+             xjust=xjust, yjust=yjust, bg=o$bg)
+    } else {
+      legend(xlocation,ylocation, legend=o$text, title=o$title, ncol=o$ncol,
+             pch=o$pch, col=o$color, lty=o$lty, lwd=lwd, box.lty=box.lty,
+             xjust=xjust, yjust=yjust, bg=o$bg)
+    }
+    par(xpd=par.xpd)
+  }
+  
+  return(result)
+}
+
+abline.prepplot <- function(argv) {
+	# Draws a straight line on the screen
+
+  argspec <- c("Module abline - draw straight lines via formula like R's abline()",
+               "a=lf      intercept locations",
+               "b=lf      slope parameters",
+               "h=lf      horizontal line intercepts",
+               "v=lf      vertical line intercepts",
+               "lty=ls    line types",
+               "lwd=lf    line widths",
+               "col=ls    line colors"
+               )
+  o <- Rgetopt(argspec=argspec, argv=argv)
+
+  if (length(o$argv) > 0) {
+    usage(paste("Unparsed parameters", o$argv), argspec)
+  }
+
+  lty <- if (is.null(o$lty)) par()$lty else o$lty
+  lwd <- if (is.null(o$lwd)) par()$lwd else o$lwd
+  col <- if (is.null(o$col)) par()$col else o$col
+  
+  possible.line.types <- c("blank", "solid", "dashed", "dotted",
+                           "dotdash", "longdash", "twodash")
+  if (is.character(lty) && !all(lty %in% possible.line.types)) {
+    stop(paste("the option --lty must only contain values from:",
+               paste(possible.line.types, collapse=", ")))
+  }
+
+  result <- list()
+  result$plotFun <- function () {
+    abline(a=o$a, b=o$b, h=o$h, v=o$v, lty=lty, lwd=lwd, col=col)
+  }
+  return(result)
+}
+
+
+mtext.prepplot <- function(argv) {
+  argspec <- c("mtext - draw text in margins, see mtext() in R. -line and -at
+are the most useful location parameters.  All three options are required.
+Usage example:
+
+  mtext -side 1 -at 1,2 -line 2,3 down word
+",
+               "at=lf   at location parameter",
+               "line=lf line of margin",
+               "side=li which side",
+               "adj=lf  ranges 0 to 1 location in the string"
+               )
+  o <- Rgetopt(argspec=argspec, argv=argv, defaults=list(adj=NA))
+  
+  result <- list()
+  
+  stopifnot(!is.null(o$at), !is.null(o$line), !is.null(o$side))
+
+  result$plotFun <- function() {
+    mtext(o$argv, at=o$at, side=o$side, line=o$line, adj=o$adj)
+  }
+
+  return(result)
+}
+
+text.prepplot <- function(argv) {
+	# Draw literal text on the screen
+  argspec <- c("text",
+               "x=i   column with x-coords. Index starts at 1.",
+               "y=i   column with y-coords. Index starts at 1.",
+               "t=i   column index with the text to be drawn, at locations specified by -x and -y.",
+               "cex=f      default plot character size (1.0 is default, <1.0 is smaller, >1.0 is bigger",
+			   "color=s color for plotted text",
+               datafile.options)
+
+  o <- Rgetopt(argspec=argspec, argv=argv)
+
+  stopifnot(length(o$argv) == 1)
+
+  if(is.null(o$header)) o$header <- 1   # if the user didn't specify the number of header lines, then we set it to 1 as the default (DEFAULT NUMBER OF HEADERS IS SET HERE)
+  d <- getTabFile(o$argv, o)
+
+  result <- list()
+  ourCexValue <- if (is.null(o$cex)) 1 else (o$cex)    # <-- how big should the text be (1.0 = normal)
+  ourColor    <- if (is.null(o$color)) "black" else (o$color)   # text color
+
+  result$plotFun <- function() {
+    text(d[,o$x], d[,o$y], d[,o$t], pos=4, cex=ourCexValue, col=ourColor)
+  }
+  return(result)
+}
+
+pairsscatter.prepplot <- function(argv) {
+  argspec <- c("Module pairsscatter - plot all pairwise scatter plots",
+               "f=li     which columns to use (defaults to 2:nocl(data)",
+               'pch=s    plot character',
+               datafile.options)
+  o <- Rgetopt(argspec=argspec, argv=argv)
+  
+  if (length(o$argv) != 1) {
+    usage(paste("Need a file for input, got", length(o$argv)) , argspec)
+  }
+
+  if (is.null(o$header)) o$header <- 1
+  df <- getTabFile(o$argv, o)
+
+  if (is.null(o$f)) o$f <- 2:ncol(df)
+  if (is.null(o$pch)) o$pch <- '.'
+  if (nchar(o$pch) > 1 && substr(o$pch,1,1) =='s')
+    o$pch <- as.integer(o$pch,2,nchar(o$pch))
+  
+  result <- list()
+  result$xlim <- c(0,ncol(df))
+  result$ylim <- c(0,nrow(df))
+  
+  result$plotFun <- function() {
+    pairs(df[,o$f], pch=o$pch, lower.panel=function(x,y,...) text(0,0,
+                      round(cor(x,y, use="pairwise.complete.obs"),4),
+                                 adj=c(0.5,0.5), cex=2))
+  }
+  return(result)
+}
+
+heatmap.prepplot <- function(argv) {
+  require(plotrix, quietly=TRUE)
+  result <- list()
+
+  argspec <- c(paste(global.options[1], "Module heatmap - make a heatmap
+module options:", sep="\n"),
+               "uncentered     allow an uncentered range",
+               "range=lf       specify the range",
+               "red=lf         points of colorscale for red",
+               "green=lf       points of colorscale for green",
+               "blue=lf        points of colorscale for blue",
+               "missing=s      color for missing data (default \"gray\")",
+               "k=li           data columns. Defaults to 2nd column to end, unless ignoring row labels",
+               "norowlabel     suppress row labels and use column 1 as data",
+               "nocollabel     suppress column labels (auto set if header=0)",
+               "nolegend       suppress legend",
+               "ldir=s         legend direction, x for horizontal, y for vertical",
+               "loffset=lf     offset for the legend location (2 or 4 values)",
+               "noltext        don't print legend labels",
+               datafile.options)
+  o <- Rgetopt(argspec=argspec, argv=argv, defaults=list(missing="gray"),
+               onerror=function(x) usage(paste("Error in heatmap args:\n", x)))
+  
+  ## Get Data File
+  if (length(o$argv) < 1) {
+    usage("Need a file for input", argspec)
+  }
+  if (length(o$argv) > 1) {
+    usage(paste("Can only specify one input file, you specifed: ",
+                o$argv, "\n"), argspec)
+  }
+  if (is.null(o$header)) o$header <- 1
+  df <- getTabFile(o$argv, o)
+
+  redrange <- if (is.null(o$red)) c(0,0,1) else o$red
+  bluerange <- if (is.null(o$blue)) c(0,0,0) else o$blue
+  greenrange <- if (is.null(o$green)) c(1,0,0) else o$green
+  stopifnot(redrange >=0, redrange <= 1,
+            bluerange >= 0, bluerange <= 1,
+            greenrange >= 0, greenrange <= 1)
+  stopifnot(length(redrange) == length(bluerange),
+            length(bluerange) == length(greenrange))
+
+  if (is.null(o$k)) {
+    o$k <- (1+!is.numeric(df[[1]])):ncol(df)
+  }
+  x <- as.matrix(df[,o$k])
+  if(!is.numeric(x)) {
+    stop("Non-numeric data in matrix", call.=FALSE)
+  }
+
+  result$xlim <- c(0,ncol(x))
+  result$ylim <- c(0,nrow(x))
+
+  result$plotAdjust <- list(xaxs="i", yaxs="i")
+
+  rowlbls <- if(is.null(o$norowlabel)) df[,1] else NULL
+  collbls <- if (o$header > 0 && is.null(o$nocollabel)) colnames(x) else NULL
+
+  mai <- rep(NA, 4)
+  if (!is.null(collbls)) {
+    mai[1] <- max(strwidth(collbls, units="inches")) +
+      par("csi")*par("mgp")[2] + 0.02
+  }
+  if (!is.null(rowlbls)) {
+    mai[2] <- max(strwidth(rowlbls, units="inches")) +
+      par("csi")*par("mgp")[2] + 0.02
+  }
+  result$plotAdjust[["mai"]] <- mai
+  
+  ## plot parameters
+  extremes <- NA
+  xrange <- if (!is.null(o$range)) {
+    stopifnot(length(o$range)==2)
+    o$range
+  } else if (is.null(o$uncentered)) {
+    range(x[!is.na(x)], -x[!is.na(x)])
+  } else {
+    range(x[!is.na(x)])
+  }
+  legend.text <- round(xrange, 2)
+
+  if (is.null(o$nolegend)) {
+    legend.width <- 1.5
+    if (is.null(o$ldir)) o$ldir='x'
+    if (o$ldir == 'x') {
+      result$plotAdjust$mai[2] <- max(result$plotAdjust$mai[2], legend.width
+                                      + 2*strwidth("M", units="inches"),
+                                      na.rm=T)
+    } else {
+      s <- paste(as.character(round(xrange,2)), "MM")
+      result$plotAdjust$mai[2] <- max(result$plotAdjust$mai[2],
+                                      strwidth(s, units="inches"),
+                                      na.rm=T)
+    }
+  } else {
+    legend.width <- NULL
+  }
+
+  nslices <- 21
+  xlab <- ""
+  ylab <- ""
+  axes <- FALSE
+  vcol <- "white"
+  vcex <- 1
+
+  # Unfortuntaley this function does not include a parameter to balance the
+  # ranges, as we want in microarray heatmaps
+  my.color.scale <- function (x, redrange = c(0, 1),
+                              greenrange = c(0, 1),
+                              bluerange = c(0, 1),
+                              missing="gray",
+                              extremes = NA,
+                              xrange=range(x)) {
+    x.na <- is.na(x)
+    if (all(x.na)) return(matrix(rep(NA, length(x)), nrow=nrow(x)))
+    x[x.na] <- x[which(!x.na)[1]]
+    if (!is.na(extremes[1])) {
+      colmat <- col2rgb(extremes)
+      redrange <- colmat[1, ]/255
+      greenrange <- colmat[2, ]/255
+      bluerange <- colmat[3, ]/255
+    }
+    mapcolors <- function(x, colrange) {
+      ncolors <- length(x)
+      ncols <- length(colrange)
+      if (ncols > 1) {
+        cells <- rep(colrange[ncols], ncolors)
+        xstart <- xrange[1]
+        xinc <- diff(xrange)/(ncols - 1)
+        for (seg in 1:(ncols - 1)) {
+          segindex <- (x >= xstart) & (x <= (xstart + xinc))
+          cells[segindex] <- rescale(c(xstart, xstart+xinc, x[segindex]),
+                                     colrange[c(seg, seg + 1)])[-(1:2)]
+          xstart <- xstart + xinc
+        }
+        cells[x < xrange[1]] <- colrange[1] # these are never assigned by loop
+        if (min(cells) < 0 || max(cells) > 1)
+          cells <- rescale(cells, c(0, 1))
+      }
+      else cells <- rep(colrange, ncolors)
+      return(cells)
+    }
+    reds <- mapcolors(x, redrange)
+    blues <- mapcolors(x, bluerange)
+    greens <- mapcolors(x, greenrange)
+    
+    xdim <- dim(x)
+    if (missing != "NA") {
+      missing.rgb <- col2rgb(missing)/255
+      reds[x.na] <- missing.rgb[1]
+      greens[x.na] <- missing.rgb[2]
+      blues[x.na] <- missing.rgb[3]
+    }
+    if (is.null(xdim))
+      colors <- rgb(reds, greens, blues)
+    else colors <- matrix(rgb(reds, greens, blues), nrow = xdim[1])
+    if (missing == "NA") {
+      colors[x.na] <- NA
+    }
+    return(colors)
+  }
+  
+  result$plotFun <- function () {
+    xdim <- dim(x)
+    x <- as.vector(x)
+    pos <- -0.3
+
+    cellcolors <- my.color.scale(x, redrange, greenrange, bluerange,
+                                 extremes, xrange=xrange, missing=o$missing)
+    rect(sort(rep((1:xdim[2]) - 1, xdim[1])),
+         rep(seq(xdim[1] - 1, 0, by = -1), xdim[2]),
+         sort(rep(1:xdim[2], xdim[1])),
+         rep(seq(xdim[1], 1, by = -1), xdim[2]), 
+         col = cellcolors, border = cellcolors)
+    box()
+
+    if (!is.null(collbls))
+      axis(side=1, at=(1:xdim[2]-0.5), labels=collbls, las=2)
+    if (!is.null(rowlbls))
+      axis(side=2, at=(xdim[1]:1-0.5), labels=rowlbls, las=2)
+
+    if (!is.null(legend.width)) {
+      xy <- par("usr")
+      plot.pin <- par("pin")
+      xs <- (xy[2] - xy[1]) / plot.pin[1]
+      ys <- (xy[4] - xy[3]) / plot.pin[2]
+      grx1 <- xy[1] - xs * legend.width - strwidth("M")
+      grx2 <- xy[1] - strwidth("M")
+      gry1 <- xy[3] - 3.5*strheight("", units="user")
+      gry2 <- xy[3] - 2.5*strheight("", units="user")
+      
+      if (o$ldir == 'y') {
+        grx1 <- xy[1] - strwidth("MM")
+        grx2 <- xy[1] - strwidth("M")
+        gry1 <- xy[3] #- 3.5*strheight("", units="user")
+        gry2 <- gry1 + ys * legend.width
+      }
+
+      if (!is.null(o$loffset)) {
+        if (length(o$loffset) == 2) {
+          o$loffset <- rep(o$loffset, each=2)
+        } else if (length(o$loffset) != 4) {
+          stop("--loffset must have either 2 or 4 values")
+        }
+        grx1 <- grx1 + o$loffset[1]
+        grx2 <- grx2 + o$loffset[2]
+        gry1 <- gry1 + o$loffset[3]
+        gry2 <- gry2 + o$loffset[4]
+      }
+      
+      legend.colors <- my.color.scale(seq(from=xrange[1], to=xrange[2],
+                                          length.out=nslices),
+                                      redrange, greenrange, bluerange,
+                                      extremes,
+                                      xrange=xrange, missing=o$missing)
+      legend.labels <- round(xrange, 2)
+      if (!is.null(o$noltext)) legend.labels <- c("","")
+      color.legend(grx1, gry1, grx2, gry2, legend.labels,
+                   gradient=o$ldir, rect.col=legend.colors)
+    }
+  }
+  return(result)
+}
+
+axis.prepplot <- function(argv) {
+  result <- list()
+
+  argspec <- c(paste(global.options[1], "Module axis:  add text lables on an axis.
+Takes one file argument.", sep="\n"),
+               "side|s=i      side for axis: 1=bottom, 2=left, 3=top, 4=right",
+               "k=li          key column for labels, defaults to 1",
+               "at=li         Column with absolute positions for each tick label. Default is to label at 0.5, 1.5, 2.5... etc. This option will override the default.",
+               "group         if consecutive labels are the same, group them",
+               "gap=f         gap between labels and axis, in lines of text",
+               "tcl=f         tick mark length in lines of text (default -0.5)",
+               "las=i         label angle (see par())",
+               "reverse       reverse the order of the labels",
+               "math          interpret text as math (see plotmath in R)",
+               datafile.options)
+  o <- Rgetopt(argspec=argspec, argv=argv)
+
+  if (is.null(o$side)) o$side <- 1    # which side to we draw on
+
+  if (is.null(o$k)) o$k <- 1     # which column from the file to read
+
+  if (length(o$argv) > 1) {
+    usage("Can only read from one file, but got many", argspec)
+  } else if (length(o$argv) == 1) {
+    if (is.null(o$header)) o$header <- 0
+    df <- getTabFile(o$argv, o)
+    
+    lbls <- df[,o$k]
+    if (!is.null(o$reverse)) {
+      lbls <- lbls[length(lbls):1]
+    }
+    
+    if (is.null(o$group)) { # This is the default (i.e., for a heatmap). Axis labels are not grouped.
+      tickLocation <- 0:length(lbls)
+      lbl <- lbls
+    } else { # If there are repeated names, they get grouped together. (Optional)
+      tickLocation <- numeric(0)
+      lbl <- character(0)
+      prev <- if ("" == lbls[1]) "a" else ""
+      for (i in 1:length(lbls)) {
+        if (prev != lbls[i]) {
+          tickLocation <- c(tickLocation, i-1)
+          lbl <- c(lbl, lbls[i])
+          prev <- lbls[i]
+        }
+      }
+      tickLocation <- c(tickLocation, length(lbls))
+    }
+    labelLocation <- diff(tickLocation) / 2 + tickLocation[-length(tickLocation)]  # where we're going to draw a label. Default is 0.5, 1.5, 2.5... etc
+
+    if (!is.null(o$at)) { # the user specified SPECIFIC locations to draw the axis labesl
+      labelLocation <- df[,o$at] # df is the file.
+      if(!is.numeric(labelLocation)) { stop("Hey! You specified a column for the <at> parameter (where to draw the axis labels), but some value there was not a number! Make sure this column is all numeric."); }
+      if (length(labelLocation) != length(lbl)) { stop("The number of items in the label location column (specified with the -at parameter) is different from the number of labels! i.e., there is not a label location for every label."); }
+      tickLocation <- labelLocation;
+    }
+    if (!is.null(o$math)) lbl <- sapply(lbl, function(l) parse(text=l))
+    if (is.null(o$gap)) o$gap <- par("mgp")[2]
+    mai <- rep(NA, 4)
+    mai[o$side] <- max(strwidth(lbl, units="inches")) + 2*par("csi")*o$gap
+    
+  } else {
+    # The user didn't specify a file. "Margin in inches" is now null.
+    mai <- NULL
+  }
+
+  if (is.null(o$las)) o$las <- 2
+
+  result$plotAdjust <- list(mai=mai)
+  
+  result$plotFun <- function() {
+    if (length(o$argv) > 0) { # <-- if we are reading the axis labels from a FILE, then do this
+      oldtcl <- par(tcl=(if(is.null(o$tcl)) -0.5 else o$tcl))
+      axis(side=o$side, at=tickLocation, tick=TRUE,  labels=FALSE, las=o$las)
+      par(tcl=oldtcl)
+      omgp <- mgp <- par('mgp')
+      if (!is.null(o$gap)) {
+        mgp[2] <- o$gap
+        par(mgp=mgp)
+      }
+      axis(side=o$side, at=labelLocation,  tick=FALSE, labels=lbl,   las=o$las)
+      if (!is.null(o$gap)) par(mgp=omgp)
+    } else { # <-- else, we tell R to use the default axis labels
+      oldtcl <- par(tcl=(if(is.null(o$tcl)) -0.5 else o$tcl))
+      axis(o$side)
+      par(tcl=oldtcl)
+    }
+  }
+
+  return(result)
+}
+
+histogram.prepplot <- function(argv) {
+  result <- list()
+
+  argspec <- c(paste(global.options[1],
+                     "Module histogram: create histograms of a data column",
+                     "Takes one file argument.", sep="\n"),
+               "data|k=li     data columns",
+               "breaks=lf     (optional) breakpoints",
+               "noframe       Omit the axes and do not draw a box around the plot",
+               "prob          use probability density rather than frequency",
+               "rug           add a tick mark at the bottom for each observation",
+               "fill=s        fill color",
+               "color=s       color of box borders",
+               "lty=i         line type",
+               datafile.options)
+  o <- Rgetopt(argspec=argspec, argv=argv)
+
+  if (length(o$argv) != 1) {
+    usage("requires one file argument", argspec)
+  }
+  df <- getTabFile(o$argv, o)
+  checkNumericCols(df, o$data, o$argv)
+
+  d <- df[,o$data]
+  
+  if (is.null(o$breaks)) o$breaks <- "Sturges"
+  
+  h <- hist(d, plot=FALSE, breaks=o$breaks)
+
+  result$xlim <- range(h$breaks)
+  result$ylim <- c(0, max(if (is.null(o$prob)) h$counts else h$density))
+
+  result$plotFun <- function() {
+    plot(h, col=o$fill, main='', xlab='', ylab='', add=TRUE,
+         freq=is.null(o$prob), lty=o$lty, border=o$col)
+    if (is.null(o$noframe)) {
+      axis(1)
+      axis(2)
+    }
+    if (!is.null(o$rug)) rug(d)
+  }
+  
+  return(result)
+}
+
+density.prepplot <- function(argv) {
+  result <- list()
+
+  argspec <- c(paste(global.options[1],
+                     "Module density: plot density of a data column",
+                     "Takes one file argument.", sep="\n"),
+               "data|k=li     data columns",
+               "bw=f          (optional) bandwidth of estimate",
+               "rug           add a tick mark at the bottom for each observation",
+               "noframe       Omit the axes and do not draw a box around the plot",
+               "color=s       color for the border",
+               "lty=i         line type (1=solid, 2=dashed, etc)",
+               "fill=s        fill color",
+               datafile.options)
+  o <- Rgetopt(argspec=argspec, argv=argv)
+
+  if (length(o$argv) != 1) {
+    usage("requires one file argument", argspec)
+  }
+  df <- getTabFile(o$argv, o)
+  checkNumericCols(df, o$data, o$argv)
+
+  d <- df[,o$data]
+  
+  if (is.null(o$bw)) o$bw <- "nrd0"
+  
+  h <- density(d, bw=o$bw)
+
+  result$xlim <- range(h$x)
+  result$ylim <- range(h$y)
+
+  result$plotFun <- function() {
+    if (is.null(o$color)) o$color <- 1
+    polygon(h, border=o$color, col=o$fill, lty=o$lty)
+    if (is.null(o$noframe)) {
+      axis(1)
+      axis(2)
+    }
+    if (!is.null(o$rug)) rug(d)
+  }
+  
+  return(result)
+}
+
+arrows.prepplot <- function(argv) {
+  argspec <- c("Module arrows - draw arrows on the plot.  Each arrow requires
+four different numbers: starting x-coordinate (x0), starting y-coord (y0),
+and the corresponding end coordinates (x1,y1).  These can either be constants
+or read from a file.",
+               "x0=f     constant for starting x-coordinate",
+               "x0col=i  column in the data file for x0 coordinates",
+               "x1=f     constant for starting x-coordinate",
+               "x1col=i  column in the data file for x0 coordinates",
+               "y0=f     constant for starting x-coordinate",
+               "y0col=i  column in the data file for x0 coordinates",
+               "y1=f     constant for starting x-coordinate",
+               "y1col=i  column in the data file for x0 coordinates",
+               "color=s  drawing color",
+               "lty=i    line type",
+               "lwd=f    line width",
+               "length=f length of the arrowheads (in plot inches)",
+               "angle=f  angle of the arrowheads",
+               datafile.options)
+  o <- Rgetopt(argspec=argspec, argv=argv)
+  result <- list()
+
+  if (length(o$argv) == 1) {
+    df <- getTabFile(o$argv, o)
+  } else if (length(o$argv) > 1) {
+    usage("must specify at most one file for input", argspec=argspec)
+  }
+
+  getCoordData <- function(coord) {
+    const <- coord
+    col <- paste(coord, "col", sep="")
+    if (is.null(o[[col]]) == is.null(o[[const]])) {
+      usage(paste("must specify exactly one of",col,const,sep=" --"),
+            argspec=argspec)
+    }
+    if (is.null(o[[col]])) return(o[[const]])
+
+    if (length(o$argv) != 1) {
+      usage(paste("Must specify a file with", col), argspec)
+    }
+    checkNumericCols(df, o[[col]], o$argv)
+    return(df[,o[[col]]])
+  }
+
+  x0 <- getCoordData("x0")
+  x1 <- getCoordData("x1")
+  y0 <- getCoordData("y0")
+  y1 <- getCoordData("y1")
+  
+  result$xlim <- range(c(x0,x1))
+  result$ylim <- range(c(y0,y1))
+
+  result$plotFun <- function() {
+    if (is.null(o$length)) o$length <- 0.25
+    if (is.null(o$angle)) o$angle <- 30
+    if (is.null(o$color)) o$color <- par("fg")
+    if (is.null(o$lty)) o$lty <- par("lty")
+    if (is.null(o$lwd)) o$lwd <- par("lwd")
+    arrows(x0,y0,x1,y1,length=o$length, angle=o$angle,
+           col=o$color, lty=o$lty, lwd=o$lwd)
+  }
+  return(result)
+}
+
+prcurve.prepplot <- function(argv) {
+  argspec <- c("Module prcurve - plot precision-recall curves from auc.pl --pr.
+If plotting parameters are specified for avgcolor or avglty, then an
+average PR curve will be calculated from all curves and plotted.
+Example Usage:
+  plot.R prcurve --color \"red,green,blue\" --avgcolor black my.aucs",
+               "color=ls    colors for each PR curve",
+               "lty=li      line type for each PR curve",
+               "lwd=lf      line width for each PR curve",
+               "avgcolor=ls color for the average PR curve",
+               "avglty=li   line type for the average PR curve",
+               "avglwd=lf   line width for the average PR curve",
+               "secolor=ls  color for the Std. Err. of the PR curves",
+               "selty=li    line type for the Std. Err. of the PR curves",
+               "selwd=lf    line width for the Std. Err. of the PR curves",
+               "sefill=s    fill in the stderr with this color",
+               "interpN=i   for average PR, number of points to interpolate (defaults to 101)",
+               "decorate    add axis and box (this is temporary, until the general system for axis decoration is fixed)")
+  o <- Rgetopt(argspec=argspec, argv=argv,
+               defaults=list(color=par("fg"), lty=par("lty"), lwd=par("lwd"),
+                 interpN=101))
+  if (length(o$argv) != 1) {
+    usage("Must specify one file argument", argspec, finish=q(status=1))
+  }
+  result <- list()
+  
+  parse.pr.curve <- function(fn) {
+    a <- strsplit(grep("^[^#]", readLines(parseReadableFile(fn)), value=T), "\t")
+    a.names <- sapply(a, "[", 1)
+    a.aucs <- sapply(a, "[", 2)
+    a <- lapply(a, "[", -(1:2))
+    names(a) <- a.names
+    
+    parseCoords <- function(vec) {
+      b <- strsplit(vec, ",")
+      stopifnot(2 == sapply(b, length))
+      return(matrix(c(as.numeric(unlist(b))), ncol=2, byrow=T)[,2:1])
+    }
+    
+    a <- lapply(a, parseCoords)
+    return(a)
+  }
+
+  curves <- parse.pr.curve(o$argv[1])
+
+  result$ylim <- range(lapply(curves, function(a) a[,2]))
+
+  attachStart <- function(m) return(rbind(c(0,1), m))
+  curves <- lapply(curves, attachStart)
+  
+  result$xlim <- range(lapply(curves, function(a) a[,1]))
+
+  plotAverage <- any(!is.null(o$avgcolor), !is.null(o$avglty),
+                     !is.null(o$avglwd))
+  plotStderr <- any(!is.null(o$secolor), !is.null(o$selty),
+                     !is.null(o$selwd), !is.null(o$sefill))
+  plotStderrFill <- !is.null(o$sefill)
+  if (any(plotAverage, plotStderr, plotStderrFill)) {
+    mesh <- seq(from=result$xlim[1], to=result$xlim[2], length.out=o$interpN)
+    curvesOnMesh <- sapply(curves, function(coords) {
+      return(approx(coords, xout=mesh)$y)
+    })
+    avgCurve <- cbind(mesh, rowMeans(curvesOnMesh, na.rm=TRUE))
+
+    if (is.null(o$avgcolor)) o$avgcolor <- par("fg")
+    if (is.null(o$avglty)) o$avglty <- par("lty")
+    if (is.null(o$avglwd)) o$avglwd <- par("lwd")
+  }
+  if (plotStderr || plotStderrFill) {
+    stderr <- function(x) sd(x, na.rm=TRUE) / sqrt(sum(!is.na(x)))
+    curvesSe <- apply(curvesOnMesh, 1, stderr)
+    if (plotStderr) {
+      if (is.null(o$secolor)) o$secolor <- par("fg")
+      if (is.null(o$selty)) o$selty <- par("lty")
+      if (is.null(o$selwd)) o$selwd <- par("lwd")
+    }
+  }
+  
+  result$plotFun <- function() {
+    colors <- rep(o$color, length.out=length(curves))
+    lty <- rep(o$lty, length.out=length(curves))
+    lwd <- rep(o$lwd, length.out=length(curves))
+    for (i in 1:length(curves)) {
+      lines(curves[[i]], col=colors[i], lty=lty[i], lwd=lwd[i])
+    }
+    
+    if (plotAverage) {
+      lines(avgCurve, col=o$avgcolor, lty=o$avglty, lwd=o$avglwd)
+    }
+
+    if (plotStderr || plotStderrFill) {
+      top <- avgCurve[,2] + curvesSe
+      bottom <-  avgCurve[,2] - curvesSe
+      if (plotStderrFill) {
+        polygon(c(mesh, rev(mesh)), c(top, rev(bottom)),
+                  border=NA, col=o$sefill)
+      }
+      if (plotStderr) {
+        lines(mesh, top, col=o$secolor, lty=o$selty, lwd=o$selwd)
+        lines(mesh, bottom, col=o$secolor, lty=o$selty, lwd=o$selwd)
+      }
+    }
+
+    if (!is.null(o$decorate)) {
+      axis(1)
+      axis(2)
+      box()
+    }
+  }
+
+  return(result)
+}
+
+density2d.prepplot <- function(argv) {
+  argspec <- c("module density2d - color the plane by density of points",
+               "x=i              column with x coordinate",
+               "y=i              column with y coordinate",
+               "palette=s        name of a function for the palette (e.g. heat.colors)",
+               "bw=lf            manual bandwidth",
+               "symmetricKernel  use a symmetric kernel (default allows oval)",
+               "n=i              grid points in each axis (default 100)",
+               "cn=i             number of colors (default(100))")
+  o <- Rgetopt(argv=argv, argspec=argspec,
+               defaults=list(n=100, cn=100, palette="default.colors"))
+  if (length(o$argv) != 1) {
+    usage("Must specify one file argument", argspec, finish=q(status=1))
+  }
+  result <- list()
+
+  
+  if(length(o$argv) != 1) {
+    usage("no file specified", argspec, finish=q(status=1))
+  }
+  a <- getTabFile(o$argv, o)
+  checkNumericCols(a, o$x, o$argv)
+  checkNumericCols(a, o$y, o$argv)
+
+  default.colors <- function(n) {tail(topo.colors(1.4*n), n)}
+
+  colmap.fn <- get(o$palette, mode="function")
+  stopifnot("function" %in% class(colmap.fn))
+  colmap <- colmap.fn(o$cn)
+
+  require(MASS, quietly=TRUE)
+  kx <- bandwidth.nrd(a[,o$x])
+  ky <- bandwidth.nrd(a[,o$y])
+  if (!is.null(o$symmetricKernel)) {
+    kx <- ky <- mean(kx, ky)
+  }
+  if (!is.null(o$bw)) {
+    stopifnot(length(o$bw) == 2)
+    kx <- o$bw[1]
+    ky <- o$bw[2]
+  }
+  
+#  result$plotAdjust <- list(xaxs="i", yaxs="i")
+  result$xlim <- range(a[,o$x])
+  result$ylim <- range(a[,o$y])
+
+  xr <- c(result$xlim[1] - 0.04*diff(result$xlim),
+          result$xlim[2] + 0.04*diff(result$xlim))
+  yr <- c(result$ylim[1] - 0.04*diff(result$ylim),
+          result$ylim[2] + 0.04*diff(result$ylim))
+  d <- kde2d(a[,o$x], a[,o$y], h=c(kx, ky), n=o$n, lims=c(xr,yr))
+
+  result$plotFun <- function() {
+    image(d, col=colmap, add=T)
+    box()
+  }
+
+  return(result)
+}
+
+boxplot.prepplot <- function(argv) {
+  argspec <- c("module boxplot - box and whisker plots of matrix columns
+Usage:
+    boxplot [options] data.tab",
+               "k=li          columns to plot (defaults to all numeric cols)",
+               "labels=ls     names for boxplots (defaults to column headers)",
+               "at=lf         locations for plotting",
+               "horizontal    plot boxplots along the length of the x-axis",
+               "notch         notch box sides to evaluate differing medians",
+               "nooutliers    omit drawing outliers",
+               "border=ls     colors of the box borders",
+               "fill=ls       colors for filling the box plots",
+               "log=s         use log scale for 'x', 'y', or 'xy'",
+               datafile.options
+               )
+  o <- Rgetopt(argv=argv, argspec=argspec,
+               defaults=list(horizontal=F, notch=F, nooutliers=F, log=""))
+  if (length(o$argv) != 1) {
+    usage("Must specify one file argument", argspec, finish=q(status=1))
+  }
+
+  df <- getTabFile(o$argv, o)
+
+  if (is.null(o$k)) o$k <- which(sapply(df, is.numeric))
+  checkNumericCols(df, o$k, o$argv)
+  if (is.null(o$labels)) o$labels <- colnames(df)[o$k]
+  if (is.null(o$at)) o$at <- 1:length(o$k)
+
+  labelSide <- o$horizontal + 1
+
+  result <- list()
+  result$plotAdjust$mai <- rep(NA,4)
+  result$plotAdjust$mai[labelSide] <- max(strwidth(o$labels, units="inches")) +
+      par("csi")*par("mgp")[labelSide]
+  result$plotAdjust$xaxs <- 'i'
+
+  box.h.w <- list(height=range(df[,o$k], na.rm=TRUE),
+                  width=range(o$at) + 0.7*c(-1,1))
+
+  result[c("xlim", "ylim")] <- if (o$horizontal) box.h.w[1:2] else box.h.w[2:1]
+
+  result$plotFun <- function() {
+    boxplot(df[,o$k], names=o$labels, at=o$at, horizontal=o$horizontal,
+            notch=o$notch, outline=!o$nooutliers, log=o$log,
+            border=o$border, col=o$fill, add=T, las=2)
+  }
+
+  return(result)
+}
+
+dendrogram.prepplot <- function(argv) {
+  argspec <- c("module dondregram - draw a heirarchical clustering tree
+Usage:
+    dendrogram [options] data.tab",
+               "hang=f  where to put the labels (-1 for all at the baseline)",
+               "dist=s  distance metric, 'pearson', 'euclidean', etc.",
+               datafile.options
+               )
+  o <- Rgetopt(argv=argv, argspec=argspec,
+               defaults=list(hang=0.1, dist="pearson"))
+  if (length(o$argv) != 1) {
+    usage("Must specify one file argument", argspec, finish=q(status=1))
+  }
+
+  df <- getTabFile(o$argv, o)
+  d <- as.matrix(df[,2:ncol(df)])
+  if (!is.null(o$columns)) d <- t(d)
+
+  if (o$dist %in% c("pearson", "kendall", "spearman")) {
+    dist.d <- as.dist(1 - cor(d, use="pairwise.complete", method=o$dist))
+  } else {
+    dist.d <- dist(t(d), method=o$dist)
+  }
+
+  hc <- hclust(dist.d)
+
+  result <- list(xlim=c(1,ncol(d)), ylim=c(0,max(hc$height)))
+  result$plotFun <- function() {
+    our.plot.dendrogram(as.dendrogram(hc, hang=o$hang))
+    axis(2)
+  }
+  
+  return(result)
+  
+}
+
+modules <- list(bars=bars.prepplot,
+                scatter=scatter.prepplot,
+                boxplot=boxplot.prepplot,  
+                heatmap=heatmap.prepplot,
+                pairsscatter=pairsscatter.prepplot,
+                legend=legend.prepplot,
+                box=box.prepplot,
+                abline=abline.prepplot,
+                axis=axis.prepplot,
+                text=text.prepplot,
+                mtext=mtext.prepplot,
+                histogram=histogram.prepplot,
+                density=density.prepplot,
+                density2d=density2d.prepplot,
+                dendrogram=dendrogram.prepplot,
+                arrows=arrows.prepplot,
+                prcurve=prcurve.prepplot)
+
+##
+## 4. Parse arguments, load all data, calculate margins, etc.
+##
+a <- RgetArgvEnvironment()
+
+components.argv <- split(a, paste("c", cumsum(a %in% names(modules)), sep=''))
+
+
+globalOpt <- Rgetopt(argspec=global.options, argv=components.argv[[1]][-1])
+
+if (length(components.argv) == 1) usage("No modules specified", global.options)
+
+components.argv <- components.argv[-1] # remove the global options
+
+##
+## 4a. Open device
+##
+
+# The following mess of if-statements sholud represent this table:
+# dev    out-file  isTTY   device  file
+# -----  --------  -----   ------  ----
+# NULL   NULL      TRUE    x11     none
+# NULL   NULL      FALSE   pdf     stdout
+# NULL   f.ext     T/F     ext     f.ext
+# nonx   NULL      FALSE   nonx    stdout
+# nonx   NULL      TRUE    error!!
+# dev    f.ext     T/F     dev     f.ext
+outfile <- globalOpt$`out-file`
+dev <- globalOpt$dev
+res <- if(is.null(globalOpt$res)) 72 else globalOpt$res
+mimic.stdout <- FALSE
+if (is.null(dev)) {
+  if (is.null(outfile)) {
+    if (stdoutIsTTY()) {
+      dev <- "x11"; outfile <- NULL
+    } else {
+      dev <- "pdf"; outfile <- deferredStdOutFile()
+    }
+  } else {
+    dev <- rev(unlist(strsplit(outfile, "\\.")))[1]
+  }
+} else { # dev is specified
+  if (is.null(outfile)) {
+    if (stdoutIsTTY() && dev != "x11") {
+      stop("Can't use device ", dev,
+           " if no output file specified and stdout is a terminal", call.=F)
+    } else {
+      outfile <- deferredStdOutFile()
+    }
+  } else {
+    # fully specified already
+  }
+}
+
+opendev <- list(x11=function(f, ...) x11(...),
+                pdf=function(f, ...) pdf(file=f, ...),
+                png=function(f, ...) png(file=f, ...,
+                  units="in", res=res),
+                jpg=function(f, ...) jpeg(file=f, ...,
+                  units="in", res=res),
+                jpeg=function(f, ...) jpeg(file=f, ...,
+                  units="in", res=res),
+                ps=function(f, ...) postscript(file=f, ...),
+                eps=function(f, ...) postscripts(file=f, ...),
+                svg=function(f, ...) CairoSVG(file=f, ...))
+if (!is.null(globalOpt$prettyX)) opendev[['x11']] <-
+  function(f,w,h) CairoX11(width=w,height=h)
+
+if (!(dev %in% names(opendev))) {
+  usage(reason=paste("Format", dev, "is unsupported"),
+        finish=q(status=-1))
+}
+
+plotWidth <- if(is.null(globalOpt$width)) 7 else globalOpt$width
+plotHeight <- if(is.null(globalOpt$height)) 7 else globalOpt$height
+plotPointsize <- if(is.null(globalOpt$pointsize)) 12 else globalOpt$pointsize
+
+# Need to have an open device so that all the graph components can
+# get their needed information out of par(). In the past I would open
+# the target device prior to it processing the components, but
+# if the device couldn't launch then you couldn't get the
+# component specific device.
+
+opendev[[if(dev=="x11") "ps" else dev]]("/tmp/plot.R.tmp",
+              width=plotWidth, height=plotHeight, pointsize=plotPointsize)
+
+##
+## 5. Component Processing
+##
+
+components <- lapply(components.argv, function(argv) {
+  modules[[argv[1]]](argv[-1])
+})
+
+##
+## 6. Combine plot parameters from all modules
+##    (this desperately needs some sort of abstraction)
+##
+
+xlim <- NA
+ylim <- NA
+mai <- par("mai")
+if (is.null(globalOpt$title)) mai[3] <- mai[4]
+lex <- if(is.null(globalOpt$lex)) par("cex.lab") else globalOpt$lex
+mgp <- par("mgp")
+mgp[1] <- if(is.null(globalOpt$lgap)) mgp[1] else globalOpt$lgap
+gap <- (mgp[1]+1.1) * (par("mai") / par("mar"))[1]
+mai[1:2] <- gap
+
+las <- par("las")
+xaxs <- par("xaxs")
+yaxs <- par("yaxs")
+
+for(c in components) {
+  plotWidth <- max(plotWidth, c$plotWidth, na.rm=T)
+  plotHeight <- max(plotHeight, c$plotHeight, na.rm=T)
+  if (!is.null(c$xlim)) xlim <- range(xlim, c$xlim, na.rm=T)
+  if (!is.null(c$ylim)) ylim <- range(ylim, c$ylim, na.rm=T)
+  mai <- apply(cbind(mai, c$plotAdjust$mai), 1, max, na.rm=T)
+  if (!is.null(c$plotAdjust$las)) las <- c$plotAdjust$las
+  if (!is.null(c$plotAdjust$xaxs)) xaxs <- c$plotAdjust$xaxs
+  if (!is.null(c$plotAdjust$yaxs)) yaxs <- c$plotAdjust$yaxs
+}
+
+outfile <- if(is.character(outfile)) path.expand(outfile) else outfile
+suppressWarnings(devtry <- try(opendev[[dev]](outfile, width=plotWidth, height=plotHeight, pointsize=plotPointsize),
+                               silent=TRUE))
+if ("try-error" %in% class(devtry)) {
+  stop("Couldn't open device: ", dev, call.=TRUE)
+}
+
+if (!is.null(globalOpt$margins)) {
+  over.mai <- globalOpt$margins
+  if (length(over.mai) != 4) usage("need 4 widths", argspec=global.options)
+  mai[!is.na(over.mai)] <- over.mai[!is.na(over.mai)]
+}
+
+par(mgp=mgp)
+par(mai=mai, las=las, xaxs=xaxs, yaxs=yaxs, cex.axis=lex, cex.lab=lex)
+
+##
+## 7. Do the plotting!
+##
+
+
+## set bounds
+if (!is.null(globalOpt$xlim)) {
+  xlim <- globalOpt$xlim
+  stopifnot(length(xlim) == 2)
+}
+if (!is.null(globalOpt$ylim)) {
+  ylim <- globalOpt$ylim
+  stopifnot(length(ylim) == 2)
+}
+if (any(is.na(xlim))) {
+  stop("No modules set limits on the x-axis, use --xlim to specify",
+       call.=TRUE)
+}
+if (any(is.na(ylim))) {
+  stop("No modules set limits on the y-axis, use --ylim to specify",
+       call.=TRUE)
+}
+
+plot.default(NULL, xlim=xlim, ylim=ylim, type='n', xlab='', ylab='',
+             frame.plot=FALSE, axes=FALSE)
+
+for (c in components) {
+  c$plotFun()
+}
+
+plotmath <- function(s) {
+  if (!is.null(s) && regexpr("^math:", s) > 0) {
+    return(parse(text=sub("^math:", "", s)))
+  } else {
+    return(s)
+  }
+}
+title(main=plotmath(globalOpt$title),
+      xlab=plotmath(globalOpt$xlab), ylab=plotmath(globalOpt$ylab))
+
+if (dev == "x11") {
+  invisible(locator(1))
+}
+invisible(dev.off())

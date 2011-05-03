@@ -1,0 +1,10 @@
+Package: CommandLinePlots
+Type: Package
+Title: Library functions for plot.R
+Version: 1.0
+Date: 2008-02-29
+Author: Charles Vaske <cvaske@soe.ucsc.edu>
+Maintainer: Charles Vaske <cvaske@soe.ucsc.edu>
+Description: All the plotting functions for plot.R, in order to clean up the mess just a little bit
+License: GPL
+Depends: Rgetopt

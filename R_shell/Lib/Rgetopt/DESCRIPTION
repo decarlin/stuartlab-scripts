@@ -1,0 +1,9 @@
+Package: Rgetopt
+Type: Package
+Title: Parse command line arguments
+Version: 1.0
+Date: 2008-02-24
+Author: Charles Vaske <cvaske@soe.ucsc.edu>
+Maintainer: Charles Vaske <cvaske@soe.ucsc.edu>
+Description: Parse command line arguments
+License: GPL

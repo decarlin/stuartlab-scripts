@@ -1,0 +1,191 @@
+#!/usr/bin/python
+
+##############################################################################################
+# This program is a binary classifier of a table of data.
+# It transforms a table of numeric values data into a table of  0 and 1s
+# by finding the minimum least squares distance to the mean.
+#
+# Input is a tab (or specified delimeter such as a comma) seperated file
+# Processing is done by rows.
+# The output is the transformed file. Non numbers (such as labels) are passed though.
+# Spaces between labels and numbers may not be preserved.
+#
+# Ted Goldstein, Baskin SOE, UCSC, 4 June 2010
+##############################################################################################
+
+
+import sys
+
+from copy import deepcopy
+
+def binaryDecider1(data):
+    data.sort()
+    leastIndex = -1
+    leastValue = 0
+    k = len(data)
+    for i in xrange(1, k):
+      lowAvg =  float(sum(data[0:i])) / i
+      highAvg = float(sum(data[i:]))  / (k - i)
+      low = high = 0
+      for j in xrange(0,i): low  = low  + sqr(lowAvg - data[j])
+      for j in xrange(i,k): high = high + sqr(highAvg - data[j])
+      total = low + high
+      if leastIndex < 0 or leastValue > total:
+	  leastIndex = i
+	  leastValue = total
+    if leastIndex == (k - 1):
+       return float(data[k-1] + data[k-2] ) / 2
+    else:
+       return float(data[leastIndex+1] + data[leastIndex]) /2
+
+# square
+def sqr(x): return x*x
+
+
+def getNumbersInList(data):
+  results = []
+  for x in data:
+      try:
+	 results.append(float(x))
+      except:
+         continue
+
+  return results
+
+def die():
+   sys.stderr.write("""
+
+Usage:
+  dichotomizer < sourcefile > destfile
+
+Optional arguments:
+     --separator=, (can be comma or any string)
+     --byColumn 
+     --lowValue=number 
+     --highValue=number 
+     --numberOfFooterRowsToSkip=number   
+     --numberOfHeaderRowsToSkip=number 
+     --numberOfLeftColumnsToSkip=number 
+     --numberOfRightColumnsToSkip=number 
+
+Authors
+     Ted Goldstein and Josh Stuart
+
+Based on ideas from 
+     Boolean implication networks derived from large scale, whole genome microarray datasets Debashis Sahoo*, David L Dill, Andrew J Gentles, Robert Tibshirani and Sylvia K Plevritis
+     Genome Biol. 2008; 9(10): R157.
+     Published online 2008 October 30. doi: 10.1186/gb-2008-9-10-r157.
+     http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2760884/?tool=pubmed
+""")
+   sys.exit(1)
+
+
+
+def processTable(lines, byColumns, maxCol, lowValue, highValue, numberOfFooterRowsToSkip, numberOfHeaderRowsToSkip, numberOfLeftColumnsToSkip, numberOfRightColumnsToSkip):
+
+    if byColumns:
+       for i in xrange(numberOfLeftColumnsToSkip, maxCol - numberOfRightColumnsToSkip):
+	    numbersInColumn = []
+	    for j in xrange(numberOfHeaderRowsToSkip, len(lines) - numberOfFooterRowsToSkip):
+	      line = lines[j]
+	      if i < len(line):
+	         try:
+		    numbersInColumn.append(float(line[i]))
+	         except:
+		    continue
+	    if len(numbersInColumn) > 1:
+		gold = binaryDecider1(numbersInColumn)
+		for j in xrange(numberOfHeaderRowsToSkip, len(lines) - numberOfFooterRowsToSkip):
+		  line = lines[j]
+		  if i < len(line):
+		     try:
+			value = float(line[i])
+			if value < gold:
+			    line[i] = lowValue
+			else:
+			    line[i] = highValue
+		     except:
+			continue
+	         
+           
+    else: # by Rows
+	for j in xrange(numberOfHeaderRowsToSkip, len(lines) - numberOfFooterRowsToSkip):
+	   line = lines[j]
+	   numbersInLine = (getNumbersInList(line))
+	   if len(numbersInLine) > 1:
+	       gold = binaryDecider1(numbersInLine)
+	       for i in xrange(numberOfLeftColumnsToSkip,len(line) - numberOfRightColumnsToSkip):
+	           try:
+		      if float(line[i]) < gold: 
+			 line[i] = lowValue
+		      else:
+			 line[i] = highValue
+	           except:
+		      continue
+
+def main(argv):
+    lowValue  = "0"
+    highValue = "1"
+    separator = "\t"
+    howManyNumbers = 0
+    byColumns = False
+    numberOfHeaderRowsToSkip = 0
+    numberOfFooterRowsToSkip = 0
+    numberOfLeftColumnsToSkip = 0
+    numberOfRightColumnsToSkip = 0
+
+    for arg in argv[1:]:
+	try:
+	    if arg.startswith("--separator="): separator = arg.split("=")[1]
+	    elif arg.startswith("--byColumn"): byColumns = True
+
+	    elif arg.startswith("--numberOfFooterRowsToSkip="): 
+		 numberOfFooterRowsToSkip = int(arg.split("=")[1])
+	    elif arg.startswith("--numberOfHeaderRowsToSkip="): 
+		 numberOfHeaderRowsToSkip = int(arg.split("=")[1])
+	    elif arg.startswith("--numberOfLeftColumnsToSkip="): 
+		 numberOfLeftColumnsToSkip = int(arg.split("=")[1])
+	    elif arg.startswith("--numberOfRightColumnsToSkip="): 
+		 numberOfRightColumnsToSkip = int(arg.split("=")[1])
+
+	    elif arg.startswith("--lowValue="): lowValue = float(arg.split("=")[1])
+	    elif arg.startswith("--highValue="): highValue = float(arg.split("=")[1])
+	    elif arg.startswith("--help"): die()
+	    else: die() 
+	except:
+	    die() 
+
+    lenColumns = 0
+    lines = []
+    numberCount = 0
+    nonNumberCount = 0
+
+    # read it in
+    for line in sys.stdin:
+       lineAsColumns = line.split(separator)
+       n = len(lineAsColumns)
+       if lenColumns < n: 
+	   lenColumns = n
+
+       for i in xrange(0, n):
+	   try:
+	      lineAsColumns[i] = float(lineAsColumns[i])
+	      numberCount = numberCount + 1 
+	   except:
+	      nonNumberCount = nonNumberCount + 1 
+       lines.append(lineAsColumns)
+
+    processTable(lines, byColumns, lenColumns, lowValue, highValue, numberOfFooterRowsToSkip, numberOfHeaderRowsToSkip, numberOfLeftColumnsToSkip, numberOfRightColumnsToSkip)
+
+    # write it out
+    for line in lines:
+       if len(line) == 1:
+       	   sys.stdout.write(str(line[0]))
+       else:
+	   for i in xrange(0,len(line)):
+	       if i > 0:
+		   sys.stdout.write(separator)
+	       sys.stdout.write(str(line[i]))
+	   sys.stdout.write("\n")
+
+main(sys.argv)

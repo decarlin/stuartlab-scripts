@@ -1,0 +1,38 @@
+2.041	Added a regression test to detect certain versions of freetype.
+2.04	Removed the patch file since Tom has begun adding his own configure file.
+	Changed the context member from free to gd_free to allow for compiling.
+	Fixed the regression tests since the gd-generated images have changed slightly.
+2.03	Skipped so as to remain version number compatible with libgd.
+2.02	Changed Math::Trig version requirement from 0.0 to 1.0 as Perl 5.8
+	no long recognizes this as a valid version number.
+2.01	Added Math::Trig to the prerequisites because GD::Polyline needs it.
+2.00    Folded in support for gd version 2.0 from Dan Palermo
+	Folded in support for splines (GD::Polyline) from Dan Harasty.
+	Removed all GIF support.
+1.43    Added demo of Type1 fonts to truetype demo from Slaven Rezic.
+1.42	Fixed the patch_gd.pl file
+	Version 2.0 is coming.
+1.39	Fixed FreeType test, at least on some platforms.
+	Added patches from Stephen Clouse to allow to build on 5.8.0rc1.
+1.35	Patches to support Philip Warner's GIF-reinstating library
+	maintained at http://www.rime.com.au/gd/
+1.34	Fixed problems that arise when compiling against older versions of
+	libgd that do not have XPM support.
+1.33	Updated patch file for gd 1.8.4
+1.32	Added support for Tru64 UNIX v5.0
+1.29	Fixed a corrupted .xpm file in the regression suite
+		(caused test 9 to fail)
+1.28    Added support for gd 1.8.3
+1.27	Fixed strict refs problem on 5.00503 and earlier
+1.26	Brought up to date with libgd 1.8.1
+1.24-1.25 More tweaks to Makefile.PL.
+1.23    Added a bunch more libraries and includes... might or might not port
+	to other platforms now
+1.22	Fix to Makefile.PL to accomodate linking static libraries.
+	Added newFromGd2Part() method.
+	Supports libgd 1.7.1.
+1.21	Slight fix in regression tests so that test 8 doesn't fail when compiled
+		without TrueType support.
+1.20	Rewritten for libgd 1.6.3
+1.19	Fixed Makefile.PL for better compilation on Windoze machines
+	

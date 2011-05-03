@@ -1,0 +1,44 @@
+
+Windows Binary Installation:
+----------------------------
+
+The Windows version of RPy is provided as a binary bundle.  It is
+compiled with Python 2.3 and with Numeric support.
+
+Before installing RPy, make sure you have installed:
+
+    o Python 2.2
+
+    o R (a recent version)
+
+    o Either the "NumPy" or  "Numeric" python module.
+
+      Main page: http://numpy.sf.net/
+      Download from:
+      http://sourceforge.net/project/showfiles.php?group_id=1369
+
+    o win32all, windows extensions from Mark Hammond (included in
+      ActiveState python) and is also available from
+      http://starship.python.net/crew/mhammond/win32/Downloads.html
+
+Now, download and install the appropriate RPy install file. Each file is named
+something like:
+
+ 	rpy-0.4.6-R-2.0.0-to-2.2.1-py24.win32.exe
+
+This file is rpy version 0.4.6, which has been compiled for R
+versions 2.0.0 through 2.2.1, and Python version 2.4. 
+
+Windows Source Installation  (MingGW)
+-------------------------------------
+
+**NEW SIMPLER INSTRUCTIONS**
+
+1. Install MinGW into C:\MinGW 
+   (http://prdownloads.sourceforge.net/mingw/MinGW-5.0.2.exe)
+  
+2. Check that the paths in setup.bat and setup.Win32 are correct for
+   where you installed MinGW.
+
+3. Run setup.bat
+    

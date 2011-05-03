@@ -1,0 +1,18 @@
+Regressions tests.
+
+These tests can be run one by one or all togheter.  For separate runs do (for
+example):
+
+    python test_modes.py
+
+To run all the tests (ecept test_cleanup.py, which should be run separately) do:
+
+    python testall.py
+
+This last invocation has an optional parameter:
+
+    --random		run the tests in random order
+
+For example:
+
+    python testall.py --random

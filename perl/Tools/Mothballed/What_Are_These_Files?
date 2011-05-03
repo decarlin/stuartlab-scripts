@@ -1,0 +1,14 @@
+These are "mothballed" perl programs that are no longer useful.
+
+They are archived here. You should not use them if you can help it.
+
+Usuaully they have been replaced by better programs with different names.
+
+
+
+Explanation of contents:
+
+Obsolete program   -->   Replacement
+
+nr_sets_alex.pl    -->  filter_set_list.pl
+                   -->  and also by nr_sets.pl

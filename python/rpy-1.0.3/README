@@ -1,0 +1,393 @@
+       RPy - Python interface to the R Programming Language
+
+1.  WHAT IS RPy?
+
+RPy is a very simple, yet robust, Python interface to the R
+Programming Language (http://www.r-project.org).  It can manage all
+kinds of R objects and can execute arbitrary R functions (including
+the graphic functions).  All the errors from the R language are
+converted to Python exceptions.  Any module that later were installed
+on the R system, can easily be used from within Python, without
+introducing any changes.
+
+Versions 0.1 and 0.2 work only on POSIX systems.  Version 0.3 and
+later also include Windows support (although, some capabilities are
+missing, see the reference manual for details).
+
+See the file NEWS for details on the lastest changes.
+
+This code is inspired in RSPython from the Omegahat project
+(http://www.omegahat.org/RSPython).
+
+
+2.  INSTALLATION
+
+You need Python and R interpreters.  At least, Python 2.1 and R
+1.5.0 is required.  I have tested it only on Linux and Solaris, but
+it should compile on any POSIX system.  It has been reported
+successful compilations on Linux, Solaris, FreeBSD and MacOS X.
+Please, send me a note if you can compile it with other versions or
+under other platforms.
+
+Linux and Unix Binary Installation
+----------------------------------
+
+Binary packages for rpy are available for Debian GNU/Linux via the
+standard mechanisms.
+
+Other binary packages may be available from the rpy download site.
+
+
+Linux and Unix Source Installation:
+----------------------------
+
+If you have Numeric (NumPy) installed, it can be used by RPy; normally it is
+autodetected, you don't have to do anything.  If Numeric cannot be found, then
+R arrays will be converted to Python lists, which are a lot more inefficient
+than Numeric arrays.  I strongly suggest to install Numeric.
+
+If you have installed some previous version of RPy, just go to (c).
+
+To install RPy follow the steps:
+
+(a) First of all, you *must* check that you have built R with the configure
+    option '--enable-R-shlib', in order to make R as a shared library.  If
+    not, the following steps should be enough:
+
+        <go to the R source directory>
+        make distclean
+        ./configure --enable-R-shlib
+        make
+        make install
+
+    (Solaris users, please, see the note (a) below.)
+
+(b) Then, configure the path to the R library.  You have several ways to do
+    this (substitute RHOME with the path where R is installed, usually
+    /usr/local/lib/R):
+
+        o make a link to RHOME/bin/libR.so in /usr/local/lib or /usr/lib, then
+          run 'ldconfig',
+
+        o or, put the following line in your .bashrc (or equivalent):
+
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:RHOME/bin
+
+        o or, edit the file /etc/ld.so.conf and add the following line:
+
+            RHOME/bin
+
+          and then, run 'ldconfig'.
+
+
+(c) Now, just type:
+
+        python setup.py install
+
+    and that's all!
+
+If you want, you can run the regression tests located in the 'tests'
+directory, just read the README file in that directory.  For a quickier test,
+launch the Python interpreter and import the module 'rpy':
+
+    Python 2.2 (#2, Dec 23 2001, 16:30:35)
+    [GCC 2.95.4 20010703 (Debian prerelease)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import rpy
+    >>>
+
+If you get some error, refer to TROUBLESHOOTING below.  If you want to test
+the module without installing it, do:
+
+    python setup.py build
+
+Then, cd to build/lib.<platform>-<version>/ and try to import the module.
+
+*** NOTES ***
+
+(a) Solaris users must change the line:
+
+        LIBR_LDFLAGS = -shared
+
+    in the file 'Makeconf' on the R source directory, for the line:
+
+        LIBR_LDFLAGS = -shared -symbolic
+
+    before recompiling the R library.
+
+(b) It has been reported that it may be necessary, in some situations,
+    to completely remove the R sources, to unpack it again, and to
+    compile to R library with the new options.
+
+
+Windows Binary Installation:
+----------------------------
+
+The Windows version of RPy is provided as a binary bundle.  It is
+compiled with Python 2.3 and with Numeric support.
+
+Before installing RPy, make sure you have installed:
+
+    o Python 2.2
+    o R (a recent version)
+    o Numeric  (http://numpy.sf.net)
+    o win32all, windows extensions from Mark Hammond
+      (http://starship.python.net/crew/mhammond/win32/Downloads.html)
+
+Then, just download the file 'rpy-0.3.win32-py2.2.exe', and execute
+it.  You may want to download the documentation, also, which is in a
+separate bundle.
+
+Finally, make sure that the R bin directory is in your path.  This holds
+the R.dll that python needs to load for rpy to work.  For R version
+1.6.1 this path is (by default)
+
+    C:\Program Files\R\rw1061\bin\
+
+For windows 98 or ME it is easier to use the path
+C:\Progra~1\R\rw1061\bin instead.
+
+Under Windows 2000 right click on "My Computer" select properties.  Now
+click the Advanced tab and select environment variables.  Finally edit
+the path variable under system variables and add
+
+    C:\Program Files\R\rw1061\bin\
+
+to your path.  Make sure that all paths are seperated by semi-colons.
+
+All others need to edit the Autoexec.bat file and add a line similar to:
+
+    set PATH=%PATH%;C:\Progra~1\R\rw1061\bin
+
+near the end.
+
+*** NOTES ***
+
+Please, read the section 'Caveat and bugs' of the reference manual,
+for details on some limitations of the Windows version.
+
+Many thanks to Rene Hagendoorn, who provides the patches for making
+the Windows version.
+
+Windows Source Installation
+---------------------------
+
+To build RPy for Windows from scratch using Visual C++:
+
+Step 0:  Unpack the rpywin source package (rpy-X.YY.zip)
+
+Step 1:  Install the latest version of Windows R from cran.r-project.org
+
+         I put R 2.0.0 into C:\Program Files\R\rw2000
+
+Step 2:  Install the latest source code for R from cran.r-project.org
+
+         I put this into C:\Program Files\R\src\R-2.0.0
+
+Step 3:  Install the tools described on the "Building R for Windows"
+         web portal: 
+
+	   http://www.murdoch-sutherland.com/Rtools/	
+
+         I installed MinGW into C:\Program Files\MinGW
+
+         I installed the "tools bundle" into C:\Program Files\R\tools
+
+Step 4:  Modify the system path to include all of the tools you will
+         need.  I did this on Win2000 using Start -> Settings ->
+         Control Panel -> System -> Advanced -> Environment Variables
+
+         My path [with a newline added after each ';' for clarity,
+         remove these for the actual variable value!] is:
+
+            C:\Progra~1\Micros~3\Common\MSDev98\Bin;
+            C:\Progra~1\Micros~3\VC98\BIN;
+            C:\Progra~1\Micros~3\Common\TOOLS;
+            C:\Progra~1\Micros~3\Common\TOOLS\WINNT;
+            C:\Progra~1\Micros~2\Office;
+            C:\WINNT\system32;
+            C:\WINNT;
+            C:\WINNT\System32\Wbem;
+            C:\Progra~1\R\rw1081\bin;
+            C:\Progra~1\R\tools;
+            C:\Progra~1\R\tools\bin;
+            C:\python23;
+
+         IMPORTANT: Use the alternative 8 character name for any long
+         names or names that contain spaces anywhere in the path.
+
+         Note that this list includes several Visual C directories,
+         the bin directory of the installed version of R, the tools
+         directory, the MinGW bin directory, and the python directory.
+
+Step 5:  Create a windows library entry point (lib) file from the R 
+         symbols file to use during linking.
+
+         Open a command window, and change to the rpy directory.
+         Then do
+
+            set RHOME=C:\Progra~1\R\rw2000
+
+            lib /def:%RHOME%\src\gnuwin32\R.exp /machine:ix86
+                /out:%RHOME%/bin/Rdll.lib
+
+         [The lib command should be all on one line.]
+
+           ALTERNATIVE (added by Matjaz Kukar)
+           You may also using pexports, see distutils documentation or
+           http://starship.python.net/crew/kernr/mingw32/Notes.html):
+
+           pexports %RHOME%/bin/R.dll > %RHOME%/bin/Rdll.def
+           lib/def:%RHOME%/bin/Rdll.def /out:%RHOME%/bin/Rdll.lib /machine:ix86
+
+           Somehow, by this approach more external variables from R.dll
+           may be linked with, if declared as
+
+           __declspec(dllimport) FILE *R_Outputfile;
+           __declspec(dllimport) int UserBreak;
+
+           Puzzling fact: UserBreak can be linked with in both cases,
+           whereas R_Outputfile only in the second (pexports) case.
+
+
+Step 6:  Build rpy:
+
+         Start the compilation with
+
+            python setup.py build
+
+Step 7:  Install rpy:
+
+            python setup.py install
+
+Step 8: Create binary install file (optional)
+
+            python setup.py bdist --formats=windist
+
+        The installer will be placed in the dist/ subdirectory.
+
+All done!
+
+***NOTE*** 
+------------------------------------------------------
+For Visual C++ 7 for Python 2.3,  you may get the following error message:
+
+	"Python was built with version 6 of Visual Studio,
+	and extensions need to be built with the same
+	version of the compiler, but it isn't installed."
+
+This is a bug in how msvccompiler.py (distutils module) handles 
+VC7.  To correct this change line 212 from
+
+	if len (self.__paths) == 0:
+
+to
+
+	if False: # len (self.__paths) == 0:
+
+
+3.  USING RPy
+
+For details see the documentation in the 'doc' directory.  As a quick example,
+try the following session:
+
+    >>> from rpy import *
+    >>>
+    >>> values = [r.dchisq(x, 4) for x in r.seq(0, 10, by=0.1)]
+    >>> r.par(ask=1, ann=0)
+    >>> r.plot(values, type='lines')
+
+and voila!, the graph of the density of a chi squared distribution with four
+degrees of freedom should appear.  Some more sofisticated examples can be
+found in the 'examples' directory.  Refer to the RPy documentation for more
+info on the interface, and to the R Programming Language manuals, which can be
+found on
+
+    http://www.r-project.org
+
+In general, every line of the R manuals can be translated almost directly to
+Python.
+
+
+4.  TROUBLESHOOTING
+
+If you get a Distutils execution error which says that R couldn't be executed:
+
+    Traceback (most recent call last):
+    ...
+    distutils.errors.DistutilsExecError: couldn't execute the R interpreter.
+    Check whether R is in the execution path
+
+then make sure that you have R installed and that it is in the execution
+path. The setup.py script uses the command 'R RHOME' to find out the location
+of the R libraries. You should check that this command returns the correct
+path.
+
+If you get errors from the C compiler or linker, then you should check that
+the headers files are under ${RHOME}/include and that 'libR.so' is under
+${RHOME}/bin, where RHOME is what the execution of 'R RHOME' returns.
+
+If you get an error when importing the 'rpy' module from Python, check that
+you have built R with the configure option '--enable-R-shlib'.  Make sure that
+you followed steps (a) and (b) of the installation procedure, described in
+section 2.
+
+If you have other problems, please, check the FAQ on the website or
+send me a message to the address below.
+
+5. MAILING LIST
+
+Please report bugs, comments, questions, and suggestions to the rpy mailing
+list (rpy-list@lists.sourceforge.net).  Subscription information  and 
+archives are available at: 
+  http://lists.sourceforge.net/lists/listinfo/rpy-list
+
+6.  CONTACT INFO
+
+Please, report bugs, comments and suggestions to the rpy mailing list.
+
+If you prefer, you can fill a bug or feature request form on the 
+Sourceforge project page, http://rpy.sourceforge.net
+
+If both of these methods fail to resolve your problem, _then_ you may contact
+the maintainer. (He does have other work and a life, you know.)
+
+7.  LICENSE
+
+RPy is subject to the Mozilla Public License Version 1.1 (the
+"License"); you may not use RPy except in compliance with the
+License. You may obtain a copy of the License at
+http://www.mozilla.org/MPL/ (or see the file MPL_LICENSE)
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+the License for the specific language governing rights and
+limitations under the License.
+
+The Original Code is the RPy python module.
+
+The Initial Developer of the Original Code is Walter Moreira.
+Portions created by the Initial Developer are Copyright (C) 2002 the
+Initial Developer. All Rights Reserved.
+
+Contributor(s):
+   Gregory R. Warnes <greg@warnes.net> (Maintainer)
+
+Alternatively, RPy may be used under the terms of either the GNU
+General Public License Version 2 or later (the "GPL", see the file
+GPL_LICENSE), or the GNU Lesser General Public License Version 2.1
+or later (the "LGPL", see the file LGPL_LICENSE), in which case the
+provisions of the GPL or the LGPL are applicable instead of those
+above. If you wish to allow use of your version of this file only
+under the terms of either the GPL or the LGPL, and not to allow
+others to use your version of this file under the terms of the MPL,
+indicate your decision by deleting the provisions above and replace
+them with the notice and other provisions required by the GPL or the
+LGPL. If you do not delete the provisions above, a recipient may use
+your version of this file under the terms of any one of the MPL, the
+GPL or the LGPL.
+
+======
+
+- Walter Moreira (Author)
+- Gregory Warnes <Gregory.R.Warnes@Pfizer.com> (Maintainer) 

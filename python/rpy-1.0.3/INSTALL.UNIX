@@ -1,0 +1,90 @@
+Linux and Unix Binary Installation
+----------------------------------
+
+Binary packages for rpy are available for Debian GNU/Linux via the
+standard mechanisms.
+
+Other binary packages may be available from the rpy download site.
+
+
+Linux and Unix Source Installation:
+----------------------------
+
+If you have Numeric (NumPy) installed, it can be used by RPy; normally it is
+autodetected, you don't have to do anything.  If Numeric cannot be found, then
+R arrays will be converted to Python lists, which are a lot more inefficient
+than Numeric arrays.  I strongly suggest to install Numeric.
+
+If you have installed some previous version of RPy, just go to (c).
+
+To install RPy follow the steps:
+
+(a) First of all, you *must* check that you have built R with the configure
+    option '--enable-R-shlib', in order to make R as a shared library.  If
+    not, the following steps should be enough:
+
+        <go to the R source directory>
+        make distclean
+        ./configure --enable-R-shlib
+        make
+        make install
+
+    (Solaris users, please, see the note (a) below.)
+
+(b) Then, configure the path to the R library.  You have several ways to do
+    this (substitute RHOME with the path where R is installed, usually
+    /usr/local/lib/R):
+
+        o make a link to RHOME/bin/libR.so in /usr/local/lib or /usr/lib, then
+          run 'ldconfig',
+
+        o or, put the following line in your .bashrc (or equivalent):
+
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:RHOME/bin
+
+        o or, edit the file /etc/ld.so.conf and add the following line:
+
+            RHOME/bin
+
+          and then, run 'ldconfig'.
+
+
+(c) Now, just type:
+
+        python setup.py install
+
+    and that's all!
+
+If you want, you can run the regression tests located in the 'tests'
+directory, just read the README file in that directory.  For a quickier test,
+launch the Python interpreter and import the module 'rpy':
+
+    Python 2.2 (#2, Dec 23 2001, 16:30:35)
+    [GCC 2.95.4 20010703 (Debian prerelease)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import rpy
+    >>>
+
+If you get some error, refer to TROUBLESHOOTING below.  If you want to test
+the module without installing it, do:
+
+    python setup.py build
+
+Then, cd to build/lib.<platform>-<version>/ and try to import the module.
+
+*** NOTES ***
+
+(a) Solaris users must change the line:
+
+        LIBR_LDFLAGS = -shared
+
+    in the file 'Makeconf' on the R source directory, for the line:
+
+        LIBR_LDFLAGS = -shared -symbolic
+
+    before recompiling the R library.
+
+(b) It has been reported that it may be necessary, in some situations,
+    to completely remove the R sources, to unpack it again, and to
+    compile to R library with the new options.
+

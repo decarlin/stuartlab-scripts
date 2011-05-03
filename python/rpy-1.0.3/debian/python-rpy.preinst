@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# prerinst script for the Debian GNU/Linux python-rpy package
+#
+# Copyright 2006 by Dirk Eddelbuettel <edd@debian.org>
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+    install|upgrade)
+	for f in rpy rpy_io rpy_options rpy_tools rpy_versions rpy_wintools; do
+	    for e in pyc pyo; do
+		for v in 2.3 2.4; do
+		    if [ -f /usr/lib/python$v/site-packages/$f.$e ]; then
+			rm -fv /usr/lib/python$v/site-packages/$f.$e
+		    fi
+		done
+            done 
+        done 
+	;;
+
+    abort-upgrade|disappear)
+	;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 0
+    ;;
+esac                 
+
+exit 0

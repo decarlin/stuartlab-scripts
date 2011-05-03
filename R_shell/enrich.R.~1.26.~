@@ -1,0 +1,490 @@
+#!/usr/bin/env Rgetopt.py
+library(Rgetopt)
+
+
+DEBUG.MODE <- FALSE    # Prints a bunch of stuff if you set it to TRUE
+DEBUG.OUT <- stdout()
+
+VERBOSE <- TRUE
+
+ITERATE.OVER.COLUMNS <- 2 ## A constant used in "apply()" that is understood by R
+
+DEBUG.WRITE <- function(argMessage, file=stdout()) {
+  if (DEBUG.MODE) { write(argMessage, file=file) }
+}
+
+verbose.write <- function(argMessage, file=stderr()) {
+  # If we are not in "quiet" mode (opt$q), then write the verbose output
+  # to STDERR.
+  if (VERBOSE) { write(argMessage, file=file) }
+}
+
+readSetList <- function(file, delim="\t") {
+  l <- readLines(file)
+  l.fields <- strsplit(l, delim)
+  r <- lapply(l.fields, function(x) as.vector(x[-1]))
+  names(r) <- sapply(l.fields, "[[", 1)
+  return(r)
+}
+
+# setList: something like <pathway1> geneA, geneB, geneC
+# scores: scores for each geneID.
+# geneids: basically just the column headers for the scores.
+calculateSetListEnrichmentScores <- function(scores, setList, geneids, opt) {
+
+  ## print(names(setList)[1], file=stdout())
+
+  DEBUG.WRITE("scores in setlist function:") ; DEBUG.WRITE(scores)
+
+  if (DEBUG.MODE) {
+    DEBUG.GLOBAL.COUNT <<- 1   ## "<<-" is for assigning GLOBAL variables
+    DEBUG.GLOBAL.SETS  <<- setList
+  }
+  
+  if (opt$m == "gsea") {
+    return(sapply(setList, gseaEnrichmentScore,
+                  scores=scores,
+                  geneids=geneids))
+  } else if (opt$m == "ttest") {
+    return(sapply(setList, calculateGenericScore,
+                  testFunction=t.test,
+                  scores=scores,
+                  all.data.ids=geneids,
+                  calcPval=opt$pval,
+                  negative.log10=opt$lp,
+                  minimumSetSize=2,
+                  alternativeSetting=opt$alternative));
+  } else if (opt$m == "wilcoxon") {
+    return(sapply(setList, calculateGenericScore,
+                  testFunction=wilcox.test,
+                  scores=scores,
+                  all.data.ids=geneids,
+                  calcPval=opt$pval,
+                  negative.log10=opt$lp,
+                  minimumSetSize=1,
+                  alternativeSetting=opt$alternative));
+  } else if (opt$m == "ks") {
+    return(sapply(setList, calculateGenericScore
+                  , testFunction   = ks.test
+                  , scores         = scores
+                  , all.data.ids   = geneids
+                  , calcPval       = opt$pval
+                  , negative.log10 = opt$lp
+                  , minimumSetSize = 1
+                  , alternativeSetting=opt$alternative));
+  }
+}
+
+gseaEnrichmentScore <- function(set, scores, geneids) {
+  geneids <- geneids[!is.na(scores)]    ## Remove the NA values
+  scores  <- scores[!is.na(scores)]    ## Remove the NA values
+  o <- order(scores, decreasing=TRUE) ## Sort in descending order
+  scores  <- scores[o]   ## Sort the scores...
+  geneids <- geneids[o]  ## ...and make sure the labels match up
+
+  in.set <- geneids %in% set
+  if (all(in.set) || all(!in.set)) return(NA) # no overlap or perfect overlap
+
+  hit <- cumsum((abs(scores) * in.set))
+  norm <- hit[length(hit)]
+  if (norm == 0) return(0) # all zero scores
+  hit <- hit / norm
+
+  miss <- cumsum(!in.set) / sum(!in.set)
+
+  d <- hit - miss
+  return(as.double(d[which.max(abs(d))]))
+}
+
+# testFunction: Can be "t.test", "wilcox.test", "ks.test", or others perhaps...
+calculateGenericScore <- function(module.ids  # <-- module.ids is auto-set when you call this function through "sapply"
+                                  , testFunction
+                                  , scores, all.data.ids, calcPval=FALSE
+                                  , negative.log10=FALSE
+                                  , minimumSetSize=1
+                                  , alternativeSetting="two.sided") {
+
+  ## testFunction: which statistical test (t.test, wilcox.test, ks.test, etc...) that we end up calling
+  ## module.ids: A vector of names of the elements that are in this particular set (generated from the sets file). Note that it gets AUTOMATICALLY passed in by "sapply" as the first argumennt.
+  ## scores: A vector of scores for the elements in this set. Each item in "scores" has a name in "module.ids" associated with it.
+  ## all.data.ids: A vector of names of ALL the possible elements (generated from the data file)
+  ## calcPval: whether to print out the P-value of this T-score (if TRUE), or the T-stat itself (if this is FALSE). Default is FALSE.
+  ## negative.log10: whether to print the P-value as a negative-log-10 score or as the original p-value.
+  ## alternativeSetting: see description in the options: basically, is this one-tailed (high/low) or two-tailed
+  is.in.set          <- all.data.ids %in% module.ids
+  scores.in.set      <- na.omit(subset(scores,  is.in.set)) # scores for the items that ARE in the module being tested
+  scores.outside.set <- na.omit(subset(scores, !is.in.set)) # the remainder
+
+  if (DEBUG.MODE) {
+    DEBUG.WRITE("Set being checked is named:")
+    DEBUG.WRITE(names(DEBUG.GLOBAL.SETS)[DEBUG.GLOBAL.COUNT])
+    DEBUG.GLOBAL.COUNT <<- (DEBUG.GLOBAL.COUNT + 1)
+    DEBUG.WRITE("module IDs (for this specific module):") ; DEBUG.WRITE(module.ids) # members of the current set being examined for enrichment
+    DEBUG.WRITE("is.in.set:")    ; DEBUG.WRITE(is.in.set)
+    DEBUG.WRITE("all.data.ids:") ; DEBUG.WRITE(all.data.ids)
+    DEBUG.GENES.IN.SET <- subset(all.data.ids, is.in.set)
+    DEBUG.WRITE("genes in set (debug):") ; DEBUG.WRITE(DEBUG.GENES.IN.SET)
+    DEBUG.WRITE("scores IN THE set:") ; DEBUG.WRITE(scores.in.set) ;
+    DEBUG.WRITE("Scores OUT OF set:") ; DEBUG.WRITE(scores.outside.set)
+  }
+
+  if ((length(scores.in.set) < minimumSetSize)
+      || (length(scores.outside.set) < minimumSetSize)) {
+
+    DEBUG.WRITE("Not enough elements in the set to calculate an enrichment score!")
+
+    return(NA); #Can't run the test if one of the sets is smaller than the minimum. Usually it's 1, sometimes 2.
+  }
+
+  # "testFunction" is a function that was passed in as an argument
+  result <- testFunction(x=scores.in.set, y=scores.outside.set,
+                         alternative=alternativeSetting);
+
+  DEBUG.WRITE(paste("The result (stat/pval):", result$statistic, result$p.value))
+
+  globalNumCalculationsDone <<- (globalNumCalculationsDone+1)
+
+  PRINT.PROGRESS.INTERVAL <- 100
+  if (globalNumCalculationsDone %% PRINT.PROGRESS.INTERVAL == 0) {
+    verbose.write(paste("enrich.R: Progress:", globalNumCalculationsDone, "out of", globalNumCalculationsToDo))
+  }
+  
+  if (isEnabled(calcPval)) {
+    if (isEnabled(negative.log10)) {
+      return (-log10(result$p.value));
+    } else {
+      return(result$p.value);
+    }
+  } else {
+    return(result$statistic);
+  }
+}
+
+## isEnabled checks to see if a variable is both
+## defined (i.e., non-NULL), and not explicitly FALSE
+isEnabled <- function(x) {
+  return (!is.null(x) && (x != FALSE));
+}
+
+main <- function(argv=RgetArgvEnvironment()[-1]) {
+
+  opt <- Rgetopt(argspec=global.options, defaults=option.defaults)
+
+  if (isEnabled(opt$more)) {
+    # This prints out more detailed information about usage.
+    usage("", argspec=global.options, finish=function() {
+      cat(long.explanation)
+      q()
+    }()) # <-- this is actually part of the "usage"! Do not remove it!
+  }
+
+  
+  if (isEnabled(opt$q)) {
+    VERBOSE <<- FALSE  # global variables require <<- for assignment
+  }
+  
+  if (length(opt$argv) != 2) {
+    usage("ERROR IN INPUT ARGUMENTS: You need to specify TWO files, a SET file (first file) and a DATA file (second file). (Or maybe you accidentally put a command line option AFTER the filenames.\n", global.options, finish=q(status=1));
+  }
+
+  if (is.null(opt$m) || !(opt$m %in% c("gsea", "ttest", "wilcoxon", "ks"))) {
+    usage("***** ERROR IN INPUT ARGUMENTS in enrich.R:\nERROR: You need to specify a METHOD to use to calculate enrichment. Valid options are:\n   <-m gsea>\n   <-m ttest>\n   <-m wilcoxon>\n   <-m ks>\n\n",
+          global.options, finish=q(status=1))
+  }
+
+  if (isEnabled(opt$warn)) {
+    options(warn = 1)
+    # Note from alexgw: This MUST be on for R to properly
+    # display warnings to STDERR for some reason.
+    # "warnings()" didn't work. It also needs to be BEFORE
+    # the things that generate warnings.
+  }
+
+  sets.file <- parseReadableFile(opt$argv[1])
+  sets <- readSetList(sets.file, delim=opt$d)
+
+  data.file <- parseReadableFile(opt$argv[2])
+  if(summary(data.file)$opened == "closed") {
+    open(data.file) # readLines requires file to be pre-opened or it will close
+  }
+  header <- readLines(data.file, n=opt$h) # Read any header line(s) separately.
+
+  ## Read everything, INCLUDING the header, but treat it all
+  ## as a giant matrix. (Don't treat the header, if any,
+  ## specially here).
+  data <- read.table(data.file, sep=opt$d, stringsAsFactors=FALSE,
+                     check.names=FALSE, quote="", row.names=NULL,
+                     header=FALSE, skip=0, na.strings=c("NA","ND"))
+
+  #if (DEBUG.MODE) { DEBUG.WRITE("Data is: "); DEBUG.WRITE(data) }
+  #if (DEBUG.MODE) { DEBUG.WRITE("Data slice is: "); DEBUG.WRITE(data[,opt$k,drop=F]) }
+
+  close(data.file)
+
+  if (is.null(opt$k)) {
+    ## If the user did NOT specify a -k (range of columns to
+    ## actually calculate enrichment for), then the columns
+    ## to use are (1 + n_option) all the way to the end of
+    ## the file. i.e., *ALL* of the columns!
+    opt$k <- (opt$n + 1):ncol(data)
+  }
+
+  ## If the user specified an out-of-bounds index for a column, then quit.
+  stopifnot(opt$n > 0, opt$n <= ncol(data))
+  stopifnot(opt$k > 0, opt$k <= ncol(data))
+
+  ## The Gene IDs (the row headers) are found in column "n". Read them here...
+  geneids <- as.character(data[,opt$n])
+
+  if (DEBUG.MODE) { DEBUG.WRITE("geneIDs:", DEBUG.OUT); DEBUG.WRITE(geneids, DEBUG.OUT) }
+
+  setsizes <- NULL
+  if (!is.null(opt$filterSetSize)) {
+    # If specified on the command line, only use sets
+    # with *at least* (>=) this many members
+    setsizes <- sapply(sets, function(s) sum(s %in% geneids))
+    included <- setsizes >= opt$filterSetSize
+    sets     <- sets[included]     # Filter the sets!
+    setsizes <- setsizes[included] # And make the sizes match, too
+  } else {
+    ## No set filtering by size...
+    if (isEnabled(opt$printSetSize)) {
+      ## Compute the set sizes if the user wants them to be printed.
+      setsizes <- sapply(sets, function(s) sum(s %in% geneids))
+    }
+  }
+
+  ## Add permutations of the first scoring column
+  if (!is.null(opt$permute) && opt$permute > 0) {
+    opt$k <- c(opt$k, ncol(data)+1:opt$permute)
+    data <- cbind(data, replicate(opt$permute, sample(data[,opt$k[1]])))
+  }
+
+  ## the main calculation of enrichment scores
+  ## Note that opt$k is (potentially) a RANGE of columns. So it could be 1:5, for example.
+  if (DEBUG.MODE) { DEBUG.WRITE("scores BEFORE setlist function:", DEBUG.OUT); DEBUG.WRITE(data[,opt$k, drop=F], DEBUG.OUT) }
+
+  globalNumCalculationsToDo <<- length(sets) * length(data[,opt$k, drop=F])
+  globalNumCalculationsDone <<- 0
+  
+  enrichment.scores <- apply(data[,opt$k, drop=F], ITERATE.OVER.COLUMNS, calculateSetListEnrichmentScores, setList=sets, geneids=geneids, opt=opt)
+
+  if (is.null(dim(enrichment.scores))) {
+    ## AGW: not sure what is going on here... some kind of resizing
+    dim(enrichment.scores) <- c(1, length(enrichment.scores))
+  }
+
+
+  # For GSEA, calculate empirical p-val using all except first column as null
+  if (opt$m == "gsea" && isEnabled(opt$pval)) {
+    if (! (ncol(enrichment.scores) > 1)) {
+      usage(paste("Must have more than one column of scores to calculate an",
+                  "\nempirical p-value for the GSEA method"),
+            finish=q(status=1))
+    }
+    s <- c(1,-1)[1+(enrichment.scores[,1] < 0)]
+    empiricalP <- rowSums(s*enrichment.scores[,1] < s*enrichment.scores[,-1])
+    empiricalP <- empiricalP / (-1 + length(opt$k))
+    opt$k <- opt$k[1]
+    enrichment.scores <- cbind(enrichment.scores[,1], empiricalP)
+  }
+
+  if (isEnabled(opt$warn)) {
+    ## Print the warnings if the user wanted them
+    warnings()
+  }
+
+  ## If there *IS* a header, then we should print it out...
+  if (opt$h > 0) {
+    header.split <- strsplit(header, opt$d)
+    header.sub   <- lapply(header.split, function(line) line[c(opt$n, opt$k)])
+    writeLines(sapply(header.sub, paste, collapse="\t"))
+  }
+
+  ## Round output to "j" significant digits...
+  enrichment.scores <- apply(enrichment.scores, ITERATE.OVER.COLUMNS, signif, digits = opt$j)
+
+  if (isEnabled(opt$printSetSize)) {
+    result <- data.frame(names(sets), setsizes, enrichment.scores)
+    # note! There is a bug here, because the header doesn't get updated!
+  } else {
+    result <- data.frame(names(sets), enrichment.scores)
+  }
+
+  write.table(result, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+}
+
+global.options <- c("enrich.R - given a scoring of elements (usually genes),
+calculate the enrichment of sets for this scoring.
+
+For more help:
+    Type  enrich.R --more  for a more information, including
+    examples and detailed explanation of input data types.
+
+Usage:
+  enrich.R  [METHOD]  [OPTIONS] SETS_FILE  SCORE_MATRIX_FILE
+
+NOTES:
+
+ * Apr 2009: enrich.R now prints progress information to STDERR.
+   You can suppress this with the -q option.
+
+ * Until Mar. 2009, enrich.R incorrectly handled input data
+   files with NA or blank data values for any entries. In
+   such cases, the row headers no longer aligned with the
+   data values. This is fixed now.
+
+BUGS:
+
+ * --printSetSize does not properly work when column headers
+     are printed. The size column does NOT get its own entry
+     in the column headers, so the col headers are all to
+     the left of their actual positions by one column. How
+     to fix it: add a 'count' column to the header when the
+     size is output.
+
+Options:",
+                    "m=s    Specify the method we want to use. One of:
+    -m gsea  (calculate the GSEA enrichment score)
+    -m ttest  (T-test)
+    -m wilcoxon  (Wilcoxon rank-sum test)
+    -m ks  (Kolmogorov-Smirnov / K-S Test) (note that the alternatives are FLIPPED for ks)",
+                    "alternative=s  Specify the alternative hypothesis used in KS/Wilcoxon/T-Test (but not GSEA). Default is alternative=two.sided. Possible values: two.sided, less, greater, or any substring of those (i.e., --alternative t or --alternative g will work). (This is how R accepts the arguments.) The meaning of this is whether we are looking for ONLY higher-scoring than expected (greater), only lower-scoring (less), or any significant shift (two.sided)",
+                    "pval  Specify that we would prefer a p-value instead of a score (when possible). This applies to ttest. With -m gsea, this calculates an empirical p-value using all columns except the first as the null scorings.  See the -permute option for simulating null scorings with GSEA.",
+                    "gsea  OLD -- if you were using this option, switch to -m gsea.",
+                    "lp    (LP) Make the p-value output the -log_10(P-value) instead of just the p-value directly. This puts the p-values in line with the output you get from sets_overlap.pl using the -no option. In this scale, larger numbers are more significant, and 0 is the worst score (Default: FALSE). Mnemonic is *L* *P*value.",
+                    "warn  Print out warnings. Some scoring methods generate warnings if there are ties in scores (Default: no warnings).",
+                    "d=s   Delimiter (default: tab)",
+                    "h=i   Number of header lines (default 1)",
+                    "j=i   Number of significant digits to print out (default 3)",
+                    "n=i   Index of column with row headers (usually gene names) (default 1)",
+                    "k=li  Indices of columns to score (default: from index n+1 onward). Format is R-style (e.g. 2:10,15)",
+                    "filterSetSize=i require at least this number of members in a set (calculated from the overlap with the specified rankings, not from total annotated set size)",
+                    "printSetSize  print the number of genes in each set that are present in the ranking. BUG REPORT: Does not update the header line if this option is selected, thereby de-synching the column headers from the data.",
+                    "q     Quiet mode. Prevents the printing of the progress updates and other *verbose* output to STDERR.",
+                    "more  print a lengthy explanation of the enrichment input, ouputs, and method",
+                    "permute=i     with -m gsea, instead of using true null scorings, permute the scorings in the first column this number of times and use as additional columns for null distributions"
+                    )
+option.defaults <- list(m=NULL, pval=FALSE, lp=FALSE, d="\t", n=1, h=1, j=3,
+                        alternative = "two.sided")
+
+long.explanation <- "
+LENGTHY EXPLANATION:
+Note that the SETS_FILE and SCORE_MATRIX_FILE
+*MUST COME LAST*. You cannot have options afterward or you will
+get an error about needing to <specify TWO files>.
+
+METHOD is the enrichment score method:
+  -m gsea : Use the GSEA method (Note: Does not have a --pval option)
+  -m ttest : Use the T-test method
+  -m wilcoxon : Use the Wilcoxon (Mann-Whitney-Wilcoxon) non-parametric rank-sum test
+  -m ks : Use the KS (Kolmogorov-Smirnov) test.
+SETS_FILE must be in list_t format (set-major format).
+  (See SET.tab example below)
+
+SCORE_MATRIX should be a tab-delimited matrix file.
+  (See VALUES.matrix example below)
+
+You can read from STDIN by specifying a hyphen (-) instead
+of a filename. Example:  cat SETFILE | enrich.R - SCOREMATRIX
+
+Examples:
+
+Set file \"SET.tab\": (tab delimited)
+ODDSET   gene1   gene3   gene5
+EVENSET  gene2   gene4   gene6   gene8
+
+Score matrix \"VALUES.matrix\": (tab-delimited)
+        ARRAY1   ARRAY2   ARRAY3   ARRAY4
+gene1    1.1      2.6      3.8
+gene2    4.4      4.6     11.6      6.1
+gene7    3.3      3.2               4.4
+gene5    2.2      1.1      0.9
+gene4             4.1      7.1
+                                 ^
+                                 |
+      Note that there MUST be a tab here at the end of the
+      line (even though gene4 has no value for ARRAY4).
+
+If you were to run it on just a single experiment, it would be
+something like this:
+Key      EXPER
+gene1    0.4
+gene2    1.3
+gene3    4.2
+gene4    5.5
+etc...
+
+
+You can run enrich.R on tab-delimited inputs as in these examples:
+  enrich.R  -m ttest               SET.tab  VALUES.matrix
+  enrich.R  -m ttest --pval        SET.tab  VALUES.matrix
+  enrich.R  -m ttest --pval  --tn  SET.tab  VALUES.matrix
+
+To run it on all columns in a comma-delimited file:
+  enrich.R  -m gsea  -d ','   SET.csv  VALUES.csv
+
+To calculate the enrichment for only columns 2-4 (ARRAY2, ARRAY3, and ARRAY4):
+  enrich.R  -m wilcoxon  -k 2:4  SET.tab  VALUES.matrix
+                         ^^^^^^
+              This part chooses columns 2-4 (Note: counting starts at 1, not 0)
+
+To read from a gzipped SET file (the lone hyphen means *read from STDIN*):
+  zcat SET.tab.gz | enrich.R  -m gsea   -  VALUES.matrix
+
+Format for specifying which data columns to examine:
+  -k 2:4    <-- Specifies columns 2, 3, and 4 (counting is from 1, not 0)
+  -k 2:5,7,19 <-- Specifies columns 2-5,7, and 19.
+  -k 5:8,15:18  <-- Columns 5,6,7,8 and 15,16,17,18
+
+Maybe you only want to check for one side of a distribution, not do a two-tailed
+test. (GSEA does not do this--since the output is signed, you can figure it out
+yourself, but the other two distributions do, since they only return a P-value).
+In that case, try the -alternative argument, like this:
+
+  enrich.R  -m wilcoxon  --alternative greater   SET.tab  VALUES.matrix
+
+When using --alternative greater, only sets with significantly *higher* values than
+average can have high p-values. Note that the KS test works in a different way,
+and seems like the opposite of what you would expect.
+
+When using --alternative less, only sets with significantly *lower* values
+than average can have high p-values. Note that the KS test works in a different way,
+and seems like the opposite of what you would expect.
+
+From the R documentation, about ks.test having flipped
+alternatives: ''...in the two-sample case
+alternative=''greater'' includes distributions for which x
+is stochastically smaller than y (the CDF of x lies above
+and hence to the left of that for y), in contrast to t.test
+or wilcox.test.''
+
+When using --alternative two.sided (the default), any sets with either
+especially low *or* especially high values will have greater significance.
+
+(See the options list---or type ?wilcoxon.test in R---for more about --alternative).
+
+CAVEAT: enrich.R *will* operate when there are missing
+values, as long as they are blank or the literal strin NA or ND.
+
+Regarding the alternative hypothesis specifications: here
+are three examples regarding the *alternative* option. Note
+that in these examples, the *test* set sample values have
+lower values on average (1,2,3,4,5) than the *other*
+set's values:
+
+> wilcox.test(c(1,2,3,4,5), c(1.5,2.5,6,7,9,10,11,12), alternative=\"less\")
+p-value = 0.03263   <-- very significant P-value
+alternative hypothesis: true location shift is less than 0
+
+> wilcox.test(c(1,2,3,4,5), c(1.5,2.5,6,7,9,10,11,12), alternative=\"greater\")
+p-value = 0.9775    <-- not significant P-value
+alternative hypothesis: true location shift is greater than 0
+
+> wilcox.test(c(1,2,3,4,5), c(1.5,2.5,6,7,9,10,11,12), alternative=\"two.sided\")
+p-value = 0.06527   <-- moderately significant P-value
+alternative hypothesis: true location shift is not equal to 0
+"
+
+if (Sys.getenv("RGETOPT_DEBUG") != "") {debug(main)}
+main()

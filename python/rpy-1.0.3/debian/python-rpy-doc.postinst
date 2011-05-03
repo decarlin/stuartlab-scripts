@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# postinst script for the Debian GNU/Linux python-roy-doc package
+#
+# Dirk Eddelbuettel <edd@debian.org>   
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+    configure)     
+	install-info --quiet --section "Math" "RPy" \
+	   --description="The RPy Reference Manual."\
+	   /usr/share/info/rpy.info.gz
+       ;;
+    abort-upgrade|abort-remove|abort-deconfigure)
+        ;;
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        ;;
+esac
+
+exit 0                 

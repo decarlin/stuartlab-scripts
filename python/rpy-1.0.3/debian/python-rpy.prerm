@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# prerm script for the Debian GNU/Linux python-rpy package
+#
+# Copyright 2006 by Dirk Eddelbuettel <edd@debian.org>
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+    remove|purge)
+	;;
+
+    upgrade)
+	;;
+
+    failed-upgrade|abort-install|abort-upgrade|disappear)
+	;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 0
+    ;;
+esac                 
