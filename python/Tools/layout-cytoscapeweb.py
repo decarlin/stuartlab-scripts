@@ -3,16 +3,17 @@
    .NA files
 
 Usage:
-  layout-cytoscapeweb.py [options] feature
+  layout-cytoscapeweb.py [options] feature destDir
 
 Options:
+  -s        output score table
   -q        run quietly
 """
 ## Written By: Sam Ng
-## Last Updated: 4/12/11
+## Last Updated: 5/17/11
 import os, os.path, sys, getopt, re
 sys.path.append("/projects/sysbio/lab_apps/python/Tools")
-import mData, mPathway
+import mData, mPathway, mCalculate
 
 verbose = True
 netExtension = ".sif"
@@ -238,6 +239,20 @@ def getColor(val, minVal = -8, maxVal = 8):
     g = fval * float(col.g - zeroColor.g) + zeroColor.g
     b = fval * float(col.b - zeroColor.b) + zeroColor.b
     col = rgb(r,g,b)
+    
+    return(col.tohex())
+
+def getColorbyType(feature, typeData):
+    if typeData[feature] == "Basal":
+        col = rgb(255, 0, 0)
+    elif typeData[feature] == "Classical":
+        col = rgb(0, 0, 255)
+    elif typeData[feature] == "Primitive":
+        col =  rgb(0, 255, 0)
+    elif typeData[feature] == "Secretory":
+        col = rgb(200, 0, 200)
+    else:
+        col = rgb(255, 255, 255)
     return(col.tohex())
 
 def getSize(val, minVal = -8, maxVal = 8):
@@ -257,21 +272,27 @@ def getSize(val, minVal = -8, maxVal = 8):
 def main(args):
     ## Parse arguments
     try:
-        opts, args = getopt.getopt(args, "q")
+        opts, args = getopt.getopt(args, "sq")
     except getopt.GetoptError, err:
         print str(err)
         usage(2)
     
-    if len(args) != 1:
+    if len(args) != 2:
         print "incorrect number of arguments"
         usage(1)
     
     feature = args[0]
+    destDir = args[1]
     
+    scoreTable = False
     global verbose
     for o, a in opts:
-        if o == "-q":
+        if o == "-s":
+            scoreTable = True
+        elif o == "-q":
             verbose = False
+    if not destDir.endswith("/"):
+        destDir += "/"
     
     ## Check structure
     assert os.path.exists("LABEL.NA")
@@ -297,6 +318,9 @@ def main(args):
     nodes = nodeMap.keys()
     nodes.sort()
     
+    ## Temporary
+    #typeData = mData.r2Col("a1")
+    
     ## Create graphml structure
     graphmlContent = """<graphml>\\
                     <key id="name" for="node" attr.name="name" attr.type="string"/>\\
@@ -308,6 +332,7 @@ def main(args):
                     <key id="interaction" for="edge" attr.name="interaction" attr.type="string"/>\\
                     <graph edgedefault="directed">\\
                     """
+    nodeVals = []
     for i in nodes:
         if nodeMap[i] == "__DISCONNECTED__":
             nodeName = re.sub("'", "", nodeMap[i])
@@ -317,10 +342,15 @@ def main(args):
             nodeSize = 25
             nodeScore = 0
         else:
+            try:
+                nodeVals.append(abs(float(scoreMap[nodeMap[i]])))
+            except ValueError:
+                pass
             nodeName = re.sub("'", "", nodeMap[i])
             nodeLabel = re.sub("'", "", labelMap[nodeMap[i]])
             nodeType = typeMap[nodeMap[i]]
             nodeColor = getColor(scoreMap[nodeMap[i]])
+            #nodeColor = getColorbyType(nodeMap[i], typeData)
             nodeSize = getSize(scoreMap[nodeMap[i]])
             nodeScore = scoreMap[nodeMap[i]]
         graphmlContent += """       <node id="%s">\\
@@ -341,10 +371,19 @@ def main(args):
     graphmlContent += """</graph>\\
                 </graphml>\\
                 """
+    
     ## Launch cytoscape
-    f = open(feature+".html", "w")
+    if (not os.path.exists(destDir)):
+        os.system("mkdir %s" % (destDir))
+    f = open(destDir+feature+".html", "w")
     f.write(htmlHead+graphmlContent+htmlTail)
     f.close()
-
+    
+    ## Score Table
+    if scoreTable:
+        f = open(destDir+"stats.tab", "a")
+        f.write(feature+"\t"+str(mCalculate.quartiles(nodeVals)[2])+"\n")
+        f.close()
+    
 if __name__ == "__main__":
     main(sys.argv[1:])

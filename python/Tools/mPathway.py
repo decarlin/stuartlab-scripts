@@ -1,6 +1,6 @@
 #Pathway module
 #Written By: Sam Ng
-#Last Updated: 4/2/11
+#Last Updated: 4/28/11
 import re, sys
 from copy import deepcopy
 
@@ -38,7 +38,7 @@ def rPathway(inf, returnProteins = False, reverse = False):
     else:
         return(inNodes, inInteractions)
 
-def rSIF(inf, type = "concept", reverse = False):
+def rSIF(inf, typef = "concept", reverse = False):
     """Read SIF"""
     
     inNodes = dict()                            #Dictionary with (A : type)
@@ -64,41 +64,51 @@ def rSIF(inf, type = "concept", reverse = False):
     f.close()
     return(inNodes, inInteractions)
 
-def wSIF(outf, outInteractions):
+def wSIF(outf, outInteractions, ignoreNodes = []):
     """Output SIF"""
     
     f = open(outf, "w")
     for i in outInteractions.keys():
+        if i in ignoreNodes:
+            continue
         for j in outInteractions[i].keys():
+            if j in ignoreNodes:
+                continue
             f.write("%s\t%s\t%s\n" % (i, outInteractions[i][j], j))
     f.close()
 
-def wPathway(outf, outNodes, outInteractions):
+def wPathway(outf, outNodes, outInteractions, ignoreNodes = []):
     """Output UCSC Pathway"""
     
     f = open(outf, "w")
     for i in outNodes.keys():
+        if i in ignoreNodes:
+            continue
         f.write("%s\t%s\n" % (outNodes[i], i))
     for i in outInteractions.keys():
+        if i in ignoreNodes:
+            continue
         for j in outInteractions[i].keys():
+            if j in ignoreNodes:
+                continue
             f.write("%s\t%s\t%s\n" % (i, j, outInteractions[i][j]))
     f.close()
 
-def wAdj(outf, outNodes, outInteractions, includeNodes = None, symmetric = False, signed = True):
+def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, signed = True):
     """Output adjacency matrix from interactions (cols = SOURCE, rows = TARGET)"""
     
-    if includeNodes is None:
-        includeNodes = outNodes.keys()
+    if useNodes is None:
+        useNodes = outNodes.keys()
     else:
-        for i in includeNodes:
+        for i in useNodes:
             if i not in outNodes.keys():
                 print >> sys.stderr, "WARNING: %s in include not found in pathway" % (i)    
     f = open(outf, "w")
-    f.write("\t".join(["id"]+includeNodes)+"\n")
+    f.write("\t".join(["id"]+useNodes)+"\n")
     val = None
-    for i in includeNodes:
+    for i in useNodes:
         f.write("%s" % (i))
-        for j in includeNodes:
+        for j in useNodes:
             val = 0
             if i in outInteractions:
                 if j in outInteractions[i]:
@@ -115,6 +125,32 @@ def wAdj(outf, outNodes, outInteractions, includeNodes = None, symmetric = False
             f.write("\t%s" % (val))
         f.write("\n")
     f.close()
+
+def filterComplexes(inNodes, inInteractions):
+    del inNodes[blah]
+    del inInteractions[blah][blah]
+    return(inNodes, inInteractions)
+
+def addPPI(inf, inNodes, inInteractions, delim = "\t"):
+    f = open(inf, "r")
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        pline = re.split(delim, line)
+        if len(pline) != 3:
+            print >> sys.stderr, "ERROR: line length not 3: \"%s\"" % (line)
+            sys.exit(1)
+        if pline[0] not in inInteractions:
+            inInteractions[pline[0]] = dict()
+        inInteractions[pline[0]][pline[1]] = pline[2]
+        if pline[2] == "component>":
+            if pline[0] not in inNodes:
+                inNodes[pline[0]] = "protein"
+            if pline[1] not in inNodes:
+                inNodes[pline[1]] = "complex"
+    f.close()
+    return(inNodes, inInteractions)
 
 def largestConnected(allNodes, forInteractions, revInteractions):
     ## Identify largest net
@@ -224,3 +260,40 @@ def reverseInteractions(forInteractions):
                 revInteractions[j] = dict()
             revInteractions[j][i] = forInteractions[i][j]
     return(revInteractions)
+
+def getDownstream(node, distance, forInteractions):
+    seenNodes = set([node])
+    borderNodes = [node]
+    frontierNodes = []
+    for dist in range(distance):
+        while len(borderNodes) > 0:
+            currNode = borderNodes.pop()
+            if currNode in forInteractions:
+                for i in forInteractions[currNode].keys():
+                    if i not in seenNodes:
+                        seenNodes.update([i])
+                        frontierNodes.append(i)
+        borderNodes = deepcopy(frontierNodes)
+        frontierNodes = list()
+    return(seenNodes)
+
+def getNeighbors(node, distance, forInteractions, revInteractions):
+    seenNodes = set([node])
+    borderNodes = [node]
+    frontierNodes = []
+    for dist in range(distance):
+        while len(borderNodes) > 0:
+            currNode = borderNodes.pop()
+            if currNode in forInteractions:
+                for i in forInteractions[currNode].keys():
+                    if i not in seenNodes:
+                        seenNodes.update([i])
+                        frontierNodes.append(i)
+            if currNode in revInteractions:
+                for i in revInteractions[currNode].keys():
+                    if i not in seenNodes:
+                        seenNodes.update([i])
+                        frontierNodes.append(i)
+        borderNodes = deepcopy(frontierNodes)
+        frontierNodes = list()
+    return(seenNodes)

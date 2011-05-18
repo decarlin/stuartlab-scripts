@@ -1,9 +1,9 @@
 ## Data module
 ## Written By: Sam Ng
 ## Last Updated: 4/1/11
-import re, sys
-#import urllib2
+import re, sys, urllib2
 from copy import deepcopy
+import mCalculate
 
 def log(msg, die = False):
     sys.stderr.write(msg)
@@ -12,13 +12,12 @@ def log(msg, die = False):
 
 def openAnyFile(inf):
     if inf.startswith("http"):
-        #stream = urllib2.urlopen(inf)
-	log("ERROR: urllib2 disabled", die = True)
+        stream = urllib2.urlopen(inf)
     else:
         stream = open(inf, 'r')
     return stream
 
-def retHeader(inf, delim = "\t"):
+def retColumns(inf, delim = "\t"):
     f = openAnyFile(inf)
     line = f.readline()
     if line.isspace():
@@ -26,10 +25,19 @@ def retHeader(inf, delim = "\t"):
     line = line.rstrip("\r\n")
     return(re.split(delim, line)[1:])
 
-def rCRSData(inf, delim = "\t", retHeader = False, rmFilter = set(), debug = False):
+def retRows(inf, delim = "\t"):
+    f = openAnyFile(inf)
+    line = f.readline()
+    if line.isspace():
+        log("ERROR: encountered a blank header\n", die = True)
+    line = line.rstrip("\r\n")
+    
+    return(re.split(delim, line)[1:])
+    
+def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, rmFilter = set(), debug = False):
     """Read simple tab-delimited data [column][row] mappings"""
     
-    inData = dict()                 #Dictionary with (column : (row : data))
+    inData = deepcopy(appendData)                 #Dictionary with (column : (row : data))
     colFeatures = list()
     rowFeatures = list()
     ## Read header
@@ -44,13 +52,15 @@ def rCRSData(inf, delim = "\t", retHeader = False, rmFilter = set(), debug = Fal
         log("LENGTH: %s\n" % (len(pline)))
     colFeatures = pline[1:]
     for i in colFeatures:
-        inData[i] = dict()
+        if i not in inData:
+            inData[i] = dict()
     ## Read data
     for line in f:
         if line.isspace():
             continue
         line = line.rstrip("\r\n")
         pline = re.split(delim, line)
+        rowFeatures.append(pline[0])
         if debug:
             log(line+"\n")
             log("LENGTH: %s\n" % (len(pline))) 
@@ -64,8 +74,8 @@ def rCRSData(inf, delim = "\t", retHeader = False, rmFilter = set(), debug = Fal
             else:            
                 inData[colFeatures[i]][pline[0]] = pline[i+1]
     f.close()
-    if retHeader:
-        return(inData, colFeatures)
+    if retFeatures:
+        return(inData, colFeatures, rowFeatures)
     else:
         return(inData)
 
@@ -95,13 +105,13 @@ def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None, printN
             if printNA:
                 f.write("\t%s" % (i))
             else:
-                log("Removing sample: %s\n" % (i))
+                log("Removing column: %s\n" % (i))
     f.write("\n")
     for i in rowFeatures:
         if (i in dataFeatures) | (printNA):
             f.write("%s" % (i))
         else:
-            log("Removing feature: %s\n" % (i))
+            log("Removing row: %s\n" % (i))
             continue
         for j in colFeatures:
             if j in outData:
@@ -170,6 +180,48 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, replace =
     f.close()
     o.close()
 
+def rMAF(inf, delim = "\t"):
+    mutData = dict()
+    f = openAnyFile(inf)
+    line = f.readline()
+    if line.isspace():
+        log("ERROR: encountered a blank on line 1\n", die = True)
+    line = line.rstrip("\r\n")
+    pline = re.split(delim, line)
+    hugoCol = -1
+    tumorCol = -1
+    for i, j in enumerate(pline):
+        if j == "Hugo_Symbol":
+            hugoCol = i
+        elif j == "Tumor_Sample_Barcode":
+            tumorCol = i
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\t\r\n")
+        pline = re.split(delim, line)
+        if pline[hugoCol] not in mutData:
+            mutData[pline[hugoCol]] = list()
+        mutData[pline[hugoCol]].append(pline[tumorCol])
+    f.close()
+    return(mutData)
+
+def rVCF(inf, delim = "\t"):
+    mutSet = set()
+    f = openAnyFile(inf)
+    for line in f:
+        if line.isspace():
+            continue
+        if line.startswith("#"):
+            continue
+        line = line.rstrip("\t\r\n")
+        pline = re.split(delim, line)
+        gene = re.split("[=/]", pline[7])[1]
+        if gene not in mutSet:
+            mutSet.update([gene])
+    f.close()
+    return(mutSet)
+
 def r3Col(inf, features = False):
     """Read 3 column data"""
     
@@ -215,7 +267,27 @@ def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
     f.close()
     return(inData)
 
-def rSet(inf, header = True, enumerate = False):
+def rCategory(inf, delim = "\t", header = False):
+    """Read category file"""
+    
+    inCat = dict()
+    f = openAnyFile(inf)
+    if header:
+        line = f.readline()
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        pline = re.split(delim, line)
+        if len(pline) != 2:
+            log("ERROR: Length of line is not 2\n", die = True)
+        if pline[1] not in inCat:
+            inCat[pline[1]] = []
+        inCat[pline[1]].append(pline[0])
+    f.close()
+    return(inCat)
+
+def rSet(inf, header = True, delim = "\t", enumerate = False):
     """Read sets file"""
     
     inSets = dict()                 #Dictionary with (name : set)
@@ -226,7 +298,7 @@ def rSet(inf, header = True, enumerate = False):
         if line.isspace():
             continue
         line = line.rstrip("\t\r\n")
-        pline = re.split("\s*\t\s*", line)
+        pline = re.split(delim, line)
         if enumerate:
             value = 1
             while "_".join([pline[0]]+[value]) in inSets:
@@ -304,37 +376,53 @@ def rPARADIGM(inf, delim = "\t"):
     return(inLikelihood, inScore)
 
 def lineCount(inf):
+    """line count"""
+    
     f = open(inf, "r")
     for i, l in enumerate(f):
         pass
     f.close()
     return(i+1)
 
-def hSamples(datasets, suffix = "_homogenized.tab", replace = "[ \[\]_()/*,:+@']", null = "NULL"):
+def hSamples(datasets, directory = "homogenized", replace = "[ \[\]_()/*,:+@']", null = "NULL", numeric = True):
     samples = None
-    dData = dict()
     for i in datasets:
-        dsamples = set(retHeader(i))
+        dsamples = set(retColumns(i))
         if samples == None:
             samples = dsamples
         else:
             samples = samples & dsamples
+    if not os.path.exists(directory):
+        os.system("mkdir %s" % (directory))
     for i in datasets:
-        rwCRSData(re.sub(".tab", "", i)+suffix, i, useCols = samples, replace = replace, null = null, numeric = True)
+        rwCRSData(directory+"/"+re.split("/", i)[-1], i, useCols = samples, replace = replace, null = null, numeric = numeric)
 
-def wMeta(clinf, samples):
+def wMeta(clinf, samples, directory = "."):
     cData = rCRSData(clinf)
     for i in cData.keys():
-        f = open(i+".metadata", "w")
+        f = open(directory+"/"+re.split("/", i)[-1]+".metadata", "w")
         f.write("labels\t"+"\t".join(samples)+"\n")
         f.write("knownVal")
-        for j in samples:
-            if j in cData[i]:
-                if cData[i][j] == "":
+        if len(set(cData[i].values())-set(["", "NULL", "null", "NA"])) == 2:
+            for j in samples:
+                if j in cData[i]:
+                    if cData[i][j] in ["", "NULL", "null", "NA"]:
+                        f.write("\tNULL")
+                    elif cData[i][j] in ["+", "1"]:
+                        f.write("\t1")
+                    elif cData[i][j] in ["-", "0", "-1"]:
+                        f.write("\t0")
+                    else:
+                        f.write("\t%s" % (cData[i][j]))
+        else:
+            medVal = mCalculate.median(cData[i].values())
+            for j in samples:
+                try:
+                    if float(cData[i][j]) > medVal:
+                        f.write("\t1")
+                    else:
+                        f.write("\t0")
+                except ValueError:
                     f.write("\tNULL")
-                else:
-                    f.write("\t%s" % (cData[i][j]))
-            else:
-                f.write("\tNULL")
         f.write("\n")
         f.close()
