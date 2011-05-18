@@ -10,7 +10,7 @@ Options:
   -q        run quietly
 """
 ## Written By: Sam Ng
-## Last Updated: 5/17/11
+## Last Updated: 5/18/11
 import os, os.path, sys, getopt, re
 sys.path.append("/projects/sysbio/lab_apps/python/Tools")
 import mData, mPathway, mCalculate
@@ -24,9 +24,9 @@ htmlHead = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.o
     <head>
         <title>CytoscapeWeb - UCSC PARADIGM Subnets</title>
         
-        <script type="text/javascript" src="js/min/json2.min.js"></script>
-        <script type="text/javascript" src="js/min/AC_OETags.min.js"></script>
-        <script type="text/javascript" src="js/min/cytoscapeweb.min.js"></script>
+        <script type="text/javascript" src="../js/min/json2.min.js"></script>
+        <script type="text/javascript" src="../js/min/AC_OETags.min.js"></script>
+        <script type="text/javascript" src="../js/min/cytoscapeweb.min.js"></script>
         
         <script type="text/javascript">
             window.onload = function() {
@@ -104,8 +104,8 @@ htmlTail = """                ';
                 
                 // initialization options
                 var options = {
-                    swfPath: "swf/CytoscapeWeb",
-                    flashInstallerPath: "swf/playerProductInstall"
+                    swfPath: "../swf/CytoscapeWeb",
+                    flashInstallerPath: "../swf/playerProductInstall"
                 };
                 
                 var vis = new org.cytoscapeweb.Visualization(div_id, options);
@@ -381,9 +381,13 @@ def main(args):
     
     ## Score Table
     if scoreTable:
-        f = open(destDir+"stats.tab", "a")
-        f.write(feature+"\t"+str(mCalculate.quartiles(nodeVals)[2])+"\n")
+        if os.path.exists(destDir+"stats.tab"):
+            f = open(destDir+"stats.tab", "a")
+        else:
+            f = open(destDir+"stats.tab", "w")
+            f.write("id\tMAX\tUQS\ttot_nodes\n")
+        f.write("%s\t%s\t%s\t%s\n" % (feature, max(nodeVals), mCalculate.quartiles(nodeVals)[2], len(allNodes.keys())))
         f.close()
-    
+
 if __name__ == "__main__":
     main(sys.argv[1:])

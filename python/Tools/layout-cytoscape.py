@@ -15,6 +15,8 @@ Options:
 Notes:
   Remember to set up your path (-c, -v, -p)
 """
+## Written By: Sam Ng
+## Last Updated: 5/17/11
 import os, os.path, sys, getopt, re
 
 verbose = True

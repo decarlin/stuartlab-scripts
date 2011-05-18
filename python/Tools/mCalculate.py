@@ -1,6 +1,6 @@
 ## Calculate module
 ## Written By: Sam Ng
-## Last Updated: 3/15/11
+## Last Updated: 5/17/11
 import math, sys
 import mData
 

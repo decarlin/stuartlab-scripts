@@ -1,6 +1,6 @@
 #Pathway module
 #Written By: Sam Ng
-#Last Updated: 4/28/11
+#Last Updated: 5/17/11
 import re, sys
 from copy import deepcopy
 
