@@ -17,6 +17,7 @@ import mData, mPathway, mCalculate
 
 verbose = True
 netExtension = ".sif"
+noteText = "Jorma"
 
 htmlHead = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
@@ -385,8 +386,8 @@ def main(args):
             f = open(destDir+"stats.tab", "a")
         else:
             f = open(destDir+"stats.tab", "w")
-            f.write("id\tMAX\tUQS\ttot_nodes\n")
-        f.write("%s\t%s\t%s\t%s\n" % (feature, max(nodeVals), mCalculate.quartiles(nodeVals)[2], len(allNodes.keys())))
+            f.write("id\tMAX\tUQS\ttot_nodes\tnote\n")
+        f.write("%s\t%s\t%s\t%s\t%s\n" % (feature, max(nodeVals), mCalculate.quartiles(nodeVals)[2], len(allNodes.keys(), noteText)))
         f.close()
 
 if __name__ == "__main__":
