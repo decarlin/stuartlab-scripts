@@ -414,15 +414,20 @@ def wMeta(clinf, samples, directory = "."):
                         f.write("\t0")
                     else:
                         f.write("\t%s" % (cData[i][j]))
+                else:
+                    f.write("\tNULL")
         else:
             medVal = mCalculate.median(cData[i].values())
             for j in samples:
-                try:
-                    if float(cData[i][j]) > medVal:
-                        f.write("\t1")
-                    else:
-                        f.write("\t0")
-                except ValueError:
+                if j in cData[i]:
+                    try:
+                        if float(cData[i][j]) > medVal:
+                            f.write("\t1")
+                        else:
+                            f.write("\t0")
+                    except ValueError:
+                        f.write("\tNULL")
+                else:
                     f.write("\tNULL")
         f.write("\n")
         f.close()
