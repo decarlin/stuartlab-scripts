@@ -14,7 +14,7 @@ Options:
   -q            run quietly
 """
 ## Written By: Sam Ng
-## Last Updated: 4/12/11
+## Last Updated: 5/17/11
 import os, os.path, sys, getopt, re
 sys.path.append("/projects/sysbio/lab_apps/python/Tools")
 import mData, mPathway, mCalculate
@@ -23,7 +23,6 @@ from copy import deepcopy
 verbose = True
 includeType = "OR"
 filterBounds = [0,0]
-filterString = "0_0"
 topDisconnected = 100
 
 outputAttributes = False
@@ -31,10 +30,12 @@ outputPARADIGM = False
 includePARADIGM = ""
 featureReq = 1
 
-globalPathway = "/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"
-#globalPathway = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/SuperPathway/data.tab"
+if os.path.exists("/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"):
+    globalPathway = "/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"
+else:
+    globalPathway = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/SuperPathway/data.tab"
+
 drugBank = "/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"
-grayBank = "/projects/sysbio/users/GRAY/DATA/DRUGS/data.tab"
 
 def usage(code = 0):
     print __doc__
@@ -66,16 +67,13 @@ def addLink(a, b, pNodes, pInteractions, gNodes, gInteractions):
 
 def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_defined = False):
     global filterBounds
+    filterString = "%s_%s" % (filterBounds[0], filterBounds[1])
     
     ## Read global pathway
     (gNodes, gInteractions) = mPathway.rPathway(globalPathway)
     
     ## Read drugs
     #drugData = mData.rSet(drugBank)
-    #gdrugData = mData.rSet(grayBank)
-    
-    ## Overlap Drugs
-    #to add later
     
     ## Write LABEL.NA, TYPE.NA
     if outputAttributes:
@@ -138,7 +136,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
                         scoref.write("%s = %s\n" % (i, "0"))
                 scoref.close()
         
-        ## Stat phenotype
+        ## Compute thresholds
         pStats = []
         if statLine == None:
             for i in range(len(sData.keys())):
@@ -285,7 +283,6 @@ if __name__ == "__main__":
             (v1, v2) = re.split(";", a)
             filterBounds = [float(v1), float(v2)]
             filterBounds.sort()
-            filterString = "%s_%s" % (filterBounds[0], filterBounds[1])
         elif o == "-d":
             outDir = a
             if (not outDir.endswith("/")):
