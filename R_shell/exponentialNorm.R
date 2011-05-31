@@ -37,7 +37,7 @@ main <- function(argv) {
   c<-apply(b, c(1,2),qexp)
 
   row.names(c)<-data.df[,1]
-  write.table(t(header), quote =FALSE, row.names=FALSE, col.names=FALSE)
+  write.table(t(header), quote =FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
   write.table(c, stdout(), quote=FALSE, sep="\t", row.names=TRUE, col.names=FALSE)
 }
 
