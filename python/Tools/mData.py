@@ -1,16 +1,18 @@
 ## Data module
 ## Written By: Sam Ng
-## Last Updated: 5/17/11
-import re, sys, urllib2
+## Last Updated: 6/2/11
+import re, sys, urllib2, os
 from copy import deepcopy
 import mCalculate
 
 def log(msg, die = False):
+    """logger function"""
     sys.stderr.write(msg)
     if die:
         sys.exit(1)
 
 def openAnyFile(inf):
+    """performs an open() on a file or url"""
     if inf.startswith("http"):
         stream = urllib2.urlopen(inf)
     else:
@@ -18,6 +20,7 @@ def openAnyFile(inf):
     return stream
 
 def retColumns(inf, delim = "\t"):
+    """returns the columns of a .tsv"""
     f = openAnyFile(inf)
     line = f.readline()
     if line.isspace():
@@ -26,21 +29,20 @@ def retColumns(inf, delim = "\t"):
     return(re.split(delim, line)[1:])
 
 def retRows(inf, delim = "\t"):
+    """returns the rows of a .tsv"""
     f = openAnyFile(inf)
     line = f.readline()
     if line.isspace():
         log("ERROR: encountered a blank header\n", die = True)
     line = line.rstrip("\r\n")
-    
     return(re.split(delim, line)[1:])
     
-def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, rmFilter = set(), debug = False):
-    """Read simple tab-delimited data [column][row] mappings"""
-    
-    inData = deepcopy(appendData)                 #Dictionary with (column : (row : data))
-    colFeatures = list()
-    rowFeatures = list()
-    ## Read header
+def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, debug = False):
+    """reads .tsv into a [col][row] dictionary"""
+    inData = deepcopy(appendData)
+    colFeatures = []
+    rowFeatures = []
+    ## read header
     f = openAnyFile(inf)
     line = f.readline()
     if line.isspace():
@@ -48,13 +50,12 @@ def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, rmFilt
     line = line.rstrip("\r\n")
     pline = re.split(delim, line)
     if debug:
-        log(line+"\n")
-        log("LENGTH: %s\n" % (len(pline)))
+        log("%s\nLENGTH: %s\n" % (line, len(pline)))
     colFeatures = pline[1:]
     for i in colFeatures:
         if i not in inData:
             inData[i] = dict()
-    ## Read data
+    ## read data
     for line in f:
         if line.isspace():
             continue
@@ -62,14 +63,11 @@ def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, rmFilt
         pline = re.split(delim, line)
         rowFeatures.append(pline[0])
         if debug:
-            log(line+"\n")
-            log("LENGTH: %s\n" % (len(pline))) 
+            log("%s\nLENGTH: %s\n" % (line, len(pline)))
         if len(pline) != (1+len(colFeatures)):
             log("ERROR: length of line does not match the rest of the file\n", die = True)
         for i in range(len(colFeatures)):
-            if pline[i+1] in rmFilter:
-                inData[colFeatures[i]][pline[0]] = "NA"
-            elif pline[i+1].isspace():
+            if pline[i+1] == "":
                 inData[colFeatures[i]][pline[0]] = "NA"
             else:            
                 inData[colFeatures[i]][pline[0]] = pline[i+1]
@@ -79,11 +77,9 @@ def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, rmFilt
     else:
         return(inData)
 
-def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None, printNA = True):
-    """Write simple column by row data"""
-    
-    ## Extract colFeatures and rowFeatures
-    dataFeatures = None
+def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None):
+    """write [col][row] dictionary to .tsv"""
+    ## get colFeatures and rowFeatures
     if useCols is None:
         colFeatures = outData.keys()
     else:
@@ -92,27 +88,14 @@ def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None, printN
         rowFeatures = outData[colFeatures[0]].keys()
     else:
         rowFeatures = useRows
-    
-    ## Write header
+    ## write header
     f = open(outf, "w")
     f.write("id")
     for i in colFeatures:
-        if i in outData:
-            f.write("\t%s" % (i))
-            if dataFeatures is None:
-                dataFeatures = set(outData[i].keys())
-        else:
-            if printNA:
-                f.write("\t%s" % (i))
-            else:
-                log("Removing column: %s\n" % (i))
+        f.write("\t%s" % (i))
     f.write("\n")
     for i in rowFeatures:
-        if (i in dataFeatures) | (printNA):
-            f.write("%s" % (i))
-        else:
-            log("Removing row: %s\n" % (i))
-            continue
+        f.write("%s" % (i))
         for j in colFeatures:
             if j in outData:
                 if i in outData[j]:
@@ -120,14 +103,12 @@ def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None, printN
                 else:
                     f.write("\tNA") 
             else:
-                if printNA:
-                    f.write("\tNA")
+                f.write("\tNA")
         f.write("\n")
     f.close()
 
 def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, replace = "[@]", null = "NA", numeric = False):
-    """Read and Write data for lower memory usage and efficiency"""
-    
+    """read and write .tsv for lower memory usage and efficiency"""
     seenRows = set()
     f = openAnyFile(inf)
     o = open(outf, "w")
@@ -328,7 +309,10 @@ def floatList(inList):
     outList = []
     for i in inList:
         try:
-            outList.append(float(i))
+            fval = float(i)
+            if fval != fval:
+                raise ValueError
+            outList.append(fval)
         except ValueError:
             continue
     return(outList)
@@ -414,20 +398,15 @@ def wMeta(clinf, samples, directory = "."):
                         f.write("\t0")
                     else:
                         f.write("\t%s" % (cData[i][j]))
-                else:
-                    f.write("\tNULL")
         else:
             medVal = mCalculate.median(cData[i].values())
             for j in samples:
-                if j in cData[i]:
-                    try:
-                        if float(cData[i][j]) > medVal:
-                            f.write("\t1")
-                        else:
-                            f.write("\t0")
-                    except ValueError:
-                        f.write("\tNULL")
-                else:
+                try:
+                    if float(cData[i][j]) > medVal:
+                        f.write("\t1")
+                    else:
+                        f.write("\t0")
+                except ValueError:
                     f.write("\tNULL")
         f.write("\n")
         f.close()

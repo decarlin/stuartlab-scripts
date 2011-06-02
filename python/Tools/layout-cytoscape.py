@@ -20,9 +20,16 @@ Notes:
 import os, os.path, sys, getopt, re
 
 verbose = True
-cysPath = "/home/kuromajutsu/LocalLibs/Cytoscape_v2.8.0/cytoscape.sh"
-vizPath = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/vizmap.props"
-pluginPath = "/home/kuromajutsu/LocalLibs/Cytoscape_v2.8.0/plugins"
+
+if os.path.exists("/projects/sysbio/apps/java/Cytoscape/cytoscape-2.8.0"):
+    cysPath = "/projects/sysbio/apps/java/Cytoscape/cytoscape-2.8.0/cytoscape.sh"
+    vizPath = "/projects/sysbio/apps/java/Cytoscape/cytoscape-2.8.0/vizmap/vizmap_nodrug.props"
+    pluginPath = "/projects/sysbio/apps/java/Cytoscape/cytoscape-2.8.0/plugins"
+else:
+    cysPath = "/home/kuromajutsu/LocalLibs/Cytoscape_v2.8.0/cytoscape.sh"
+    vizPath = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/vizmap.props"
+    pluginPath = "/home/kuromajutsu/LocalLibs/Cytoscape_v2.8.0/plugins"
+
 layoutSpec = 'layout.default="force-directed" defaultVisualStyle="Local-Red-Blue-On-White"'
 netExtension = ".sif"
 

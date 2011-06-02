@@ -14,7 +14,7 @@ Options:
   -q            run quietly
 """
 ## Written By: Sam Ng
-## Last Updated: 5/17/11
+## Last Updated: 6/2/11
 import os, os.path, sys, getopt, re
 sys.path.append("/projects/sysbio/lab_apps/python/Tools")
 import mData, mPathway, mCalculate
@@ -34,8 +34,8 @@ if os.path.exists("/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data
     globalPathway = "/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"
 else:
     globalPathway = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/SuperPathway/data.tab"
-
-drugBank = "/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"
+if os.path.exists("/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"):
+    drugBank = "/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"
 
 def usage(code = 0):
     print __doc__

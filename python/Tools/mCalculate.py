@@ -96,7 +96,7 @@ def median (inList):
     return(median)
 
 def quartiles (inList):
-    """Calculates median"""
+    """Returns the 25/50/75 quartiles"""
     
     cList = mData.floatList(inList)
     cList.sort()
@@ -203,7 +203,7 @@ def ttest(group0, group1, inData, alpha = 0.01):
                 scoreMap[i] = (mean0-mean1)/(math.sqrt((std0**2)/len(values0)+(std1**2)/len(values1))+alpha)
     return(scoreMap)
 
-def zIPL(inData):
+def zIPL(inData, method = "deviation"):
     """Computes z-scores for deviations from 0"""
     
     scoreMap = dict()
