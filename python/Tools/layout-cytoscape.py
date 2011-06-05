@@ -27,13 +27,13 @@ if os.path.exists("/projects/sysbio/apps/java/Cytoscape/cytoscape-2.8.0"):
     pluginPath = "/projects/sysbio/apps/java/Cytoscape/cytoscape-2.8.0/plugins"
 else:
     cysPath = "/home/kuromajutsu/LocalLibs/Cytoscape_v2.8.0/cytoscape.sh"
-    vizPath = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/vizmap.props"
+    vizPath = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/vizmap_nodrug.props"
     pluginPath = "/home/kuromajutsu/LocalLibs/Cytoscape_v2.8.0/plugins"
 
 layoutSpec = 'layout.default="force-directed" defaultVisualStyle="Local-Red-Blue-On-White"'
 netExtension = ".sif"
 
-def usage(code=0):
+def usage(code = 0):
     print __doc__
     if code != None: sys.exit(code)
 

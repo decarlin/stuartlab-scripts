@@ -16,7 +16,6 @@ Options:
 ## Written By: Sam Ng
 ## Last Updated: 6/2/11
 import os, os.path, sys, getopt, re
-sys.path.append("/projects/sysbio/lab_apps/python/Tools")
 import mData, mPathway, mCalculate
 from copy import deepcopy
 

@@ -6,13 +6,13 @@ Usage:
   layout-cytoscapeweb.py [options] feature destDir
 
 Options:
+  -n str    note text
   -s        output score table
   -q        run quietly
 """
 ## Written By: Sam Ng
 ## Last Updated: 5/18/11
 import os, os.path, sys, getopt, re
-sys.path.append("/projects/sysbio/lab_apps/python/Tools")
 import mData, mPathway, mCalculate
 
 verbose = True
@@ -181,7 +181,7 @@ htmlTail = """                ';
 </html>
 """
 
-def usage(code=0):
+def usage(code = 0):
     print __doc__
     if code != None: sys.exit(code)
 
@@ -273,7 +273,7 @@ def getSize(val, minVal = -8, maxVal = 8):
 def main(args):
     ## Parse arguments
     try:
-        opts, args = getopt.getopt(args, "sq")
+        opts, args = getopt.getopt(args, "n:sq")
     except getopt.GetoptError, err:
         print str(err)
         usage(2)
@@ -286,9 +286,11 @@ def main(args):
     destDir = args[1]
     
     scoreTable = False
-    global verbose
+    global verbose, noteText
     for o, a in opts:
-        if o == "-s":
+        if o == "-n":
+            noteText = a
+        elif o == "-s":
             scoreTable = True
         elif o == "-q":
             verbose = False
@@ -387,7 +389,7 @@ def main(args):
         else:
             f = open(destDir+"stats.tab", "w")
             f.write("id\tMAX\tUQS\ttot_nodes\tnote\n")
-        f.write("%s\t%s\t%s\t%s\t%s\n" % (feature, max(nodeVals), mCalculate.quartiles(nodeVals)[2], len(allNodes.keys(), noteText)))
+        f.write("%s\t%s\t%s\t%s\t%s\n" % (feature, max(nodeVals), mCalculate.quartiles(nodeVals)[2], len(allNodes.keys()), noteText))
         f.close()
 
 if __name__ == "__main__":

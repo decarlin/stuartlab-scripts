@@ -4,9 +4,8 @@
 import re, sys
 from copy import deepcopy
 
-def rPathway(inf, returnProteins = False, reverse = False):
-    """Read UCSC Pathway Format"""
-    
+def rPathway(inf, reverse = False, retProteins = False, delim = "\t"):
+    """read UCSC pathway tab"""
     inNodes = dict()                            #Dictionary with (A : type)
     inInteractions = dict()                     #Dictionary with (A : (B : interaction))
     proteins = set()                            #Set of features in pathway
@@ -15,7 +14,7 @@ def rPathway(inf, returnProteins = False, reverse = False):
         if line.isspace():
             continue
         line = line.rstrip("\r\n")
-        pline = re.split("\s*\t\s*", line)
+        pline = re.split(delim, line)
         if len(pline) == 2:
             inNodes[pline[1]] = pline[0]
             if pline[0] == "protein":
@@ -33,14 +32,13 @@ def rPathway(inf, returnProteins = False, reverse = False):
             print >> sys.stderr, "ERROR: line length not 2 or 3: \"%s\"" % (line)
             sys.exit(1)
     f.close()
-    if returnProteins:
+    if retProteins:
         return(inNodes, inInteractions, proteins)
     else:
         return(inNodes, inInteractions)
 
 def rSIF(inf, typef = "concept", reverse = False):
-    """Read SIF"""
-    
+    """read .sif"""
     inNodes = dict()                            #Dictionary with (A : type)
     inInteractions = dict()                     #Dictionary with (A : (B : interaction))
     f = open(inf, "r")
@@ -65,8 +63,7 @@ def rSIF(inf, typef = "concept", reverse = False):
     return(inNodes, inInteractions)
 
 def wSIF(outf, outInteractions, ignoreNodes = []):
-    """Output SIF"""
-    
+    """write .sif"""
     f = open(outf, "w")
     for i in outInteractions.keys():
         if i in ignoreNodes:
@@ -78,8 +75,7 @@ def wSIF(outf, outInteractions, ignoreNodes = []):
     f.close()
 
 def wPathway(outf, outNodes, outInteractions, ignoreNodes = []):
-    """Output UCSC Pathway"""
-    
+    """write UCSC pathway tab"""
     f = open(outf, "w")
     for i in outNodes.keys():
         if i in ignoreNodes:
@@ -131,7 +127,7 @@ def filterComplexes(inNodes, inInteractions):
     del inInteractions[blah][blah]
     return(inNodes, inInteractions)
 
-def addPPI(inf, inNodes, inInteractions, delim = "\t"):
+def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
     f = open(inf, "r")
     for line in f:
         if line.isspace():
@@ -149,6 +145,21 @@ def addPPI(inf, inNodes, inInteractions, delim = "\t"):
                 inNodes[pline[0]] = "protein"
             if pline[1] not in inNodes:
                 inNodes[pline[1]] = "complex"
+        elif (pline[2] == "-a>") | (pline[2] == "-a|"):
+            if pline[0] not in inNodes:
+                inNodes[pline[0]] = "protein"
+            if pline[1] not in inNodes:
+                inNodes[pline[1]] = "protein"
+        elif (pline[2] == "-t>") | (pline[2] == "-t|"):
+            if pline[0] not in inNodes:
+                inNodes[pline[0]] = "protein"
+            if pline[1] not in inNodes:
+                inNodes[pline[1]] = "protein"
+        elif (pline[2] == "-ap>") | (pline[2] == "-ap|"):
+            if pline[0] not in inNodes:
+                inNodes[pline[0]] = "protein"
+            if pline[1] not in inNodes:
+                inNodes[pline[1]] = "abstract"
     f.close()
     return(inNodes, inInteractions)
 
