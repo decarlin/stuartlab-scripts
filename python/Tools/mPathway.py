@@ -62,37 +62,36 @@ def rSIF(inf, typef = "concept", reverse = False):
     f.close()
     return(inNodes, inInteractions)
 
-def wSIF(outf, outInteractions, ignoreNodes = []):
+def wSIF(outf, outInteractions, useNodes = []):
     """write .sif"""
     f = open(outf, "w")
-    for i in outInteractions.keys():
-        if i in ignoreNodes:
+    for i in useNodes:
+        if i not in outInteractions:
             continue
         for j in outInteractions[i].keys():
-            if j in ignoreNodes:
+            if j not in useNodes:
                 continue
             f.write("%s\t%s\t%s\n" % (i, outInteractions[i][j], j))
     f.close()
 
-def wPathway(outf, outNodes, outInteractions, ignoreNodes = []):
-    """write UCSC pathway tab"""
+def wPathway(outf, outNodes, outInteractions, useNodes = []):
+    """write UCSC pathway.tab"""
     f = open(outf, "w")
-    for i in outNodes.keys():
-        if i in ignoreNodes:
+    for i in useNodes:
+        if i not in outNodes:
             continue
         f.write("%s\t%s\n" % (outNodes[i], i))
-    for i in outInteractions.keys():
-        if i in ignoreNodes:
+    for i in useNodes:
+        if i not in outInteractions:
             continue
         for j in outInteractions[i].keys():
-            if j in ignoreNodes:
+            if j not in useNodes:
                 continue
             f.write("%s\t%s\t%s\n" % (i, j, outInteractions[i][j]))
     f.close()
 
 def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, signed = True):
-    """Output adjacency matrix from interactions (cols = SOURCE, rows = TARGET)"""
-    
+    """write adjacency matrix from interactions (cols = SOURCE, rows = TARGET)"""
     if useNodes is None:
         useNodes = outNodes.keys()
     else:
@@ -123,11 +122,25 @@ def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, si
     f.close()
 
 def filterComplexes(inNodes, inInteractions):
+    """remove complexes with no support"""
     del inNodes[blah]
     del inInteractions[blah][blah]
     return(inNodes, inInteractions)
 
+def revInteractions(inInteractions):
+    """reverse interaction mapping"""
+    outInteractions = dict()
+    for i in inInteractions.keys():
+        for j in inInteractions[i].keys():
+            if j not in outInteractions:
+                outInteractions[j] = dict()
+            outInteractions[j][i] = inInteractions[i][j]
+    return(outInteractions)
+
 def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
+    """read in interactions and append to current pathway mappings"""
+    outNodes = deepcopy(inNodes)
+    outInteractions = deepcopy(inInteractions)
     f = open(inf, "r")
     for line in f:
         if line.isspace():
@@ -137,31 +150,31 @@ def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
         if len(pline) != 3:
             print >> sys.stderr, "ERROR: line length not 3: \"%s\"" % (line)
             sys.exit(1)
-        if pline[0] not in inInteractions:
-            inInteractions[pline[0]] = dict()
-        inInteractions[pline[0]][pline[1]] = pline[2]
+        if pline[0] not in outInteractions:
+            outInteractions[pline[0]] = dict()
+        outInteractions[pline[0]][pline[1]] = pline[2]
         if pline[2] == "component>":
-            if pline[0] not in inNodes:
-                inNodes[pline[0]] = "protein"
-            if pline[1] not in inNodes:
-                inNodes[pline[1]] = "complex"
+            if pline[0] not in outNodes:
+                outNodes[pline[0]] = "protein"
+            if pline[1] not in outNodes:
+                outNodes[pline[1]] = "complex"
         elif (pline[2] == "-a>") | (pline[2] == "-a|"):
-            if pline[0] not in inNodes:
-                inNodes[pline[0]] = "protein"
-            if pline[1] not in inNodes:
-                inNodes[pline[1]] = "protein"
+            if pline[0] not in outNodes:
+                outNodes[pline[0]] = "protein"
+            if pline[1] not in outNodes:
+                outNodes[pline[1]] = "protein"
         elif (pline[2] == "-t>") | (pline[2] == "-t|"):
-            if pline[0] not in inNodes:
-                inNodes[pline[0]] = "protein"
-            if pline[1] not in inNodes:
-                inNodes[pline[1]] = "protein"
+            if pline[0] not in outNodes:
+                outNodes[pline[0]] = "protein"
+            if pline[1] not in outNodes:
+                outNodes[pline[1]] = "protein"
         elif (pline[2] == "-ap>") | (pline[2] == "-ap|"):
-            if pline[0] not in inNodes:
-                inNodes[pline[0]] = "protein"
-            if pline[1] not in inNodes:
-                inNodes[pline[1]] = "abstract"
+            if pline[0] not in outNodes:
+                outNodes[pline[0]] = "protein"
+            if pline[1] not in outNodes:
+                outNodes[pline[1]] = "abstract"
     f.close()
-    return(inNodes, inInteractions)
+    return(outNodes, outInteractions)
 
 def largestConnected(allNodes, forInteractions, revInteractions):
     ## Identify largest net
