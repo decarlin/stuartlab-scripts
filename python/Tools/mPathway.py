@@ -23,11 +23,17 @@ def rPathway(inf, reverse = False, retProteins = False, delim = "\t"):
             if reverse:
                 if pline[1] not in inInteractions:
                     inInteractions[pline[1]] = dict()
-                inInteractions[pline[1]][pline[0]] = pline[2]
+                if pline[0] not in inInteractions[pline[1]]:
+                    inInteractions[pline[1]][pline[0]] = pline[2]
+                else:
+                    inInteractions[pline[1]][pline[0]] += ";"+pline[2]
             else:
                 if pline[0] not in inInteractions:
                     inInteractions[pline[0]] = dict()
-                inInteractions[pline[0]][pline[1]] = pline[2]
+                if pline[1] not in inInteractions[pline[0]]:
+                    inInteractions[pline[0]][pline[1]] = pline[2]
+                else:
+                    inInteractions[pline[0]][pline[1]] += ";"+pline[2]
         else:
             print >> sys.stderr, "ERROR: line length not 2 or 3: \"%s\"" % (line)
             sys.exit(1)
@@ -54,29 +60,44 @@ def rSIF(inf, typef = "concept", reverse = False):
         if reverse:
             if pline[2] not in inInteractions:
                 inInteractions[pline[2]] = dict()
-            inInteractions[pline[2]][pline[0]] = pline[1]
+            if pline[0] not in inInteractions[pline[2]]: 
+                inInteractions[pline[2]][pline[0]] = pline[1]
+            else:
+                inInteractions[pline[2]][pline[0]] += ";"+pline[1]
         else:
             if pline[0] not in inInteractions:
                 inInteractions[pline[0]] = dict()
-            inInteractions[pline[0]][pline[2]] = pline[1]
+            if pline[2] not in inInteractions[pline[0]]:
+                inInteractions[pline[0]][pline[2]] = pline[1]
+            else:
+                inInteractions[pline[0]][pline[2]] += ";"+pline[1]
     f.close()
     return(inNodes, inInteractions)
 
-def wSIF(outf, outInteractions, useNodes = []):
+def wSIF(outf, outInteractions, useNodes = None):
     """write .sif"""
     f = open(outf, "w")
-    for i in useNodes:
-        if i not in outInteractions:
-            continue
-        for j in outInteractions[i].keys():
-            if j not in useNodes:
+    if useNodes == None:
+        for i in outInteractions.keys():
+            for j in outInteractions[i].keys():
+                for k in re.split(";", outInteractions[i][j]):
+                    f.write("%s\t%s\t%s\n" % (i, k, j))
+    else:
+        for i in useNodes:
+            if i not in outInteractions:
                 continue
-            f.write("%s\t%s\t%s\n" % (i, outInteractions[i][j], j))
+            for j in outInteractions[i].keys():
+                if j not in useNodes:
+                    continue
+                for k in re.split(";", outInteractions[i][j]):
+                    f.write("%s\t%s\t%s\n" % (i, k, j))
     f.close()
 
-def wPathway(outf, outNodes, outInteractions, useNodes = []):
+def wPathway(outf, outNodes, outInteractions, useNodes = None):
     """write UCSC pathway.tab"""
     f = open(outf, "w")
+    if useNodes == None:
+        useNodes = outNodes.keys()
     for i in useNodes:
         if i not in outNodes:
             continue
@@ -152,7 +173,8 @@ def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
             sys.exit(1)
         if pline[0] not in outInteractions:
             outInteractions[pline[0]] = dict()
-        outInteractions[pline[0]][pline[1]] = pline[2]
+        if pline[1] not in outInteractions[pline[0]]:
+            outInteractions[pline[0]][pline[1]] = pline[2]
         if pline[2] == "component>":
             if pline[0] not in outNodes:
                 outNodes[pline[0]] = "protein"
