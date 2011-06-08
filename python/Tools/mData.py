@@ -107,16 +107,18 @@ def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None):
         f.write("\n")
     f.close()
 
-def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, replace = "[@]", null = "NA", numeric = False):
+def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, replace = "[@]", charMax = 9999, null = "NA", numeric = False):
     """read and write .tsv for lower memory usage and efficiency"""
     seenRows = set()
     f = openAnyFile(inf)
     o = open(outf, "w")
+    ## read header
     line = f.readline()
     if line.isspace():
         log("ERROR: no header found\n", die = True)
     line = line.rstrip("\r\n")
     dataCols = re.split(delim, line)[1:]
+    ## write header
     if useCols is None:
         useCols = set(dataCols)
     outCols = list(set(useCols)&set(dataCols))+list(set(useCols)-set(dataCols))
@@ -125,18 +127,25 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, replace =
     for i in outCols:
         o.write("\t%s" % (i))
     o.write("\n")
+    ## read and write rest of the file
+    numTruncated = 0
     for line in f:
         if line.isspace():
             continue
         line = line.rstrip("\r\n")
         pline = re.split(delim, line)
+        ## tranformations on rowID
         rowItem = re.sub(replace, "", pline[0])
+        if len(rowItem) > charMax:
+            numTruncated += 1
+            rowItem = rowItem[0:(charMax-20)]+"TRUNC"+str(numTruncated)
         if useRows is not None:
             if rowItem not in useRows:
                 continue
         if rowItem in seenRows:
             continue
         seenRows.update([rowItem])
+        ## read in cells
         lData = dict()
         for i in range(len(dataCols)):
             if numeric:
@@ -147,7 +156,7 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, replace =
                     lData[dataCols[i]] = null
             else:
                 lData[dataCols[i]] = pline[i+1]
-
+        ## write the row
         o.write("%s" % (rowItem))
         for i in outCols:
             if i in lData:
