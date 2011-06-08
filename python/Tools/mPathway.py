@@ -108,7 +108,8 @@ def wPathway(outf, outNodes, outInteractions, useNodes = None):
         for j in outInteractions[i].keys():
             if j not in useNodes:
                 continue
-            f.write("%s\t%s\t%s\n" % (i, j, outInteractions[i][j]))
+            for k in re.split(";", outInteractions[i][j]):
+                f.write("%s\t%s\t%s\n" % (i, j, k)
     f.close()
 
 def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, signed = True):
@@ -195,6 +196,9 @@ def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
                 outNodes[pline[0]] = "protein"
             if pline[1] not in outNodes:
                 outNodes[pline[1]] = "abstract"
+        else:
+            print >> sys.stderr, "ERROR: unknown interaction type \"%s\"" % (pline[2])
+            sys.exit(1)
     f.close()
     return(outNodes, outInteractions)
 
@@ -284,30 +288,8 @@ def sortConnected(allNodes, forInteractions, revInteractions, method = "size", a
         sortedNets.append(mapNets[i])
     return(sortedNets)
 
-def constructInteractions(netNodes, allNodes, forInteractions):
-    cNodes = dict()
-    cInteractions = dict()
-    for i in (netNodes):
-        cNodes[i] = allNodes[i]
-        if i in forInteractions:
-            for j in forInteractions[i].keys():
-                if i not in cInteractions:
-                    cInteractions[i] = dict()
-                cInteractions[i][j] = forInteractions[i][j]
-    return(cNodes, cInteractions)
-
-def reverseInteractions(forInteractions):
-    """Reverse interaction dictionary"""
-    
-    revInteractions = dict()
-    for i in forInteractions.keys():
-        for j in forInteractions[i].keys():
-            if j not in revInteractions:
-                revInteractions[j] = dict()
-            revInteractions[j][i] = forInteractions[i][j]
-    return(revInteractions)
-
 def getDownstream(node, distance, forInteractions):
+    """returns downstream neighbors of distance"""
     seenNodes = set([node])
     borderNodes = [node]
     frontierNodes = []
@@ -324,6 +306,7 @@ def getDownstream(node, distance, forInteractions):
     return(seenNodes)
 
 def getNeighbors(node, distance, forInteractions, revInteractions):
+    """returns upstream and downstream neighbors of distance"""
     seenNodes = set([node])
     borderNodes = [node]
     frontierNodes = []
