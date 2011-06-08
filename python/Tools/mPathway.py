@@ -109,7 +109,7 @@ def wPathway(outf, outNodes, outInteractions, useNodes = None):
             if j not in useNodes:
                 continue
             for k in re.split(";", outInteractions[i][j]):
-                f.write("%s\t%s\t%s\n" % (i, j, k)
+                f.write("%s\t%s\t%s\n" % (i, j, k))
     f.close()
 
 def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, signed = True):
