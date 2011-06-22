@@ -1,0 +1,51 @@
+#!/usr/bin/env python2.6
+
+# Take in a sets_overlap.pl output file and convert it to 
+# the java heatmap sets input file
+# 
+
+import sys
+
+def order(collection):
+	return sorted(collection)
+
+connections = {}
+
+query_set = None
+for line in sys.stdin:
+
+	if line.startswith(">"):
+		query_set = line.rstrip()[1:]	
+		connections[query_set] = {}
+		continue
+		
+	parts = line.rstrip().split(",")
+	gene, score = parts[0], parts[1]
+
+	connections[query_set][gene] = score	
+
+
+# print columns
+header = ""
+for set in order(connections):
+	header += "\t"+set
+print "ROWS"+header
+
+# print metadata: edit as needed
+print "METADATA\tWIDTH^800\tHEIGHT^800\tOUTPUT^gif\tFILENAME^heatmap.gif"
+
+# print rows
+for setA in order(connections):
+
+	printline = setA
+
+	for setB in order(connections):
+		score = None
+		if setB in connections[setA]:
+			score = connections[setA][setB]
+		else:
+			score = "0"
+		printline += "\t"+setB+"^"+score	
+
+	print printline	
+
