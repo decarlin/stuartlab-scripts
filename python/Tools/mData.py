@@ -372,6 +372,28 @@ def createSplits(samples0, samples1, seed = None, nrepeats = 1, mfolds = 5):
             splitMap[r][sampleMap[i]].update([i])
     return(splitMap)
 
+def createFoldStructure(samples, splitMap, allLabels, directory = "."):
+    # Iterate through repeats
+    for r in splitMap.keys():
+        # Iterate through folds
+        for m in splitMap[r].keys():
+            # Make directories
+            runDir = directory+"run_%s_%s" % (r, m)
+            system("mkdir %s" % (runDir))
+            test_samples = splitMap[r][m]
+            train_samples = set(samples)-test_samples
+            trlabelf = "%s/train.samples" % (runDir)
+            telabelf = "%s/test.samples" % (runDir)
+            # Generate train/test clinical files
+            f = open(trlabelf, "w")
+            for i in train_samples:
+                f.write("%s\t%s\n" % (i, allLabels[i]))
+            f.close()
+            f = open(telabelf, "w")
+            for i in test_samples:
+                f.write("%s\t%s\n" % (i, allLabels[i]))
+            f.close()
+
 def rMAF(inf, delim = "\t"):
     mutData = dict()
     f = openAnyFile(inf)
