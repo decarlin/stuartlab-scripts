@@ -1,7 +1,7 @@
 ## Data module
 ## Written By: Sam Ng
 ## Last Updated: 6/2/11
-import re, sys, urllib2, os
+import re, sys, urllib2, os, random
 from copy import deepcopy
 import mCalculate
 
@@ -347,7 +347,7 @@ def getSplits(splitf, limit = None):
     f.close()
     return(splitMap)
 
-def createSplits(samples0, samples1, seed = None):
+def createSplits(samples0, samples1, seed = None, nrepeats = 1, mfolds = 5):
     if seed != None:
         random.seed(seed)
     if (len(samples0) < mfolds) | (len(samples1) < mfolds):
