@@ -1,0 +1,8 @@
+This component has been developed in Eclipse, and then exported to an Ant Buildfile
+project. 
+
+To make the heatmap.jar file from the source:
+make jar
+
+To run the heatmap: Java6 must be used --
+java -jar heatmap.jar < input_file.json
