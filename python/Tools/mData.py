@@ -1,7 +1,7 @@
 ## Data module
 ## Written By: Sam Ng
 ## Last Updated: 6/2/11
-import re, sys, urllib2, os
+import re, sys, urllib2, os, random
 from copy import deepcopy
 import mCalculate
 
@@ -347,7 +347,7 @@ def getSplits(splitf, limit = None):
     f.close()
     return(splitMap)
 
-def createSplits(samples0, samples1, seed = None):
+def createSplits(samples0, samples1, seed = None, nrepeats = 1, mfolds = 5):
     if seed != None:
         random.seed(seed)
     if (len(samples0) < mfolds) | (len(samples1) < mfolds):
@@ -371,6 +371,28 @@ def createSplits(samples0, samples1, seed = None):
         for i in sampleMap.keys():
             splitMap[r][sampleMap[i]].update([i])
     return(splitMap)
+
+def createFoldStructure(samples, splitMap, allLabels, directory = "."):
+    # Iterate through repeats
+    for r in splitMap.keys():
+        # Iterate through folds
+        for m in splitMap[r].keys():
+            # Make directories
+            runDir = directory+"run_%s_%s" % (r, m)
+            system("mkdir %s" % (runDir))
+            test_samples = splitMap[r][m]
+            train_samples = set(samples)-test_samples
+            trlabelf = "%s/train.samples" % (runDir)
+            telabelf = "%s/test.samples" % (runDir)
+            # Generate train/test clinical files
+            f = open(trlabelf, "w")
+            for i in train_samples:
+                f.write("%s\t%s\n" % (i, allLabels[i]))
+            f.close()
+            f = open(telabelf, "w")
+            for i in test_samples:
+                f.write("%s\t%s\n" % (i, allLabels[i]))
+            f.close()
 
 def rMAF(inf, delim = "\t"):
     mutData = dict()
