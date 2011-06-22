@@ -6,28 +6,32 @@
 
 import sys
 
-def order(collection):
-	return sorted(collection)
-
 connections = {}
 
-query_set = None
+gold_sets = []
+test_sets = []
+
+gold_sets_hash = {}
 for line in sys.stdin:
 
 	if line.startswith(">"):
-		query_set = line.rstrip()[1:]	
-		connections[query_set] = {}
+		test_sets.append(line.rstrip()[1:])
+		connections[line.rstrip()[1:]] = {}
 		continue
 		
 	parts = line.rstrip().split(",")
-	gene, score = parts[0], parts[1]
+	gold_set, score = parts[0], parts[1]
 
-	connections[query_set][gene] = score	
+	connections[test_sets[-1]][gold_set] = score	
 
+	gold_sets_hash[gold_set] = 1
+
+for set in gold_sets_hash:
+	gold_sets.append(set)
 
 # print columns
 header = ""
-for set in order(connections):
+for set in test_sets:
 	header += "\t"+set
 print "ROWS"+header
 
@@ -35,17 +39,17 @@ print "ROWS"+header
 print "METADATA\tWIDTH^800\tHEIGHT^800\tOUTPUT^gif\tFILENAME^heatmap.gif"
 
 # print rows
-for setA in order(connections):
+for test_set in test_sets:
 
-	printline = setA
+	printline = test_set
 
-	for setB in order(connections):
+	for gold_set in sorted(gold_sets):
 		score = None
-		if setB in connections[setA]:
-			score = connections[setA][setB]
+		if gold_set in connections[test_set]:
+			score = connections[test_set][gold_set]
 		else:
 			score = "0"
-		printline += "\t"+setB+"^"+score	
+		printline += "\t"+gold_set+"^"+score	
 
 	print printline	
 
