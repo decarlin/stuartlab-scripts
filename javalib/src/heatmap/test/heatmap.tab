@@ -1,0 +1,7 @@
+# test input file, to run:
+# java -jar heatmap.jar < heatmap.tab
+ROWS	X	Y	Z
+METADATA	WIDTH^400	HEIGHT^400	OUTPUT^gif	FILENAME^heatmap.gif
+SET1	Y^0.1213	Z^-0.723
+SET2	X^0.23242	Z^0.98121
+SET3	Y^-0.124	X^0.435
