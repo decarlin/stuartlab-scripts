@@ -141,7 +141,7 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, null = "N
         if enumerateRows:
             rowID += 1
             rowItem = "rid_%s" % (rowID)
-            
+            e.write("%s\t%s\n" % (pline[0], rowItem))
         else:
             rowItem = pline[0]
         ## read row
@@ -166,8 +166,211 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, null = "N
             else:
                 o.write("\t%s" % (null))
         o.write("\n")
+    e.close()
     f.close()
     o.close()
+
+def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
+    """read 2 column data"""
+    inData = deepcopy(appendData)
+    f = openAnyFile(inf)
+    if header:
+        line = f.readline()
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        pline = re.split(delim, line)
+        if len(pline[1]) == 0:
+            pline[1] = null
+        if len(pline) != 2:
+            log("ERROR: Length of data line is not 2\n", die = True)
+        inData[pline[0]] = pline[1]
+    f.close()
+    return(inData)
+
+def rCategory(inf, delim = "\t", header = False):
+    """read 2Col categories mapping"""
+    inCat = dict()
+    f = openAnyFile(inf)
+    if header:
+        line = f.readline()
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        pline = re.split(delim, line)
+        if len(pline) != 2:
+            log("ERROR: Length of line is not 2\n", die = True)
+        if pline[1] not in inCat:
+            inCat[pline[1]] = []
+        inCat[pline[1]].append(pline[0])
+    f.close()
+    return(inCat)
+
+def rSet(inf, header = True, delim = "\t", enumerate = False):
+    """read sets file"""
+    inSets = dict()                 #Dictionary with (name : set)
+    f = openAnyFile(inf)
+    if header:
+        f.readline()
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\t\r\n")
+        pline = re.split(delim, line)
+        if enumerate:
+            value = 1
+            while "_".join([pline[0]]+[value]) in inSets:
+                value += 1
+            inSets["_".join([pline[0]]+[value])] = set(pline[1:])
+        else:
+            inSets[pline[0]] = set(pline[1:])
+    f.close()
+    return(inSets)
+
+def rList(inf):
+    """read 1 column list"""
+    inList = list()
+    f = openAnyFile(inf)
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\t\r\n")
+        inList.append(line)
+    f.close()
+    return(inList)
+
+def floatList(inList):
+    """returns only numeric elements of a list"""
+    outList = []
+    for i in inList:
+        try:
+            fval = float(i)
+            if fval != fval:
+                raise ValueError
+            outList.append(fval)
+        except ValueError:
+            continue
+    return(outList)
+
+def lineCount(inf):
+    """returns line count"""
+    f = openAnyFile(inf)
+    for i, l in enumerate(f):
+        pass
+    f.close()
+    return(i+1)
+
+def rMeta(clinf, delim = "\t", null = True):
+    """read .meta format clinical information"""
+    metaLabels = dict()
+    f = openAnyFile(clinf)
+    line = f.readline()
+    if line.isspace():
+        log("ERROR: encountered a blank on line 1\n", die = True)
+    line = line.rstrip("\r\n")
+    pline = re.split(delim, line)
+    samples = pline[1:]
+    line = f.readline()
+    if line.isspace():
+        log("ERROR: encountered a blank on line 2\n", die = True)
+    line = line.rstrip("\r\n")
+    pline = re.split(delim, line)
+    for i in range(len(samples)):
+        if not null:
+            if pline[i+1] == "NULL":
+                continue
+        metaLabels[samples[i]] = pline[i+1]
+    return(metaLabels)
+
+def wMeta(clinf, samples, directory = "."):
+    """write .meta format clinical information"""
+    cData = rCRSData(clinf)
+    for i in cData.keys():
+        f = open(directory+"/"+re.split("/", i)[-1]+".metadata", "w")
+        f.write("labels\t"+"\t".join(samples)+"\n")
+        f.write("knownVal")
+        if len(set(cData[i].values())-set(["", "NULL", "null", "NA"])) == 2:
+            for j in samples:
+                if j in cData[i]:
+                    if cData[i][j] in ["", "NULL", "null", "NA"]:
+                        f.write("\tNULL")
+                    elif cData[i][j] in ["+", "1"]:
+                        f.write("\t1")
+                    elif cData[i][j] in ["-", "0", "-1"]:
+                        f.write("\t0")
+                    else:
+                        f.write("\t%s" % (cData[i][j]))
+                else:
+                    f.write("\tNULL")
+        else:
+            medVal = mCalculate.median(cData[i].values())
+            for j in samples:
+                try:
+                    if float(cData[i][j]) > medVal:
+                        f.write("\t1")
+                    else:
+                        f.write("\t0")
+                except ValueError:
+                    f.write("\tNULL")
+        f.write("\n")
+        f.close()
+
+def getSplits(splitf, limit = None):
+    splitMap = dict()
+    f = openAnyFile(splitf)
+    ## Header
+    line = f.readline()
+    if line.isspace():
+        log("ERROR: encountered a blank on line 1\n", die = True)
+    line = line.rstrip("\r\n")
+    colFeatures = re.split("\t", line)[1:]
+    ## Data
+    r = 0
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        pline = re.split("\t", line)
+        if len(pline) != (1+len(colFeatures)):
+            log("ERROR: length of line does not match the rest of the file\n", die = True)
+        r += 1
+        splitMap[r] = dict()
+        for i in range(len(colFeatures)):
+            if pline[i+1] not in splitMap[r]:
+                splitMap[r][pline[i+1]] = set()
+            splitMap[r][pline[i+1]].update([colFeatures[i]])
+        if limit is not None:
+            if r >= limit:
+                break
+    f.close()
+    return(splitMap)
+
+def createSplits(samples0, samples1, seed = None):
+    if seed != None:
+        random.seed(seed)
+    if (len(samples0) < mfolds) | (len(samples1) < mfolds):
+        log("ERROR: Not enough samples for mfold\n", die = True)
+    splitMap = dict()
+    for r in range(1, nrepeats+1):
+        select0 = deepcopy(samples0)
+        select1 = deepcopy(samples1)
+        sampleMap = dict()
+        splitMap[r] = dict()
+        for m in range(1, mfolds+1):
+            splitMap[r][m] = set()
+        while len(select0)+len(select1) > 0:
+            for m in range(1, mfolds+1):
+                if len(select0) > 0:
+                    sampleMap[select0.pop(random.randint(0,len(select0)-1))] = m
+                else:
+                    sampleMap[select1.pop(random.randint(0,len(select1)-1))] = m
+                if len(select0)+len(select1) == 0:
+                    break
+        for i in sampleMap.keys():
+            splitMap[r][sampleMap[i]].update([i])
+    return(splitMap)
 
 def rMAF(inf, delim = "\t"):
     mutData = dict()
@@ -210,213 +413,3 @@ def rVCF(inf, delim = "\t"):
             mutSet.update([gene])
     f.close()
     return(mutSet)
-
-def r3Col(inf, features = False):
-    """Read 3 column data"""
-    
-    inData = dict()
-    fSet = set()
-    sSet = set()
-    f = openAnyFile(inf)
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\t\r\n")
-        pline = re.split("\s*\t\s*", line)
-        if len(pline) != 3:
-            log("ERROR: Length of data line is not 3\n", die = True)
-        if pline[0] not in inData:
-            inData[pline[0]] = dict()
-        inData[pline[0]][pline[1]] = pline[2]
-        fSet.update([pline[0]])
-        sSet.update([pline[1]])
-    f.close()
-    if features:
-        return(inData, fSet, sSet)
-    else:
-        return(inData)
-
-def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
-    """Read 2 column data"""
-    
-    inData = deepcopy(appendData)
-    f = openAnyFile(inf)
-    if header:
-        line = f.readline()
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\r\n")
-        pline = re.split(delim, line)
-        if len(pline[1]) == 0:
-            pline[1] = null
-        if len(pline) != 2:
-            log("ERROR: Length of data line is not 2\n", die = True)
-        inData[pline[0]] = pline[1]
-    f.close()
-    return(inData)
-
-def rCategory(inf, delim = "\t", header = False):
-    """Read category file"""
-    
-    inCat = dict()
-    f = openAnyFile(inf)
-    if header:
-        line = f.readline()
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\r\n")
-        pline = re.split(delim, line)
-        if len(pline) != 2:
-            log("ERROR: Length of line is not 2\n", die = True)
-        if pline[1] not in inCat:
-            inCat[pline[1]] = []
-        inCat[pline[1]].append(pline[0])
-    f.close()
-    return(inCat)
-
-def rSet(inf, header = True, delim = "\t", enumerate = False):
-    """Read sets file"""
-    
-    inSets = dict()                 #Dictionary with (name : set)
-    f = openAnyFile(inf)
-    if header:
-        f.readline()
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\t\r\n")
-        pline = re.split(delim, line)
-        if enumerate:
-            value = 1
-            while "_".join([pline[0]]+[value]) in inSets:
-                value += 1
-            inSets["_".join([pline[0]]+[value])] = set(pline[1:])
-        else:
-            inSets[pline[0]] = set(pline[1:])
-    f.close()
-    return(inSets)
-
-def rList(inf):
-    """Read 1 column list"""
-    
-    inList = list()
-    f = openAnyFile(inf)
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\t\r\n")
-        inList.append(line)
-    f.close()
-    return(inList)
-
-def floatList(inList):
-    """Takes a list and returns it with only numeric elements"""
-    
-    outList = []
-    for i in inList:
-        try:
-            fval = float(i)
-            if fval != fval:
-                raise ValueError
-            outList.append(fval)
-        except ValueError:
-            continue
-    return(outList)
-        
-def rPDataFeatures(inf):
-    """Read PARADIGM Data for features"""
-    
-    features = set()
-    samples = set() 
-    f = openAnyFile(inf)
-    line = f.readline()
-    if line.isspace():
-        log("Features not found on line 1\n", die = True)
-    line = line.rstrip("\t\r\n")
-    features = set(re.split("\s*\t\s*", line)[1:])
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\t\r\n")
-        pline = re.split("\s*\t\s*", line)
-        samples.update([pline[0]])
-    f.close()
-    return (features, samples)
-
-def rPARADIGM(inf, delim = "\t"):
-    """Read PARADIGM Output"""
-    
-    inLikelihood = dict()
-    inScore = dict()
-    f = openAnyFile(inf)
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\r\n")
-        if line.startswith(">"):
-            pline = re.split("[= ]", line)
-            sample = pline[1]
-            inLikelihood[sample] = float(pline[3])
-            inScore[sample] = dict()
-        else:
-            pline = re.split(delim, line)
-            feature = pline[0]    
-            inScore[sample][feature] = float(pline[1])
-    f.close()
-    return(inLikelihood, inScore)
-
-def lineCount(inf):
-    """line count"""
-    
-    f = open(inf, "r")
-    for i, l in enumerate(f):
-        pass
-    f.close()
-    return(i+1)
-
-def hSamples(datasets, directory = "homogenized", replace = "[ \[\]_()/*,:+@']", null = "NULL", numeric = True):
-    samples = None
-    for i in datasets:
-        dsamples = set(retColumns(i))
-        if samples == None:
-            samples = dsamples
-        else:
-            samples = samples & dsamples
-    if not os.path.exists(directory):
-        os.system("mkdir %s" % (directory))
-    for i in datasets:
-        rwCRSData(directory+"/"+re.split("/", i)[-1], i, useCols = samples, replace = replace, null = null, numeric = numeric)
-
-def wMeta(clinf, samples, directory = "."):
-    cData = rCRSData(clinf)
-    for i in cData.keys():
-        f = open(directory+"/"+re.split("/", i)[-1]+".metadata", "w")
-        f.write("labels\t"+"\t".join(samples)+"\n")
-        f.write("knownVal")
-        if len(set(cData[i].values())-set(["", "NULL", "null", "NA"])) == 2:
-            for j in samples:
-                if j in cData[i]:
-                    if cData[i][j] in ["", "NULL", "null", "NA"]:
-                        f.write("\tNULL")
-                    elif cData[i][j] in ["+", "1"]:
-                        f.write("\t1")
-                    elif cData[i][j] in ["-", "0", "-1"]:
-                        f.write("\t0")
-                    else:
-                        f.write("\t%s" % (cData[i][j]))
-                else:
-                    f.write("\tNULL")
-        else:
-            medVal = mCalculate.median(cData[i].values())
-            for j in samples:
-                try:
-                    if float(cData[i][j]) > medVal:
-                        f.write("\t1")
-                    else:
-                        f.write("\t0")
-                except ValueError:
-                    f.write("\tNULL")
-        f.write("\n")
-        f.close()
