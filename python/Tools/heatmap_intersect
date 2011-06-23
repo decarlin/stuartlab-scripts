@@ -1,0 +1,66 @@
+#!/usr/bin/env python2.6
+
+# Take in a sets_overlap.pl output file and convert it to 
+# the java heatmap sets input file
+# 
+
+# this will only work if the heatmaps have the same rows and
+# columns (in any order)
+# Usage: 
+#
+# 	heatmap_diff <heatmap1.tab> <heatmap2.tab> > diff_heatmap_output
+# 
+# Author: Evan Paull
+
+import sys, math
+
+from optparse import OptionParser
+parser = OptionParser()
+(options, args) = parser.parse_args()
+
+heatmap1 = args[0]
+heatmap2 = args[1]
+
+
+def parseHeatmap(file):
+
+	columns = None
+	fh = open(file, 'r')
+	map = {}
+	first = True
+	for line in fh:
+	
+		if first:
+			columns = line.rstrip().lstrip().split("\t")			
+			first = False
+			continue
+	
+		parts = line.rstrip().split("\t")
+		row_name = parts[0]
+	
+		map[row_name] = {}
+		for i in range(0,len(columns)):
+			map[row_name][columns[i]] = float(parts[i+1])
+
+	fh.close()
+	return (columns, map)
+
+hm1_cols, hm1 = parseHeatmap(heatmap1)
+hm2_cols, hm2 = parseHeatmap(heatmap1)
+
+# columns
+print "\t"+"\t".join(hm1_cols)
+
+# take the intersection	
+for row in hm1:
+
+	printstr = row
+	for col in hm1_cols:
+		hm2_val = 0
+		if row in hm2 and col in hm2[row]:
+			hm2_val = hm2[row][col]
+
+		intersection = hm1[row][col]*hm2_val
+		printstr += "\t"+str(math.sqrt(intersection))
+
+	print printstr
