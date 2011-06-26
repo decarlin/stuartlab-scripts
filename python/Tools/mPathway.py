@@ -159,6 +159,20 @@ def revInteractions(inInteractions):
             outInteractions[j][i] = inInteractions[i][j]
     return(outInteractions)
 
+def constructInteractions(nodeList, inNodes, inInteractions):
+    """select concepts from list and construct Nodes and Interactions"""
+    outNodes = dict()
+    outInteractions = dict()
+    for i in nodeList:
+        inNodes[i] = outNodes[i]
+        if i in inInteractions:
+            for j in inInteractions[i].keys():
+                if j in nodeList:
+                    if i not in outInteractions:
+                        outInteractions[i] = dict()
+                    outInteractions[i][j] = inInteractions[i][j]
+    return(outNodes, outInteractions)
+
 def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
     """read in interactions and append to current pathway mappings"""
     outNodes = deepcopy(inNodes)

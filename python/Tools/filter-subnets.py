@@ -224,8 +224,8 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
             protSet = set()
             for i in gNodes:
                 if gNodes[i] == "protein":
-                    protNodes.update([i])
-            netNodes = mPathway.sortConnected(pNodes, pInteractions, mPathway.reverseInteractions(pInteractions))
+                    protSet.update([i])
+            netNodes = mPathway.sortConnected(pNodes, pInteractions, mPathway.revInteractions(pInteractions))
             trainNodes = []
             for i in netNodes:
                 if len((protSet) & set(i)) > featureReq:
@@ -246,7 +246,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
             classNode = "class"
             lInteractions[classNode] = dict()
             for i in lNodes.keys():
-                lInteractions[classNode][i] = "-pr>"
+                lInteractions[classNode][i] = "-cl>"
             lNodes[classNode] = "class"
             mPathway.wPathway("%s/%s_%s_pp.tab" % (wrtDir, p, filterString), lNodes, lInteractions)        
         ## output nodrug pathway
