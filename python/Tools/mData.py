@@ -166,7 +166,8 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, null = "N
             else:
                 o.write("\t%s" % (null))
         o.write("\n")
-    e.close()
+    if enumerateRows:
+        e.close()
     f.close()
     o.close()
 
@@ -378,8 +379,10 @@ def createFoldStructure(samples, splitMap, allLabels, directory = "."):
         # Iterate through folds
         for m in splitMap[r].keys():
             # Make directories
-            runDir = directory+"run_%s_%s" % (r, m)
-            system("mkdir %s" % (runDir))
+            if not directory.endswith("/"):
+                directory += "/"
+            runDir = "%srun_%s_%s" % (directory, r, m)
+            os.system("mkdir %s" % (runDir))
             test_samples = splitMap[r][m]
             train_samples = set(samples)-test_samples
             trlabelf = "%s/train.samples" % (runDir)

@@ -9,7 +9,7 @@ Options:
   -s  str       mean;std[,mean;std,...] <- forced stats
   -f  str       lower;upper <- filter parameters 
   -d  str       output directory     
-  -l  str       output largest connected net with at least featureReq number of genes in list
+  -t            output paradigm net
   -n            output node attributes for cytoscape
   -q            run quietly
 """
@@ -26,7 +26,6 @@ topDisconnected = 100
 
 outputAttributes = False
 outputPARADIGM = False
-includePARADIGM = ""
 featureReq = 1
 
 if os.path.exists("/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"):
@@ -64,17 +63,17 @@ def addLink(a, b, pNodes, pInteractions, gNodes, gInteractions):
     pInteractions[a][b] = gInteractions[a][b]
     return(pNodes, pInteractions)
 
-def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_defined = False):
+def filterNet(files, phenotypes = [], statLine = None, outDir = None):
     global filterBounds
     filterString = "%s_%s" % (filterBounds[0], filterBounds[1])
     
-    ## Read global pathway
+    ## read global pathway
     (gNodes, gInteractions) = mPathway.rPathway(globalPathway)
     
-    ## Read drugs
+    ## read drugs
     #drugData = mData.rSet(drugBank)
     
-    ## Write LABEL.NA, TYPE.NA
+    ## write LABEL.NA, TYPE.NA
     if outputAttributes:
         typef = open("TYPE.NA", "w")
         labelf = open("LABEL.NA", "w")
@@ -90,7 +89,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
         typef.close()
         labelf.close()
     
-    ## Read scores
+    ## read scores
     uData = dict()
     sData = dict()
     for i in range(len(files)):
@@ -104,7 +103,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
                 except ValueError:
                     sData[i][j][k] = "NA"
     
-    ## Iterate phenotypes
+    ## iterate phenotypes
     for p in sData[0].keys():
         if len(phenotypes) > 0:
             if p not in phenotypes:
@@ -112,7 +111,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
         pNodes = dict()
         pInteractions = dict()
         
-        ## Write SCORE.NA
+        ## write SCORE.NA
         if outputAttributes:
             scoref = open(p+"_SCORE.NA", "w")
             scoref.write("SCORE (class=java.lang.Float)\n")
@@ -135,7 +134,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
                         scoref.write("%s = %s\n" % (i, "0"))
                 scoref.close()
         
-        ## Compute thresholds
+        ## compute thresholds
         pStats = []
         if statLine == None:
             for i in range(len(sData.keys())):
@@ -149,7 +148,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
             log(",%s;%s" % (pStats[i][0], pStats[i][1]))
         log("\n")
         
-        ## Iterate links
+        ## iterate links
         for a in gInteractions.keys():
             if a not in sData[0][p]:
                 continue
@@ -160,6 +159,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
                     continue
                 elif sData[0][p][b] == "NA":
                     continue
+                ## score nodes by threshold
                 aScore = []
                 bScore = []
                 linkScore = []
@@ -179,7 +179,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
                     else:
                         bScore.append(0)
                 
-                ## Selection rule
+                ## selection rule
                 if includeType == "OR":
                     if max(aScore)+max(bScore) >= 3:
                         (pNodes, pInteractions) = addLink(a, b, pNodes, pInteractions, gNodes, gInteractions)
@@ -194,7 +194,7 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
                     if aScore[0]+bScore[0] >= 3:
                         (pNodes, pInteractions) = addLink(a, b, pNodes, pInteractions, gNodes, gInteractions)
         
-        ## Connect top scoring
+        ## connect top scoring disconnected nodes
         sortedTop = sData[0][p].keys()
         sortedTop.sort(lambda x, y: cmp(sData[0][p][y],sData[0][p][x]))
         while (sData[0][p][sortedTop[0]] == "NA"):
@@ -211,52 +211,51 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None, outDir_def
                 pInteractions[sortedTop[i]] = dict()
                 pInteractions[sortedTop[i]]["__DISCONNECTED__"] = "-disconnected-"
         
-        ## Output
-        if not outDir_defined:
-            outDir = p+"/"
-        if not os.path.exists(outDir):
-            os.system("mkdir %s" % (outDir))
+        ## output
+        if outDir == None:
+            wrtDir = p
+        else:
+            wrtDir = outDir
+        if not os.path.exists(wrtDir):
+            os.system("mkdir %s" % (wrtDir))
 
-        ## Output for pathway-predictor
+        ## output for pathway-predictor
         if outputPARADIGM:
-            dataSet = set(mData.rList(includePARADIGM))
+            protSet = set()
+            for i in gNodes:
+                if gNodes[i] == "protein":
+                    protNodes.update([i])
             netNodes = mPathway.sortConnected(pNodes, pInteractions, mPathway.reverseInteractions(pInteractions))
-            #netNodes = mPathway.sortConnected(pNodes, pInteractions, mPathway.reverseInteractions(pInteractions), method = "overlap", addData = dataSet)
-            #netNodes = mPathway.sortConnected(pNodes, pInteractions, mPathway.reverseInteractions(pInteractions), method = "average", addData = sData[0][p])
-            largestNodes = []
+            trainNodes = []
             for i in netNodes:
-                if len((dataSet) & set(i)) > featureReq:
-                    log("found %s features with data in net\n" % (len((dataSet) & set(i))))
-                    largestNodes = i
-                    break
-            if len(largestNodes) == 0:
+                if len((protSet) & set(i)) > featureReq:
+                    trainNodes += i
+            if len(trainNodes) == 0:
                 log("ERROR: no nets contained enough data\n...trying again\n")
                 if filterBounds[0]+0.1 <= filterBounds[1]:
                     filterBounds[1] -= 0.1
                 else:
                     filterBounds[0] -= 0.1
                     filterBounds[1] -= 0.1
-                filterNet(files, phenotypes = phenotypes, statLine = statLine, outDir = outDir, outDir_defined = outDir_defined)
+                filterNet(files, phenotypes = phenotypes, statLine = statLine, outDir = outDir)
                 sys.exit(0)
-            (lNodes, lInteractions) = mPathway.constructInteractions(largestNodes, pNodes, pInteractions)
-            mPathway.wPathway(outDir+p+"_"+filterString+"_largest.tab", lNodes, lInteractions)
+            (lNodes, lInteractions) = mPathway.constructInteractions(trainNodes, pNodes, pInteractions)
             if outputAttributes:
-                mPathway.wSIF(outDir+p+"_"+filterString+"_largest.sif", lInteractions)
-        
-        ## Output nodrug pathway
+                mPathway.wSIF("%s/%s_%s_pp.sif" % (wrtDir, p, filterString), lInteractions)
+            ## connect class node
+            classNode = "class"
+            lInteractions[classNode] = dict()
+            for i in lNodes.keys():
+                lInteractions[classNode][i] = "-pr>"
+            lNodes[classNode] = "class"
+            mPathway.wPathway("%s/%s_%s_pp.tab" % (wrtDir, p, filterString), lNodes, lInteractions)        
+        ## output nodrug pathway
         else:
-            mPathway.wSIF(outDir+p+"_"+filterString+"_nodrug.sif", pInteractions)
-        
-        ## Attach drugs
-        
-        ## Output drug pathway
-        #if outputSIF:
-        #    mPathway.wSIF(outDir+p+"_"+filterString+"_drug.sif", pInteractions)
- 
+            mPathway.wSIF("%s/%s_%s_nodrug.sif" % (wrtDir, p, filterString), pInteractions) 
 
 if __name__ == "__main__":
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "p:s:f:d:l:nq")
+        opts, args = getopt.getopt(sys.argv[1:], "p:s:f:d:tnq")
     except getopt.GetoptError, err:
         print str(err)
         usage(2)
@@ -268,7 +267,6 @@ if __name__ == "__main__":
     phenotypes = []
     statLine = None
     outDir = None
-    outDir_defined = False
     for o, a in opts:
         if o == "-p":
             phenotypes = re.split(";", a)
@@ -284,14 +282,12 @@ if __name__ == "__main__":
             filterBounds.sort()
         elif o == "-d":
             outDir = a
-            if (not outDir.endswith("/")):
-                outDir += "/"
-            outDir_defined = True
-        elif o == "-l":
+            if outDir.endswith:
+                outDir = outDir.rstrip("/")
+        elif o == "-t":
             outputPARADIGM = True
-            includePARADIGM = a
         elif o == "-n":
             outputAttributes = True
         elif o == "-q":
             verbose = False
-    filterNet(args, phenotypes = phenotypes, statLine = statLine, outDir = outDir, outDir_defined = outDir_defined)
+    filterNet(args, phenotypes = phenotypes, statLine = statLine, outDir = outDir)
