@@ -285,38 +285,42 @@ def rMeta(clinf, delim = "\t", null = True):
         metaLabels[samples[i]] = pline[i+1]
     return(metaLabels)
 
-def wMeta(clinf, samples, directory = "."):
+def wMeta(inf, col, method = "discrete", mparams = "-;-1;0,+;1", name = None, samples = None, directory = "."):
     """write .meta format clinical information"""
-    cData = rCRSData(clinf)
-    for i in cData.keys():
-        f = open(directory+"/"+re.split("/", i)[-1]+".metadata", "w")
-        f.write("labels\t"+"\t".join(samples)+"\n")
-        f.write("knownVal")
-        if len(set(cData[i].values())-set(["", "NULL", "null", "NA"])) == 2:
-            for j in samples:
-                if j in cData[i]:
-                    if cData[i][j] in ["", "NULL", "null", "NA"]:
-                        f.write("\tNULL")
-                    elif cData[i][j] in ["+", "1"]:
-                        f.write("\t1")
-                    elif cData[i][j] in ["-", "0", "-1"]:
-                        f.write("\t0")
-                    else:
-                        f.write("\t%s" % (cData[i][j]))
+    cData = rCRSData(inf)[col]
+    if name == None:
+        name = re.sub(" ", "", col)
+    if samples == None:
+        samples = cData.keys()
+    if directory.endswith("/"):
+        directory = directory.rstrip("/")
+    f = open("%s/%s.tab" % (directory, name))
+    f.write("labels\t"+"\t".join(samples)+"\n")
+    vals = []
+    if method == "discrete":
+        labelList = []
+        for i in re.split(",", mparams):
+            labelList.append(re.split(";", i))
+        for i in samples:
+            valAppend = False
+            for label, j in enumerate(labelList):
+                if cData[i] in j:
+                    vals.append(label)
+                    valAppend = True
+            if not valAppend:
+                vals.append("NULL")
+    elif method == "quartile":
+        medVal = mCalculate.median(cData[i].values())
+        for j in samples:
+            try:
+                if float(cData[i][j]) > medVal:
+                    f.write("\t1")
                 else:
-                    f.write("\tNULL")
-        else:
-            medVal = mCalculate.median(cData[i].values())
-            for j in samples:
-                try:
-                    if float(cData[i][j]) > medVal:
-                        f.write("\t1")
-                    else:
-                        f.write("\t0")
-                except ValueError:
-                    f.write("\tNULL")
-        f.write("\n")
-        f.close()
+                    f.write("\t0")
+            except ValueError:
+                f.write("\tNULL")
+    f.write("knownVal\t"+"\t".join(vals)+"\n")
+    f.close()
 
 def getSplits(splitf, limit = None):
     splitMap = dict()

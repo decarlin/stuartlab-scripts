@@ -164,7 +164,7 @@ def constructInteractions(nodeList, inNodes, inInteractions):
     outNodes = dict()
     outInteractions = dict()
     for i in nodeList:
-        inNodes[i] = outNodes[i]
+        outNodes[i] = inNodes[i]
         if i in inInteractions:
             for j in inInteractions[i].keys():
                 if j in nodeList:

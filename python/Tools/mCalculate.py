@@ -24,7 +24,7 @@ def revDict(inDict, list = True):
                 outDict[inDict[i]] = str(i)
     return(outDict)
 
-def removeFeature (feature, inList):
+def removeFeature(feature, inList):
     outList = []
     for i in inList:
         if feature == i:
@@ -32,7 +32,7 @@ def removeFeature (feature, inList):
         outList.append(i)
     return(outList)
 
-def getValues (features, inDict):
+def getValues(features, inDict):
     outList = []
     for i in features:
         if i not in inDict:
@@ -40,7 +40,7 @@ def getValues (features, inDict):
         outList.append(inDict[i])
     return(outList)
 
-def proportions (inList):
+def proportions(inList):
     pMap = dict()
     for i in set(inList):
         pMap[i] = 0
@@ -50,7 +50,7 @@ def proportions (inList):
         pMap[i] = pMap[i]/float(len(inList))
     return(pMap)
 
-def mean (inList):
+def mean(inList):
     """Calculates mean"""
     
     cList = mData.floatList(inList)
@@ -60,7 +60,7 @@ def mean (inList):
         mean = sum(cList)/len(cList)
     return (mean)
 
-def mean_std (inList, sample = True):
+def mean_std(inList, sample = True):
     """Calculates mean and std"""
     
     cList = mData.floatList(inList)
@@ -81,7 +81,7 @@ def mean_std (inList, sample = True):
             std = 0.0
     return(mean, std)
 
-def median (inList):
+def median(inList):
     """Calculates median"""
     
     cList = mData.floatList(inList)
@@ -95,7 +95,7 @@ def median (inList):
             median = (cList[len(cList)/2]+cList[(len(cList)/2)-1])/2.0
     return(median)
 
-def quartiles (inList):
+def quartiles(inList):
     """Returns the 25/50/75 quartiles"""
     
     cList = mData.floatList(inList)

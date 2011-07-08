@@ -28,6 +28,7 @@ outputAttributes = False
 outputPARADIGM = False
 featureReq = 1
 
+#globalPathway = "/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"
 if os.path.exists("/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"):
     globalPathway = "/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"
 else:
@@ -246,8 +247,10 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
             classNode = "class"
             lInteractions[classNode] = dict()
             for i in lNodes.keys():
+                if i not in protSet:
+                    continue
                 lInteractions[classNode][i] = "-cl>"
-            lNodes[classNode] = "class"
+            lNodes[classNode] = "active"
             mPathway.wPathway("%s/%s_%s_pp.tab" % (wrtDir, p, filterString), lNodes, lInteractions)        
         ## output nodrug pathway
         else:
