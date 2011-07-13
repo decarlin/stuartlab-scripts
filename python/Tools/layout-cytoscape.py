@@ -74,6 +74,10 @@ def main(args):
     assert os.path.exists("%s_SCORE.NA" % (feature))
     assert os.path.exists("%s" % (feature))
     
+    naFiles = ["LABEL.NA", "TYPE.NA", "%s_SCORE.NA" % (feature)]
+    if os.path.exists("%s_BORDER.NA" % (feature)):
+        naFiles.append("%s_BORDER.NA" % (feature))
+    
     ## Identify nets with feature
     sifFiles = list()
     for i in os.listdir("%s" % (feature)):
@@ -81,7 +85,7 @@ def main(args):
             sifFiles.append(feature+"/"+i)
                 
     ## Launch cytoscape
-    cmd = "%s -N %s -n LABEL.NA TYPE.NA %s_SCORE.NA -V %s -p %s -P %s" % (cysPath, " ".join(sifFiles), feature, vizPath, pluginPath, layoutSpec)
+    cmd = "%s -N %s -n %s -V %s -p %s -P %s" % (cysPath, " ".join(sifFiles), " ".join(naFiles), vizPath, pluginPath, layoutSpec)
     log(cmd+"\n")
     os.system(cmd)
 

@@ -1,6 +1,6 @@
 ## Data module
 ## Written By: Sam Ng
-## Last Updated: 6/2/11
+## Last Updated: 7/12/11
 import re, sys, urllib2, os, random
 from copy import deepcopy
 import mCalculate
@@ -191,7 +191,7 @@ def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
     return(inData)
 
 def rCategory(inf, delim = "\t", header = False):
-    """read 2Col categories mapping"""
+    """read 2 column categories mapping"""
     inCat = dict()
     f = openAnyFile(inf)
     if header:
@@ -294,7 +294,7 @@ def wMeta(inf, col, method = "discrete", mparams = "-;-1;0,+;1", name = None, sa
         samples = cData.keys()
     if directory.endswith("/"):
         directory = directory.rstrip("/")
-    f = open("%s/%s.tab" % (directory, name))
+    f = open("%s/%s.metadata" % (directory, name), "w")
     f.write("labels\t"+"\t".join(samples)+"\n")
     vals = []
     if method == "discrete":
@@ -302,13 +302,15 @@ def wMeta(inf, col, method = "discrete", mparams = "-;-1;0,+;1", name = None, sa
         for i in re.split(",", mparams):
             labelList.append(re.split(";", i))
         for i in samples:
-            valAppend = False
             for label, j in enumerate(labelList):
-                if cData[i] in j:
-                    vals.append(label)
-                    valAppend = True
-            if not valAppend:
-                vals.append("NULL")
+                if i not in cData:
+                    vals.append("NULL")
+                    break
+                elif cData[i] in j:
+                    vals.append(str(label))
+                    break
+                elif label+1 == len(labelList):
+                    vals.append("NULL")
     elif method == "quartile":
         medVal = mCalculate.median(cData[i].values())
         for j in samples:
@@ -323,6 +325,7 @@ def wMeta(inf, col, method = "discrete", mparams = "-;-1;0,+;1", name = None, sa
     f.close()
 
 def getSplits(splitf, limit = None):
+    """read .folds format file"""
     splitMap = dict()
     f = openAnyFile(splitf)
     ## Header
@@ -353,6 +356,7 @@ def getSplits(splitf, limit = None):
     return(splitMap)
 
 def createSplits(samples0, samples1, seed = None, nrepeats = 1, mfolds = 5):
+    """create splitMap from samples"""
     if seed != None:
         random.seed(seed)
     if (len(samples0) < mfolds) | (len(samples1) < mfolds):
@@ -377,31 +381,8 @@ def createSplits(samples0, samples1, seed = None, nrepeats = 1, mfolds = 5):
             splitMap[r][sampleMap[i]].update([i])
     return(splitMap)
 
-def createFoldStructure(samples, splitMap, allLabels, directory = "."):
-    # Iterate through repeats
-    for r in splitMap.keys():
-        # Iterate through folds
-        for m in splitMap[r].keys():
-            # Make directories
-            if not directory.endswith("/"):
-                directory += "/"
-            runDir = "%srun_%s_%s" % (directory, r, m)
-            os.system("mkdir %s" % (runDir))
-            test_samples = splitMap[r][m]
-            train_samples = set(samples)-test_samples
-            trlabelf = "%s/train.samples" % (runDir)
-            telabelf = "%s/test.samples" % (runDir)
-            # Generate train/test clinical files
-            f = open(trlabelf, "w")
-            for i in train_samples:
-                f.write("%s\t%s\n" % (i, allLabels[i]))
-            f.close()
-            f = open(telabelf, "w")
-            for i in test_samples:
-                f.write("%s\t%s\n" % (i, allLabels[i]))
-            f.close()
-
-def rMAF(inf, delim = "\t"):
+def rMAF(inf, delim = "\t", retSamples = False):
+    """read .maf format file"""
     mutData = dict()
     f = openAnyFile(inf)
     line = f.readline()
@@ -416,6 +397,7 @@ def rMAF(inf, delim = "\t"):
             hugoCol = i
         elif j == "Tumor_Sample_Barcode":
             tumorCol = i
+    samples = []
     for line in f:
         if line.isspace():
             continue
@@ -424,10 +406,16 @@ def rMAF(inf, delim = "\t"):
         if pline[hugoCol] not in mutData:
             mutData[pline[hugoCol]] = list()
         mutData[pline[hugoCol]].append(pline[tumorCol])
+        if pline[tumorCol] not in samples:
+            samples.append(pline[tumorCol])
     f.close()
-    return(mutData)
+    if retSamples:
+        return(mutData, samples)
+    else:
+        return(mutData)
 
 def rVCF(inf, delim = "\t"):
+    """read .vcf files from directory"""
     mutSet = set()
     f = openAnyFile(inf)
     for line in f:
@@ -442,3 +430,20 @@ def rVCF(inf, delim = "\t"):
             mutSet.update([gene])
     f.close()
     return(mutSet)
+
+def wMutData(outf, mutData, samples, features):
+    """write mutation data into a paradigm rawFile"""
+    f = open(outf, "w")
+    f.write("id\t%s\n" % ("\t".join(features)))
+    for i in samples:
+        f.write("%s" % (i))
+        for j in features:
+            if j not in mutData:
+                f.write("\t%s" % ("NA"))
+            else:
+                if i in mutData[j]:
+                    f.write("\t%s" % ("1"))
+                else:
+                    f.write("\t%s" % ("0"))
+        f.write("\n")
+    f.close()
