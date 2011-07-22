@@ -30,12 +30,17 @@ def retColumns(inf, delim = "\t"):
 
 def retRows(inf, delim = "\t"):
     """returns the rows of a .tsv"""
+    rows = []
     f = openAnyFile(inf)
     line = f.readline()
     if line.isspace():
         log("ERROR: encountered a blank header\n", die = True)
-    line = line.rstrip("\r\n")
-    return(re.split(delim, line)[1:])
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        rows.append(re.split(delim, line)[0])
+    return(rows)
     
 def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, debug = False):
     """reads .tsv into a [col][row] dictionary"""

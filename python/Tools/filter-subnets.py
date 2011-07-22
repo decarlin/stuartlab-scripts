@@ -125,15 +125,6 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
                 else:
                     scoref.write("%s = %s\n" % (i, "0"))
             scoref.close()
-            if 1 in uData:
-                scoref = open(p+"_INFLUENCE.NA", "w")
-                scoref.write("INFLUENCE (class=java.lang.Float)\n")
-                for i in gNodes.keys():
-                    if i in uData[1][p]:
-                        scoref.write("%s = %s\n" % (i, uData[1][p][i]))
-                    else:
-                        scoref.write("%s = %s\n" % (i, "0"))
-                scoref.close()
         
         ## compute thresholds
         pStats = []
@@ -196,7 +187,12 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
                         (pNodes, pInteractions) = addLink(a, b, pNodes, pInteractions, gNodes, gInteractions)
         
         ## connect top scoring disconnected nodes
-        sortedTop = sData[0][p].keys()
+        sortedTop = []
+        for i in sData[0][p].keys():
+            if i not in gNodes:
+                continue
+            if gNodes[i] in ["protein"]:
+                sortedTop.append(i)
         sortedTop.sort(lambda x, y: cmp(sData[0][p][y],sData[0][p][x]))
         while (sData[0][p][sortedTop[0]] == "NA"):
             sortedTop.pop(0)

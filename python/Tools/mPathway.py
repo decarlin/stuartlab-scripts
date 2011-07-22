@@ -2,6 +2,7 @@
 #Written By: Sam Ng
 #Last Updated: 5/17/11
 import re, sys
+import mData
 from copy import deepcopy
 
 def rPathway(inf, reverse = False, retProteins = False, delim = "\t"):
@@ -43,10 +44,13 @@ def rPathway(inf, reverse = False, retProteins = False, delim = "\t"):
     else:
         return(inNodes, inInteractions)
 
-def rSIF(inf, typef = "concept", reverse = False):
+def rSIF(inf, typef = None, reverse = False):
     """read .sif"""
     inNodes = dict()                            #Dictionary with (A : type)
     inInteractions = dict()                     #Dictionary with (A : (B : interaction))
+    nodeMap = dict()
+    if typef != None:
+        nodeMap = mData.r2Col(typef, delim = " = ", header = True)
     f = open(inf, "r")
     for line in f:
         if line.isspace():
@@ -54,9 +58,15 @@ def rSIF(inf, typef = "concept", reverse = False):
         line = line.rstrip("\r\n")
         pline = re.split("\s*\t\s*", line)
         if pline[0] not in inNodes:
-            inNodes[pline[0]] = type
+            if pline[0] in nodeMap:
+                inNodes[pline[0]] = nodeMap[pline[0]]
+            else:
+                inNodes[pline[0]] = "concept"
         if pline[2] not in inNodes:
-            inNodes[pline[2]] = type
+            if pline[2] in nodeMap:
+                inNodes[pline[2]] = nodeMap[pline[2]]
+            else:
+                inNodes[pline[2]] = "concept"
         if reverse:
             if pline[2] not in inInteractions:
                 inInteractions[pline[2]] = dict()
@@ -143,11 +153,37 @@ def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, si
         f.write("\n")
     f.close()
 
-def filterComplexes(inNodes, inInteractions):
-    """remove complexes with no support"""
-    del inNodes[blah]
-    del inInteractions[blah][blah]
-    return(inNodes, inInteractions)
+def filterComplexes(allNodes, forInteractions, revInteractions):
+    """remove singleton complexes"""
+    lastCount = -1
+    while lastCount != len(allNodes.keys()):
+        lastCount = len(allNodes.keys())
+        for i in allNodes.keys():
+            if allNodes[i] == "complex":
+                numLinks = 0
+                if i in forInteractions:
+                    numLinks += len(forInteractions[i].keys())
+                if i in revInteractions:
+                    numLinks += len(revInteractions[i].keys())
+                if numLinks < 2:
+                    del allNodes[i]
+                    if i in forInteractions:
+                        for j in forInteractions[i].keys():
+                            del forInteractions[i][j]
+                            if len(forInteractions[i].keys()) == 0:
+                                del forInteractions[i]
+                            del revInteractions[j][i]
+                            if len(revInteractions[j].keys()) == 0:
+                                del revInteractions[j]
+                    if i in revInteractions:
+                        for j in revInteractions[i].keys():
+                            del forInteractions[j][i]
+                            if len(forInteractions[j].keys()) == 0:
+                                del forInteractions[j]
+                            del revInteractions[i][j]
+                            if len(revInteractions[i].keys()) == 0:
+                                del revInteractions[i]
+    return(allNodes, forInteractions)
 
 def revInteractions(inInteractions):
     """reverse interaction mapping"""
