@@ -14,7 +14,7 @@ Options:
   -q            run quietly
 """
 ## Written By: Sam Ng
-## Last Updated: 6/2/11
+## Last Updated: 7/23/11
 import os, os.path, sys, getopt, re
 import mData, mPathway, mCalculate
 from copy import deepcopy
@@ -28,10 +28,11 @@ outputAttributes = False
 outputPARADIGM = False
 featureReq = 1
 
-#globalPathway = "/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"
-if os.path.exists("/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"):
+if os.path.exists("/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"):
+    globalPathway = "/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"
+elif os.path.exists("/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"):
     globalPathway = "/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"
-else:
+elif os.path.exists("/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/SuperPathway/data.tab"):
     globalPathway = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/SuperPathway/data.tab"
 if os.path.exists("/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"):
     drugBank = "/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"
@@ -201,6 +202,8 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
         for i in range(topDisconnected):
             if i > len(sortedTop)-1:
                 break
+            if sData[0][p][sortedTop[i]] < pStats[0][0]+filterBounds[0]*pStats[0][1]:
+                break
             if sortedTop[i] not in gNodes:
                 continue
             if sortedTop[i] not in pNodes:
@@ -250,7 +253,9 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
             mPathway.wPathway("%s/%s_%s_pp.tab" % (wrtDir, p, filterString), lNodes, lInteractions)        
         ## output nodrug pathway
         else:
-            mPathway.wSIF("%s/%s_%s_nodrug.sif" % (wrtDir, p, filterString), pInteractions) 
+            mPathway.wSIF("%s/%s_%s_nodrug.sif" % (wrtDir, p, filterString), pInteractions)
+            (cpNodes, cpInteractions) = mPathway.filterComplexes(pNodes, pInteractions, mPathway.revInteractions(pInteractions))
+            mPathway.wSIF("%s/%s_%s_nodrug_cleaned.sif" % (wrtDir, p, filterString), cpInteractions)
 
 if __name__ == "__main__":
     try:

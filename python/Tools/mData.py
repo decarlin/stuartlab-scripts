@@ -247,19 +247,6 @@ def rList(inf):
     f.close()
     return(inList)
 
-def floatList(inList):
-    """returns only numeric elements of a list"""
-    outList = []
-    for i in inList:
-        try:
-            fval = float(i)
-            if fval != fval:
-                raise ValueError
-            outList.append(fval)
-        except ValueError:
-            continue
-    return(outList)
-
 def lineCount(inf):
     """returns line count"""
     f = openAnyFile(inf)
@@ -452,3 +439,24 @@ def wMutData(outf, mutData, samples, features):
                     f.write("\t%s" % ("0"))
         f.write("\n")
     f.close()
+
+def floatList(inList):
+    """returns only numeric elements of a list"""
+    outList = []
+    for i in inList:
+        try:
+            fval = float(i)
+            if fval != fval:
+                raise ValueError
+            outList.append(fval)
+        except ValueError:
+            continue
+    return(outList)
+
+def applyData(inData, fh):
+    outData = dict()
+    for i in inData.keys():
+        outData[i] = dict()
+        for j in inData[i].keys():
+            outData[i][j] = fh(inData[i])
+    return(outData)
