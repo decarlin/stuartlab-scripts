@@ -153,8 +153,22 @@ def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, si
         f.write("\n")
     f.close()
 
-def filterComplexes(allNodes, forInteractions, revInteractions):
-    """remove singleton complexes"""
+def getComponentMap(allNodes, revInteractions):
+    """create the dictionary componentMap from interaction map"""
+    componentMap = dict()
+    for i in allNodes.keys():
+        if allNodes[i] != "complex":
+            continue
+        if i not in revInteractions:
+            continue
+        componentMap[i] = []
+        for j in revInteractions[i]:
+            if revInteractions[i][j] == "component>":
+                componentMap[i].append(j)
+    return(componentMap)
+
+def filterTerminalComplexes(allNodes, forInteractions, revInteractions):
+    """remove terminal complexes"""
     lastCount = -1
     while lastCount != len(allNodes.keys()):
         lastCount = len(allNodes.keys())
@@ -166,23 +180,28 @@ def filterComplexes(allNodes, forInteractions, revInteractions):
                 if i in revInteractions:
                     numLinks += len(revInteractions[i].keys())
                 if numLinks < 2:
-                    del allNodes[i]
-                    if i in forInteractions:
-                        for j in forInteractions[i].keys():
-                            del forInteractions[i][j]
-                            if len(forInteractions[i].keys()) == 0:
-                                del forInteractions[i]
-                            del revInteractions[j][i]
-                            if len(revInteractions[j].keys()) == 0:
-                                del revInteractions[j]
-                    if i in revInteractions:
-                        for j in revInteractions[i].keys():
-                            del forInteractions[j][i]
-                            if len(forInteractions[j].keys()) == 0:
-                                del forInteractions[j]
-                            del revInteractions[i][j]
-                            if len(revInteractions[i].keys()) == 0:
-                                del revInteractions[i]
+                    removeNode(i, allNodes, forInteractions, revInteractions)
+    return(allNodes, forInteractions)
+
+def filterUnsupportedComplexes(allNodes, forInteractions, revInteractions, componentMap, percent = 50):
+    """remove complexes with less than percent support"""
+    for i in allNodes.keys():
+        ## skip non-complexes
+        if allNodes[i] != "complex":
+            continue
+        ## count members
+        count = 0
+        for j in componentMap[i]:
+            if j in allNodes:
+                count += 1
+        ## remove complexes with 0 components
+        if len(componentMap[i]) == 0:
+            (allNodes, forInteractions, revInteractions) = removeNode(i, allNodes, forInteractions, revInteractions)
+        ## skip supported complexes
+        if count/float(len(componentMap[i])) <= percent:
+            continue
+        ## remove unsuppported complexes
+        (allNodes, forInteractions, revInteractions) = removeNode(i, allNodes, forInteractions, revInteractions)
     return(allNodes, forInteractions)
 
 def revInteractions(inInteractions):
@@ -252,42 +271,25 @@ def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
     f.close()
     return(outNodes, outInteractions)
 
-def largestConnected(allNodes, forInteractions, revInteractions):
-    ## Identify largest net
-    largestNet = []
-    seenNodes = set()
-    for i in allNodes.keys():
-        if i in seenNodes:
-            continue
-        borderNodes = [i]
-        currentNet = [i]
-        while len(borderNodes) > 0:
-            if borderNodes[0] in revInteractions:
-                for j in revInteractions[borderNodes[0]].keys():
-                    if j not in seenNodes:
-                        seenNodes.update([j])
-                        borderNodes.append(j)
-                        currentNet.append(j)
-            if borderNodes[0] in forInteractions:
-                for j in forInteractions[borderNodes[0]].keys():
-                    if j not in seenNodes:
-                        seenNodes.update([j])
-                        borderNodes.append(j)
-                        currentNet.append(j)
-            borderNodes.pop(0)
-        if ("__DISCONNECTED__" not in currentNet) & (len(currentNet) > len(largestNet)):
-            largestNet = deepcopy(currentNet)
-    ## Build largest net
-    lNodes = dict()
-    lInteractions = dict()
-    for i in (largestNet):
-        lNodes[i] = allNodes[i]
-        if i in forInteractions:
-            for j in forInteractions[i].keys():
-                if i not in lInteractions:
-                    lInteractions[i] = dict()
-                lInteractions[i][j] = forInteractions[i][j]
-    return(lNodes, lInteractions)
+def removeNode(i, allNodes, forInteractions, revInteractions):
+    del allNodes[i]
+    if i in forInteractions:
+        for j in forInteractions[i].keys():
+            del forInteractions[i][j]
+            if len(forInteractions[i].keys()) == 0:
+                del forInteractions[i]
+            del revInteractions[j][i]
+            if len(revInteractions[j].keys()) == 0:
+                del revInteractions[j]
+    if i in revInteractions:
+        for j in revInteractions[i].keys():
+            del forInteractions[j][i]
+            if len(forInteractions[j].keys()) == 0:
+                del forInteractions[j]
+            del revInteractions[i][j]
+            if len(revInteractions[i].keys()) == 0:
+                del revInteractions[i]
+    return(allNodes, forInteractions, revInteractions)
 
 def sortConnected(allNodes, forInteractions, revInteractions, method = "size", addData = None):
     index = 1

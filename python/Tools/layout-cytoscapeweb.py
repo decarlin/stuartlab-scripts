@@ -213,7 +213,7 @@ class rgb:
         g = self.g
         b = self.b
         hexchars = "0123456789ABCDEF"
-        return "#" + hexchars[r / 16] + hexchars[r % 16] + hexchars[g / 16] + hexchars[g % 16] + hexchars[b / 16] + hexchars[b % 16]
+        return "#" + hexchars[r/16]+hexchars[r%16]+hexchars[g/16]+hexchars[g%16]+hexchars[b/16]+hexchars[b%16]
 
 def getColor(val, minVal = -8, maxVal = 8):
     minColor = rgb(0, 0, 255)
@@ -222,13 +222,13 @@ def getColor(val, minVal = -8, maxVal = 8):
     try:
         fval = float(val)
     except ValueError:
-        col = rgb(200,200,200)
+        col = rgb(200, 200, 200)
         return col.tohex()
     if fval < 0.0:
         if fval < minVal:
             fval = 1.0
         else:
-            fval = fval / minVal
+            fval = fval/minVal
         col = minColor
     else:
         if fval > maxVal:
@@ -236,9 +236,9 @@ def getColor(val, minVal = -8, maxVal = 8):
         else:
             fval = fval/maxVal
         col = maxColor
-    r = fval * float(col.r - zeroColor.r) + zeroColor.r
-    g = fval * float(col.g - zeroColor.g) + zeroColor.g
-    b = fval * float(col.b - zeroColor.b) + zeroColor.b
+    r = fval*float(col.r-zeroColor.r)+zeroColor.r
+    g = fval*float(col.g-zeroColor.g)+zeroColor.g
+    b = fval*float(col.b-zeroColor.b)+zeroColor.b
     col = rgb(r,g,b)
     
     return(col.tohex())
@@ -286,6 +286,7 @@ def main(args):
     destDir = args[1]
     
     scoreTable = False
+    customImage = False
     global verbose, noteText
     for o, a in opts:
         if o == "-n":
@@ -302,6 +303,8 @@ def main(args):
     assert os.path.exists("TYPE.NA")
     assert os.path.exists("%s_SCORE.NA" % (feature))
     assert os.path.exists("%s" % (feature))
+    if os.path.exists("%s/img" % (feature)):
+        customImage = True
     
     ## Identify nets with feature
     sifFile = None
@@ -321,9 +324,6 @@ def main(args):
     nodes = nodeMap.keys()
     nodes.sort()
     
-    ## Temporary
-    #typeData = mData.r2Col("a1")
-    
     ## Create graphml structure
     graphmlContent = """<graphml>\\
                     <key id="name" for="node" attr.name="name" attr.type="string"/>\\
@@ -332,6 +332,7 @@ def main(args):
                     <key id="color" for="node" attr.name="color" attr.type="string"/>\\
                     <key id="size" for="node" attr.name="size" attr.type="double"/>\\
                     <key id="score" for="node" attr.name="score" attr.type="double"/>\\
+                    <key id="image" for="node" attr.name="image" attr.type="string"/>\\
                     <key id="interaction" for="edge" attr.name="interaction" attr.type="string"/>\\
                     <graph edgedefault="directed">\\
                     """
@@ -344,6 +345,9 @@ def main(args):
             nodeColor = "#FFFFFF"
             nodeSize = 25
             nodeScore = 0
+            nodeImage = ""
+            if customImage:
+                nodeImage = "img/%s" % (re.sub("[:/]", "_", nodeMap[i]))
         else:
             try:
                 nodeVals.append(abs(float(scoreMap[nodeMap[i]])))
@@ -353,9 +357,11 @@ def main(args):
             nodeLabel = re.sub("'", "", labelMap[nodeMap[i]])
             nodeType = typeMap[nodeMap[i]]
             nodeColor = getColor(scoreMap[nodeMap[i]])
-            #nodeColor = getColorbyType(nodeMap[i], typeData)
             nodeSize = getSize(scoreMap[nodeMap[i]])
             nodeScore = scoreMap[nodeMap[i]]
+            nodeImage = ""
+            if customImage:
+                nodeImage = "img/%s" % (re.sub("[:/]", "_", nodeMap[i]))
         graphmlContent += """       <node id="%s">\\
                             <data key="name">%s</data>\\
                             <data key="label">%s</data>\\
@@ -363,8 +369,9 @@ def main(args):
                             <data key="color">%s</data>\\
                             <data key="size">%s</data>\\
                             <data key="score">%s</data>\\
+                            <data key="image">%s</data>\\
                         </node>\\
-                        """ % (i, nodeName, nodeLabel, nodeType, nodeColor, nodeSize, nodeScore)
+                        """ % (i, nodeName, nodeLabel, nodeType, nodeColor, nodeSize, nodeScore, nodeImage)
     for i in allInteractions.keys():
         for j in allInteractions[i].keys():
             graphmlContent += """   <edge source="%s" target="%s">\\
@@ -381,6 +388,8 @@ def main(args):
     f = open(destDir+feature+".html", "w")
     f.write(htmlHead+graphmlContent+htmlTail)
     f.close()
+    if customImage:
+        os.system("cp -r %s/img %s" % (feature, destDir))
     
     ## Score Table
     if scoreTable:

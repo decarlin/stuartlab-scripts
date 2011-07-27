@@ -316,10 +316,10 @@ def wMeta(inf, col, method = "discrete", mparams = "-;-1;0,+;1", name = None, sa
     f.write("knownVal\t"+"\t".join(vals)+"\n")
     f.close()
 
-def getSplits(splitf, limit = None):
+def rFolds(inf, limit = None):
     """read .folds format file"""
     splitMap = dict()
-    f = openAnyFile(splitf)
+    f = openAnyFile(inf)
     ## Header
     line = f.readline()
     if line.isspace():
@@ -327,7 +327,7 @@ def getSplits(splitf, limit = None):
     line = line.rstrip("\r\n")
     colFeatures = re.split("\t", line)[1:]
     ## Data
-    r = 0
+    r = 1
     for line in f:
         if line.isspace():
             continue
@@ -335,7 +335,6 @@ def getSplits(splitf, limit = None):
         pline = re.split("\t", line)
         if len(pline) != (1+len(colFeatures)):
             log("ERROR: length of line does not match the rest of the file\n", die = True)
-        r += 1
         splitMap[r] = dict()
         for i in range(len(colFeatures)):
             if pline[i+1] not in splitMap[r]:
@@ -344,33 +343,55 @@ def getSplits(splitf, limit = None):
         if limit is not None:
             if r >= limit:
                 break
+        r += 1
     f.close()
     return(splitMap)
 
-def createSplits(samples0, samples1, seed = None, nrepeats = 1, mfolds = 5):
+def wFolds(outf, splitMap):
+    samples = []
+    m = 1
+    while m in splitMap[1]:
+        samples += splitMap[1][m]
+        m += 1
+    samples.sort()
+    f = open(outf, "w")
+    f.write("id\t%s\n" % ("\t".join(samples)))
+    r = 1
+    while r in splitMap:
+        f.write("repeat_%s" % (r))
+        for i in samples:
+            val = -1
+            for m in splitMap[r].keys():
+                if i in splitMap[r][m]:
+                    val = m
+                    break
+            f.write("\t%s" % (val))
+        f.write("\n")
+    f.close()
+
+def createSplits(metaGroups, seed = None, nrepeats = 1, mfolds = 5):
     """create splitMap from samples"""
     if seed != None:
         random.seed(seed)
-    if (len(samples0) < mfolds) | (len(samples1) < mfolds):
-        log("ERROR: Not enough samples for mfold\n", die = True)
+    for i in metaGroups.keys():
+        if i == "NULL":
+            continue
+        if len(metaGroups[i]) < mfolds:
+            log("ERROR: Not enough samples for mfold\n", die = True)
     splitMap = dict()
     for r in range(1, nrepeats+1):
-        select0 = deepcopy(samples0)
-        select1 = deepcopy(samples1)
+        selectGroups = deepcopy(metaGroups)
+        groups = selectGroups.keys()
         sampleMap = dict()
-        splitMap[r] = dict()
-        for m in range(1, mfolds+1):
-            splitMap[r][m] = set()
-        while len(select0)+len(select1) > 0:
+        while len(groups) > 0:
             for m in range(1, mfolds+1):
-                if len(select0) > 0:
-                    sampleMap[select0.pop(random.randint(0,len(select0)-1))] = m
-                else:
-                    sampleMap[select1.pop(random.randint(0,len(select1)-1))] = m
-                if len(select0)+len(select1) == 0:
-                    break
-        for i in sampleMap.keys():
-            splitMap[r][sampleMap[i]].update([i])
+                sampleMap[selectGroups[groups[0]].pop(random.randint(0,len(selectGroups[groups[0]])-1))] = m
+                if len(selectGroups[groups[0]]) == 0:
+                    if len(groups) == 0:
+                        break
+                    else:
+                        groups.pop(0)
+        splitMap[r] = reverseDict(sampleMap)
     return(splitMap)
 
 def rMAF(inf, delim = "\t", retSamples = False):
@@ -453,10 +474,24 @@ def floatList(inList):
             continue
     return(outList)
 
+def reverseDict(inDict):
+    outDict = dict()
+    for i in inDict.keys():
+        if inDict[i] not in outDict:
+            outDict[inDict[i]] = []
+        outDict[inDict[i]].append(i)
+    return(outDict)
+
 def applyData(inData, fh):
     outData = dict()
     for i in inData.keys():
         outData[i] = dict()
         for j in inData[i].keys():
-            outData[i][j] = fh(inData[i])
+            outData[i][j] = fh(inData[i][j])
     return(outData)
+
+def randomNoise(val, scale = 0.1):
+    try:
+        return(float(val)*(1+scale*random.gauss(0,1)))
+    except ValueError:
+        return("NA")

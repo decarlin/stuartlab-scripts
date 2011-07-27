@@ -254,7 +254,9 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
         ## output nodrug pathway
         else:
             mPathway.wSIF("%s/%s_%s_nodrug.sif" % (wrtDir, p, filterString), pInteractions)
-            (cpNodes, cpInteractions) = mPathway.filterComplexes(pNodes, pInteractions, mPathway.revInteractions(pInteractions))
+            rpInteractions = mPathway.revInteractions(pInteractions)
+            (cpNodes, cpInteractions) = mPathway.filterUnsupportedComplexes(pNodes, pInteractions, 
+                                        rpInteractions, mPathway.getComponentMap(pNodes, rpInteractions))
             mPathway.wSIF("%s/%s_%s_nodrug_cleaned.sif" % (wrtDir, p, filterString), cpInteractions)
 
 if __name__ == "__main__":
