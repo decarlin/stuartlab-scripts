@@ -159,49 +159,58 @@ def getComponentMap(allNodes, revInteractions):
     for i in allNodes.keys():
         if allNodes[i] != "complex":
             continue
+        componentMap[i] = []
         if i not in revInteractions:
             continue
-        componentMap[i] = []
         for j in revInteractions[i]:
             if revInteractions[i][j] == "component>":
                 componentMap[i].append(j)
     return(componentMap)
 
-def filterTerminalComplexes(allNodes, forInteractions, revInteractions):
-    """remove terminal complexes"""
-    lastCount = -1
-    while lastCount != len(allNodes.keys()):
-        lastCount = len(allNodes.keys())
-        for i in allNodes.keys():
-            if allNodes[i] == "complex":
-                numLinks = 0
-                if i in forInteractions:
-                    numLinks += len(forInteractions[i].keys())
-                if i in revInteractions:
-                    numLinks += len(revInteractions[i].keys())
-                if numLinks < 2:
-                    removeNode(i, allNodes, forInteractions, revInteractions)
-    return(allNodes, forInteractions)
+def filterComplexesByGeneSupport(allNodes, forInteractions, revInteractions, typeMap, componentMap, threshold = 0.5):
+    """remove complexes by percent support"""
+    ## mark complexes in allNodes as unvisitedComplexes
+    unvisitedComplexes = set()
+    for i in allNodes:
+        if allNodes[i] == "complex":
+            unvisitedComplexes.update([i])
+    def keepMajority(complex, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions, typeMap, componentMap, threshold = 0.5):
+        unvisitedComplexes.discard(complex)
+        complexSubunits = []
+        otherSubunits = []
+        for i in componentMap[complex]:
+            if typeMap[i] == "complex":
+                complexSubunits.append(i)
+            else:
+                otherSubunits.append(i)
+        n = len(complexSubunits)+len(otherSubunits)
+        complexSubunitsInNet = []
+        otherSubunitsInNet = []
+        for i in complexSubunits:
+            if i in allNodes:
+                if i in recursedComplexes:
+                    indices = mData.getListIndices(i, recursedComplexes)
+                    mData.log("WARNING: complex loop %s\n" % (recursedComplexes[indices[-1]:]))
+                    continue
+                recursedComplexes.append(i)
+                (logical, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions) = keepMajority(i, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions, typeMap, componentMap, threshold = threshold)
+                if logical:
+                    complexSubunitsInNet.append(i)
+        for i in otherSubunits:
+            if i in allNodes:
+                otherSubunitsInNet.append(i)
+        m = len(complexSubunitsInNet)+len(otherSubunitsInNet)
+        if m <= threshold*n:
+            (allNodes, forInteractions, revInteractions) = removeNode(complex, allNodes, forInteractions, revInteractions)
+            return(False, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions)
+        else:
+            return(True, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions)
 
-def filterUnsupportedComplexes(allNodes, forInteractions, revInteractions, componentMap, percent = 50):
-    """remove complexes with less than percent support"""
-    for i in allNodes.keys():
-        ## skip non-complexes
-        if allNodes[i] != "complex":
-            continue
-        ## count members
-        count = 0
-        for j in componentMap[i]:
-            if j in allNodes:
-                count += 1
-        ## remove complexes with 0 components
-        if len(componentMap[i]) == 0:
-            (allNodes, forInteractions, revInteractions) = removeNode(i, allNodes, forInteractions, revInteractions)
-        ## skip supported complexes
-        if count/float(len(componentMap[i])) <= percent:
-            continue
-        ## remove unsuppported complexes
-        (allNodes, forInteractions, revInteractions) = removeNode(i, allNodes, forInteractions, revInteractions)
+    ## visit complexes while there are still unvisitedComplexes
+    while len(unvisitedComplexes) > 0:
+        complex = list(unvisitedComplexes)[0]
+        recursedComplexes = [complex]
+        (logical, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions) = keepMajority(complex, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions, typeMap, componentMap, threshold = threshold)
     return(allNodes, forInteractions)
 
 def revInteractions(inInteractions):

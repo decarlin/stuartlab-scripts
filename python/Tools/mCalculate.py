@@ -50,12 +50,12 @@ def proportions(inList):
         pMap[i] = pMap[i]/float(len(inList))
     return(pMap)
 
-def mean(inList):
+def mean(inList, null = "NA"):
     """Calculates mean"""
     
     cList = mData.floatList(inList)
     if len(cList) == 0:
-        mean = "NA"
+        mean = null
     else:
         mean = sum(cList)/len(cList)
     return (mean)

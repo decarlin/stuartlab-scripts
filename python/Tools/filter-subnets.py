@@ -30,10 +30,8 @@ featureReq = 1
 
 if os.path.exists("/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"):
     globalPathway = "/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"
-elif os.path.exists("/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"):
-    globalPathway = "/projects/sysbio/map/Data/Pathways/Paradigm/SuperPathway/data.tab"
-elif os.path.exists("/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/SuperPathway/data.tab"):
-    globalPathway = "/home/kuromajutsu/Desktop/Dropbox/My_Research/bin/subnets/SuperPathway/data.tab"
+elif os.path.exists("/home/kuromajutsu/LocalLibs/map/pathwayFiles/global_five3/pid_600_pathway.tab"):
+    globalPathway = "/home/kuromajutsu/LocalLibs/map/pathwayFiles/global_five3/pid_600_pathway.tab"
 if os.path.exists("/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"):
     drugBank = "/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"
 
@@ -254,9 +252,9 @@ def filterNet(files, phenotypes = [], statLine = None, outDir = None):
         ## output nodrug pathway
         else:
             mPathway.wSIF("%s/%s_%s_nodrug.sif" % (wrtDir, p, filterString), pInteractions)
-            rpInteractions = mPathway.revInteractions(pInteractions)
-            (cpNodes, cpInteractions) = mPathway.filterUnsupportedComplexes(pNodes, pInteractions, 
-                                        rpInteractions, mPathway.getComponentMap(pNodes, rpInteractions))
+            (cpNodes, cpInteractions) = mPathway.filterComplexesByGeneSupport(pNodes, pInteractions, 
+                                        mPathway.revInteractions(pInteractions), gNodes,
+                                        mPathway.getComponentMap(gNodes, mPathway.revInteractions(gInteractions)))
             mPathway.wSIF("%s/%s_%s_nodrug_cleaned.sif" % (wrtDir, p, filterString), cpInteractions)
 
 if __name__ == "__main__":

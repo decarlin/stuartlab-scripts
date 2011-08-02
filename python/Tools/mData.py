@@ -482,6 +482,14 @@ def reverseDict(inDict):
         outDict[inDict[i]].append(i)
     return(outDict)
 
+def getListIndices(inItem, inList):
+    """returns indices of the occurence of inItem in inList"""
+    indices = []
+    for i, item in enumerate(inList):
+        if item == inItem:
+            indices.append(i)
+    return(indices)
+
 def applyData(inData, fh):
     outData = dict()
     for i in inData.keys():
