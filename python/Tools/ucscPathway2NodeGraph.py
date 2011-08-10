@@ -23,23 +23,20 @@ componentMap = mPathway.getComponentMap(nodes, revInteractions)
 
 complexRE = re.compile(".*\(complex\).*")
 
-def getGenes(complex_str, componentMap):
-
+# get the constituents of a complex
+def getGenes(complex_str, componentMap, depth):
 	all_genes = []
-	for component in componentMap(complex_str):
-		if complexRE.matches(component):
-			genes = getGenes(component, componentMap)
-			for gene in genes:
-				all_genes.append(gene)
+
+	for component in componentMap[complex_str]:
+		if complexRE.match(component):
+			if component in componentMap and depth < 3:
+				genes = getGenes(component, componentMap, depth+1)
+				for gene in genes:
+					all_genes.append(gene)
 		else:
 			all_genes.append(component)
 
 	return all_genes
-
-
-def enumType(type_str):
-
-
 
 
 # print out a 2-column interactions file of simple PPIs
@@ -50,20 +47,53 @@ tf_edges = {}
 # for each node, find all interactions, and use the component map to refine them to genes
 # if the interaction is a -t>, add it to the TF edge list, otherwise add it to the ppi edge list
 for node in nodes:
+	proteins = []
+	# first break down this node into it's protein constituents
 	if nodes[node] == "protein":
-		ppi_edges[node] = [] 
-		tf_edges[node] = [] 
-		for inode in Interactions[node]:
-			type = Interactions[node][inode]
-			if (complexRE.matches(inode)):
-				genes = getGenes(inode)
-				for gene in genes:
-					if enumType(type) is TF:
-						tf_edges[node].append(gene)	
-					else:
-						ppi_edges[node].append(gene)	
-				
+		proteins = [ node ]
+	elif nodes[node] == "complex":
+		proteins = getGenes(node, componentMap, 1)
+		
 		
 
+	# for each protein, add all interactions to corresponding elements
+	for protein in proteins:
+		ppi_edges[protein] = [] 
+		tf_edges[protein] = [] 
+
+		if protein not in Interactions:
+			continue
+
+		for inode in Interactions[protein]:
+
+			type = Interactions[protein][inode]
+			if type.startswith("-t"):
+				tf_edges[protein].append(gene)	
+				continue
+
+			if complexRE.match(inode):
+				genes = getGenes(inode, componentMap, 1)
+				for gene in genes:
+					ppi_edges[protein].append(gene)	
+				
+	
+
+ppi_out = open(options.ppi_output, 'w')
+for source in ppi_edges:
+
+	for sink in ppi_edges[source]:
+		ppi_out.write(source+"\t"+sink+"\n")
+
+ppi_out.close()
+			
+tf_out = open(options.tf_output, 'w')
+for source in tf_edges:
+
+	for sink in tf_edges[source]:
+		tf_out.write(source+"\t"+sink+"\n")
+
+tf_out.close()
+
+print("done!")			
 
 # print a simple TF interactions file
