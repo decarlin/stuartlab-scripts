@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/local/bin/python2.6
 
-import mPathway, sys, re
-
+import mPathway, sys, re, collections, itertools
 
 from optparse import OptionParser
+
 parser = OptionParser()
 parser.add_option("-p","--pathway_file",type="string",dest="pathway_file", action="store", help="UCSC Pathway File")
 parser.add_option("--tf_output",type="string",dest="tf_output", action="store", help="Output file for Transcription Factor links")
@@ -44,6 +44,21 @@ def getGenes(complex_str, componentMap, depth):
 ppi_edges = {}
 tf_edges = {}
 
+# members in a complex get a different edge weight
+# parse past the protein and complex definitions
+complex_edges = collections.defaultdict(list)
+for line in open(options.pathway_file, 'r'):
+	type, name = line.rstrip().split("\t")
+	if type == "protein":
+		continue
+	elif type == "complex":
+		proteins = getGenes(name, componentMap, 1)
+		for combo in itertools.combinations(proteins, 2):
+			complex_edges[combo[0]].append(combo[1])
+	else:
+		break	
+			
+
 # for each node, find all interactions, and use the component map to refine them to genes
 # if the interaction is a -t>, add it to the TF edge list, otherwise add it to the ppi edge list
 for node in nodes:
@@ -75,8 +90,6 @@ for node in nodes:
 				genes = getGenes(inode, componentMap, 1)
 				for gene in genes:
 					ppi_edges[protein].append(gene)	
-				
-	
 
 ppi_out = open(options.ppi_output, 'w')
 for source in ppi_edges:
@@ -94,6 +107,10 @@ for source in tf_edges:
 
 tf_out.close()
 
-print("done!")			
+#for source in complex_edges:
+#
+#	for sink in complex_edges[source]:
+#		print source+"\t"+sink
+#
 
 # print a simple TF interactions file
