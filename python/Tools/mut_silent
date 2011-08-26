@@ -1,9 +1,9 @@
 #!/usr/bin/env python2.6
 
 """
-    Evan Paull; Aug 25th, 2011
-    Mut Silent
-    Usage: mut_silent <gzipped seq file>
+	Evan Paull; Aug 25th, 2011
+	Mut Silent
+	Usage: mut_silent <gzipped seq file>
 
 	Take a 2-column tab file mapping gene IDs to the exome. Finds the largest
 	ORF, reads through one codon at a time and counts the number of single mutations
@@ -51,39 +51,102 @@ codon_table = codon_table.get_ncbi_codon_table("Standard")
 
 IN_GENE = False
 
+def get_longest_orf(sequence, codon_table):
+
+	# for each ORF window, record the positions of each start and stop codon 
+	frames = [ { 'start_positions':[], 'stop_positions':[] } for x in range(3) ]
+	for pos in range(0, len(sequence)-3, 3):
+
+		# look at each codon, record any stop or start states 
+		orf1_codon = sequence[pos:pos + 3]
+		orf2_codon = sequence[pos + 1:pos + 4]
+		orf3_codon = sequence[pos + 2:pos + 5]
+		orf_codons = [ orf1_codon, orf2_codon, orf3_codon ]
+
+	#	if options.debug:
+		#print "looking at frames:"+orf1_codon+":"+orf2_codon+":"+orf3_codon
+		#print "postion %d of sequence length %d" % (pos, len(sequence))
+
+		# update the window for each ORF if any contains a start/stop codon
+		for window in range(3):
+
+			# at the end of the strand: skip
+			if len(orf_codons[window]) < 3:
+				break
+
+			if codon_table[orf_codons[window]] == 'M':
+				frames[window]['start_positions'].append( pos/3 )
+			elif codon_table[orf_codons[window]] in '*':
+				frames[window]['stop_positions'].append( pos/3 )
+			
+		# terminate the loop once we've found stops for all 3 ORFs
+		#if orf1_state['found_stop'] and orf2_state['found_stop'] and orf3_state['found_stop']:
+			# update the best count list, since we've just found the longest ORF
+
+	# what if the longest ORF has no stop codon at the end?
+	# in that case we're looking for the first start codon that has no
+	# stop codons after it. Instead of writing a new piece of code to 
+	# deal with this, I can just add a 'phantom' stop codon immediately 
+	# after the real sequence and use the get_longest_orf function
+	# normally
+	for index in range(3):
+		frames[index]['stop_positions'].append( len(sequence)/3 + 1 )
+
+	longest_w = 0
+	start = None
+	stop = None
+	for window in range(0,3):
+		longest, x_start, x_stop = get_longest_orf_from_positions(frames[window]['start_positions'],frames[window]['stop_positions'])
+		if longest > longest_w:
+			longest_w, start, stop = longest, x_start*3-3, x_stop*3-3
+
+	return (longest_w, start, stop)
+ 
+def get_longest_orf_from_positions(start_positions, stop_positions):
+	"""
+		Take a list of start positions and a list of stop positions
+		and return the lenth of the longest ORF
+		- Warnings: start and stop positions must be sorted!
+	"""
+	longest = 0
+
+	#if options.debug:
+	#print "Start positions: "+str(start_positions)
+	#print "Stop positions: "+str(stop_positions)
+
+	last_stop = None
+	last_start = None
+	for start in start_positions:
+		for stop in stop_positions:
+			if stop > start:
+				length = stop - start 
+				if length > longest:
+					longest = length 
+					last_stop = stop
+					last_start = start
+				break
+   
+	return (longest, last_start, last_stop)
+
+
 print "#Gene\tLongest_ORF_Length\tNon-Silent_Mutations\tSilent_Mutations"
 seqs = gzip.GzipFile(args[0], 'r')
 for	line in seqs:
-	gene, seq = line.split("\t")
-	seq = seq.translate(lc_to_uc_TT) 
+	gene, sequence = line.split("\t")
+	sequence = sequence.rstrip().translate(lc_to_uc_TT) 
 
-	longest = 0
-	ns_mut = 0
+	ns_mutations = 0
+	s_mutations = 0
 
-	# check all 3 ORFs
-	for offset in range(0,3):
+	# longest ORF from any of 3 windows
+	length, start_pos, stop_pos = get_longest_orf(sequence, codon_table)
+	# XXXXATGXXXTAGXX
+	#    ^         ^
+	for i in range(start_pos, stop_pos-3, 3):
+		codon = sequence[i:i+3]
+	#	print codon
+		ns = count_ns_mutations(codon, codon_table)	
+		ns_mutations += ns
+		s_mutations += 9 - ns
 
-		length = 0
-		ns_mutations = 0	
-		for pos in range(offset,len(seq),3):
-			codon = seq[pos:pos+3]	
-	
-			if codon not in codon_table:
-				continue
-
-			if not IN_GENE and codon_table[codon] == 'M':
-				IN_GENE = True
-				length += 3
-				continue
-
-			if IN_GENE:
-				length += 3
-				ns_mutations += count_ns_mutations(codon, codon_table)	
-			
-			if IN_GENE and codon_table[codon] == '*':
-				if length > longest:
-					longest = length
-					ns_mut = ns_mutations
-				break
-
-	print gene+"\t"+str(longest)+"\t"+str(ns_mut)+"\t"+str(longest*3-ns_mut)
+	print gene+"\t"+str(length)+"\t"+str(ns_mutations)+"\t"+str(s_mutations)
