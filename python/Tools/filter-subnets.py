@@ -28,10 +28,10 @@ outputAttributes = False
 outputPARADIGM = False
 featureReq = 1
 
-if os.path.exists("/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"):
-    globalPathway = "/hive/users/sng/map/pathwayFiles/global_five3/pid_600_pathway.tab"
-elif os.path.exists("/home/kuromajutsu/LocalLibs/map/pathwayFiles/global_five3/pid_600_pathway.tab"):
-    globalPathway = "/home/kuromajutsu/LocalLibs/map/pathwayFiles/global_five3/pid_600_pathway.tab"
+if os.path.exists("/hive/users/sng/map/pathwayFiles/global_five3_v1/pid_600_pathway.tab"):
+    globalPathway = "/hive/users/sng/map/pathwayFiles/global_five3_v1/pid_600_pathway.tab"
+elif os.path.exists("/home/kuromajutsu/LocalLibs/map/pathwayFiles/global_five3_v1/pid_600_pathway.tab"):
+    globalPathway = "/home/kuromajutsu/LocalLibs/map/pathwayFiles/global_five3_v1/pid_600_pathway.tab"
 if os.path.exists("/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"):
     drugBank = "/projects/sysbio/map/Data/Drugs/Human/DrugBank/data.tab"
 

@@ -195,25 +195,6 @@ def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
     f.close()
     return(inData)
 
-def rCategory(inf, delim = "\t", header = False):
-    """read 2 column categories mapping"""
-    inCat = dict()
-    f = openAnyFile(inf)
-    if header:
-        line = f.readline()
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\r\n")
-        pline = re.split(delim, line)
-        if len(pline) != 2:
-            log("ERROR: Length of line is not 2\n", die = True)
-        if pline[1] not in inCat:
-            inCat[pline[1]] = []
-        inCat[pline[1]].append(pline[0])
-    f.close()
-    return(inCat)
-
 def rSet(inf, header = True, delim = "\t", enumerate = False):
     """read sets file"""
     inSets = dict()                 #Dictionary with (name : set)
@@ -367,6 +348,7 @@ def wFolds(outf, splitMap):
                     break
             f.write("\t%s" % (val))
         f.write("\n")
+        r += 1
     f.close()
 
 def createSplits(metaGroups, seed = None, nrepeats = 1, mfolds = 5):
@@ -387,10 +369,9 @@ def createSplits(metaGroups, seed = None, nrepeats = 1, mfolds = 5):
             for m in range(1, mfolds+1):
                 sampleMap[selectGroups[groups[0]].pop(random.randint(0,len(selectGroups[groups[0]])-1))] = m
                 if len(selectGroups[groups[0]]) == 0:
+                    groups.pop(0)
                     if len(groups) == 0:
                         break
-                    else:
-                        groups.pop(0)
         splitMap[r] = reverseDict(sampleMap)
     return(splitMap)
 
