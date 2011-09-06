@@ -176,6 +176,44 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, null = "N
     f.close()
     o.close()
 
+def permuteCRSData(inData, exclude = []):
+    """permutes the rows keys of a CRS data matrix"""
+    rowMap = dict()
+    rowFeatures = list(set(inData[inData.keys()[0]].keys())-set(exclude))
+    permuteFeatures = random.sample(rowFeatures, len(rowFeatures))
+    for i in range(0, len(rowFeatures)):
+        rowMap[rowFeatures[i]] = permuteFeatures[i]
+    outData = dict()
+    for i in inData.keys():
+        outData[i] = dict()
+        for j in inData[i].keys():
+            if j in rowMap:
+                outData[i][j] = inData[i][rowMap[j]]
+            else:
+                outData[i][j] = inData[i][j]
+    return(outData)
+
+def rPARADIGM(inf, delim = "\t"):
+    """read PARADIGM format .fa output"""
+    inLikelihood = dict()
+    inScore = dict()
+    f = openAnyFile(inf)
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        if line.startswith(">"):
+            pline = re.split("[= ]", line)
+            sample = pline[1]
+            inLikelihood[sample] = float(pline[3])
+            inScore[sample] = dict()
+        else:
+            pline = re.split(delim, line)
+            feature = pline[0]    
+            inScore[sample][feature] = float(pline[1])
+    f.close()
+    return(inLikelihood, inScore)
+
 def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
     """read 2 column data"""
     inData = deepcopy(appendData)
