@@ -41,7 +41,7 @@ def getGenes(complex_str, componentMap, depth):
 
 # print out a 2-column interactions file of simple PPIs
 # protein -> protein
-ppi_edges = {}
+edges = {}
 tf_edges = {}
 
 # members in a complex get a different edge weight
@@ -62,42 +62,36 @@ for line in open(options.pathway_file, 'r'):
 # for each node, find all interactions, and use the component map to refine them to genes
 # if the interaction is a -t>, add it to the TF edge list, otherwise add it to the ppi edge list
 for node in nodes:
-	proteins = []
-	# first break down this node into it's protein constituents
-	if nodes[node] == "protein":
-		proteins = [ node ]
-	elif nodes[node] == "complex":
-		proteins = getGenes(node, componentMap, 1)
-		
-		
 
+	# complex, etc
+	type =  nodes[node]
+		
 	# for each protein, add all interactions to corresponding elements
-	for protein in proteins:
-		ppi_edges[protein] = [] 
-		tf_edges[protein] = [] 
+	edges[node] = [] 
+	tf_edges[node] = [] 
 
-		if protein not in Interactions:
+	if node not in Interactions:
+		continue
+
+	for inode in Interactions[node]:
+
+		type = Interactions[node][inode]
+		if type.startswith("-t"):
+			tf_edges[node].append(gene)	
 			continue
 
-		for inode in Interactions[protein]:
+		if complexRE.match(inode):
+			genes = getGenes(inode, componentMap, 1)
+			for gene in genes:
+				edges[node].append(gene)	
 
-			type = Interactions[protein][inode]
-			if type.startswith("-t"):
-				tf_edges[protein].append(gene)	
-				continue
+interactions_out = open(options.ppi_output, 'w')
+for source in edges:
 
-			if complexRE.match(inode):
-				genes = getGenes(inode, componentMap, 1)
-				for gene in genes:
-					ppi_edges[protein].append(gene)	
+	for sink in edges[source]:
+		interactions_out.write(source+"\t"+sink+"\n")
 
-ppi_out = open(options.ppi_output, 'w')
-for source in ppi_edges:
-
-	for sink in ppi_edges[source]:
-		ppi_out.write(source+"\t"+sink+"\n")
-
-ppi_out.close()
+interactions_out.close()
 			
 tf_out = open(options.tf_output, 'w')
 for source in tf_edges:
