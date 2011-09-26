@@ -176,6 +176,44 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, null = "N
     f.close()
     o.close()
 
+def permuteCRSData(inData, exclude = []):
+    """permutes the rows keys of a CRS data matrix"""
+    rowMap = dict()
+    rowFeatures = list(set(inData[inData.keys()[0]].keys())-set(exclude))
+    permuteFeatures = random.sample(rowFeatures, len(rowFeatures))
+    for i in range(0, len(rowFeatures)):
+        rowMap[rowFeatures[i]] = permuteFeatures[i]
+    outData = dict()
+    for i in inData.keys():
+        outData[i] = dict()
+        for j in inData[i].keys():
+            if j in rowMap:
+                outData[i][j] = inData[i][rowMap[j]]
+            else:
+                outData[i][j] = inData[i][j]
+    return(outData)
+
+def rPARADIGM(inf, delim = "\t"):
+    """read PARADIGM format .fa output"""
+    inLikelihood = dict()
+    inScore = dict()
+    f = openAnyFile(inf)
+    for line in f:
+        if line.isspace():
+            continue
+        line = line.rstrip("\r\n")
+        if line.startswith(">"):
+            pline = re.split("[= ]", line)
+            sample = pline[1]
+            inLikelihood[sample] = float(pline[3])
+            inScore[sample] = dict()
+        else:
+            pline = re.split(delim, line)
+            feature = pline[0]    
+            inScore[sample][feature] = float(pline[1])
+    f.close()
+    return(inLikelihood, inScore)
+
 def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
     """read 2 column data"""
     inData = deepcopy(appendData)
@@ -194,25 +232,6 @@ def r2Col(inf, appendData = dict(), delim = "\t", header = False, null = ""):
         inData[pline[0]] = pline[1]
     f.close()
     return(inData)
-
-def rCategory(inf, delim = "\t", header = False):
-    """read 2 column categories mapping"""
-    inCat = dict()
-    f = openAnyFile(inf)
-    if header:
-        line = f.readline()
-    for line in f:
-        if line.isspace():
-            continue
-        line = line.rstrip("\r\n")
-        pline = re.split(delim, line)
-        if len(pline) != 2:
-            log("ERROR: Length of line is not 2\n", die = True)
-        if pline[1] not in inCat:
-            inCat[pline[1]] = []
-        inCat[pline[1]].append(pline[0])
-    f.close()
-    return(inCat)
 
 def rSet(inf, header = True, delim = "\t", enumerate = False):
     """read sets file"""
@@ -367,6 +386,7 @@ def wFolds(outf, splitMap):
                     break
             f.write("\t%s" % (val))
         f.write("\n")
+        r += 1
     f.close()
 
 def createSplits(metaGroups, seed = None, nrepeats = 1, mfolds = 5):
@@ -387,10 +407,9 @@ def createSplits(metaGroups, seed = None, nrepeats = 1, mfolds = 5):
             for m in range(1, mfolds+1):
                 sampleMap[selectGroups[groups[0]].pop(random.randint(0,len(selectGroups[groups[0]])-1))] = m
                 if len(selectGroups[groups[0]]) == 0:
+                    groups.pop(0)
                     if len(groups) == 0:
                         break
-                    else:
-                        groups.pop(0)
         splitMap[r] = reverseDict(sampleMap)
     return(splitMap)
 

@@ -53,7 +53,7 @@ htmlTail = """                ';
                                     { attrValue: "protein", value: "CIRCLE" },
                                     { attrValue: "complex", value: "HEXAGON" },
                                     { attrValue: "abstract", value: "ROUNDRECT" },
-									{ attrValue: "drug", value: "TRIANGLE" }
+                                    { attrValue: "drug", value: "TRIANGLE" }
                                 ]
                             }
                         },
@@ -62,44 +62,47 @@ htmlTail = """                ';
                         size: {
                             passthroughMapper: { attrName: "size" }
                         },
-						color: {
+                        color: {
                             passthroughMapper: { attrName: "color" }
-						},
+                        },
+                        image: {
+                            passthroughMapper: { attrName: "image" }
+                        },
                         labelHorizontalAnchor: "center"
                     },
                     edges: {
                         width: 2,
                         color: "#000000",
-						targetArrowShape: {
-							discreteMapper: {
-								attrName: "interaction",
-								entries: [
-									{ attrValue: "-t|", value: "T" },
-									{ attrValue: "-t>", value: "ARROW" },
-									{ attrValue: "-a|", value: "T" },
-									{ attrValue: "-a>", value: "ARROW" },
-									{ attrValue: "-ap|", value: "T" },
-									{ attrValue: "-ap>", value: "ARROW" },
-									{ attrValue: "component>", value: "NONE" },
-									{ attrValue: "-disconnected-", value: "NONE" }
-								]
-							}
-						},
-						style: {
-							discreteMapper: {
-								attrName: "interaction",
-								entries: [
-									{ attrValue: "-t|", value: "SOLID" },
-									{ attrValue: "-t>", value: "SOLID" },
-									{ attrValue: "-a|", value: "LONG_DASH" },
-									{ attrValue: "-a>", value: "LONG_DASH" },
-									{ attrValue: "-ap|", value: "LONG_DASH" },
-									{ attrValue: "-ap>", value: "LONG_DASH" },
-									{ attrValue: "component>", value: "LONG_DASH" },
-									{ attrValue: "-disconnected-", value: "LONG_DASH" }
-								]
-							}
-						}
+                        targetArrowShape: {
+                            discreteMapper: {
+                                attrName: "interaction",
+                                    entries: [
+                                    { attrValue: "-t|", value: "T" },
+                                    { attrValue: "-t>", value: "ARROW" },
+                                    { attrValue: "-a|", value: "T" },
+                                    { attrValue: "-a>", value: "ARROW" },
+                                    { attrValue: "-ap|", value: "T" },
+                                    { attrValue: "-ap>", value: "ARROW" },
+                                    { attrValue: "component>", value: "NONE" },
+                                    { attrValue: "-disconnected-", value: "NONE" }
+                                ]
+                            }
+                        },
+                        style: {
+                            discreteMapper: {
+                                attrName: "interaction",
+                                entries: [
+                                    { attrValue: "-t|", value: "SOLID" },
+                                    { attrValue: "-t>", value: "SOLID" },
+                                    { attrValue: "-a|", value: "LONG_DASH" },
+                                    { attrValue: "-a>", value: "LONG_DASH" },
+                                    { attrValue: "-ap|", value: "LONG_DASH" },
+                                    { attrValue: "-ap>", value: "LONG_DASH" },
+                                    { attrValue: "component>", value: "LONG_DASH" },
+                                    { attrValue: "-disconnected-", value: "LONG_DASH" }
+                                ]
+                            }
+                        }
                     }
                 };
                 
@@ -346,8 +349,6 @@ def main(args):
             nodeSize = 25
             nodeScore = 0
             nodeImage = ""
-            if customImage:
-                nodeImage = "img/%s" % (re.sub("[:/]", "_", nodeMap[i]))
         else:
             try:
                 nodeVals.append(abs(float(scoreMap[nodeMap[i]])))
@@ -361,7 +362,7 @@ def main(args):
             nodeScore = scoreMap[nodeMap[i]]
             nodeImage = ""
             if customImage:
-                nodeImage = "img/%s" % (re.sub("[:/]", "_", nodeMap[i]))
+                nodeImage = "img/%s.png" % (re.sub("[:/]", "_", nodeMap[i]))
         graphmlContent += """       <node id="%s">\\
                             <data key="name">%s</data>\\
                             <data key="label">%s</data>\\

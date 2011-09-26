@@ -213,7 +213,7 @@ def filterComplexesByGeneSupport(allNodes, forInteractions, revInteractions, typ
         (logical, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions) = keepMajority(complex, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions, typeMap, componentMap, threshold = threshold)
     return(allNodes, forInteractions)
 
-def revInteractions(inInteractions):
+def reverseInteractions(inInteractions):
     """reverse interaction mapping"""
     outInteractions = dict()
     for i in inInteractions.keys():
@@ -359,6 +359,24 @@ def getDownstream(node, distance, forInteractions):
             currNode = borderNodes.pop()
             if currNode in forInteractions:
                 for i in forInteractions[currNode].keys():
+                    if i not in seenNodes:
+                        seenNodes.update([i])
+                        frontierNodes.append(i)
+        borderNodes = deepcopy(frontierNodes)
+        frontierNodes = list()
+    return(seenNodes)
+
+def getUpstream(node, distance, forInteractions):
+    """returns downstream neighbors of distance"""
+    revInteractions = reverseInteractions(forInteractions)
+    seenNodes = set([node])
+    borderNodes = [node]
+    frontierNodes = []
+    for dist in range(distance):
+        while len(borderNodes) > 0:
+            currNode = borderNodes.pop()
+            if currNode in revInteractions:
+                for i in revInteractions[currNode].keys():
                     if i not in seenNodes:
                         seenNodes.update([i])
                         frontierNodes.append(i)
