@@ -7,6 +7,7 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("-p","--pathway_file",type="string",dest="pathway_file", action="store", help="UCSC Pathway File")
 parser.add_option("--tf_output",type="string",dest="tf_output", action="store", help="Output file for Transcription Factor links")
+parser.add_option("--c_output",type="string",dest="component_output", action="store", help="Output file for Component Map")
 parser.add_option("--ppi_output",type="string",dest="ppi_output", action="store", help="Output file for PPI links")
 (options, args) = parser.parse_args()
 
@@ -100,6 +101,11 @@ for source in tf_edges:
 		tf_out.write(source+"\t"+sink+"\n")
 
 tf_out.close()
+
+c_out = open(options.component_output, 'w')
+for component in componentMap:
+	c_out.write(component+"\t"+" ".join(componentMap[component])+"\n")
+c_out.close()
 
 #for source in complex_edges:
 #
