@@ -138,9 +138,8 @@ for p in Proteins:
 
 # go over every interaction: 
 # map connections onto proteins
-for i in Interactions:
-	source = i
-	targets = Interactions[i]
+for source in Interactions:
+	targets = Interactions[source]
 
 	# use to component map to find all the source genes
 	sourceGenes = None
@@ -152,8 +151,8 @@ for i in Interactions:
 	# find target genes with the component map
 	targetGenes = []
 	for target in targets:
-		if complexRE.match(source):
-			for gene in getGenes(source, componentMap, 1):
+		if complexRE.match(target):
+			for gene in getGenes(target, componentMap, 1):
 				targetGenes.append(gene)
 		else:
 			targetGenes.append(gene)
@@ -171,6 +170,7 @@ for i in Interactions:
 				if sr == target:
 					continue
 				edges[sr][target] = None
+
 
 
 # print it out
