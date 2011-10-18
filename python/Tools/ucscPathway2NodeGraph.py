@@ -136,31 +136,42 @@ for p in Proteins:
 				continue
 			edges[p][gene] = None
 
-# go over every complex: for each gene
-for component in componentMap:
-	source_genes = getGenes(component, componentMap, 1)
-	sink_genes = {}
+# go over every interaction: 
+# map connections onto proteins
+for i in Interactions:
+	source = i
+	targets = Interactions[i]
 
-	for node in componentMap[component]:
-		genes = None
-		if complexRE.match(inode):
-			genes = getGenes(node, componentMap, 1)
+	# use to component map to find all the source genes
+	sourceGenes = None
+	if complexRE.match(source):
+		sourceGenes = getGenes(source, componentMap, 1)
+	else:
+		sourceGenes = [ source ]
+
+	# find target genes with the component map
+	targetGenes = []
+	for target in targets:
+		if complexRE.match(source):
+			for gene in getGenes(source, componentMap, 1):
+				targetGenes.append(gene)
 		else:
-			genes = [ node ]
+			targetGenes.append(gene)
 
-		# connect these sink genes to the source gene
-		for sr in source_genes:
+	# connect these sink genes to the source gene
+	for sr in sourceGenes:
 
-			# only proteins here
-			if sr not in edges:
-				continue
+		# only proteins here
+		if sr not in edges:
+			continue
 
-			for sink in genes:
-				# again, only proteins
-				if sink in edges:
-					if sr == sink:
-						continue
-					edges[sr][sink] = None
+		for target in targetGenes:
+			# again, only proteins
+			if target in edges:
+				if sr == target:
+					continue
+				edges[sr][target] = None
+
 
 # print it out
 flattened_out = open(options.flattened, 'w')
