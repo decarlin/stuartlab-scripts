@@ -1,7 +1,7 @@
 ## Data module
 ## Written By: Sam Ng
-## Last Updated: 7/12/11
-import re, sys, urllib2, os, random
+## Last Updated: 9/28/11
+import re, sys, urllib2, os, random, math
 from copy import deepcopy
 import mCalculate
 
@@ -44,9 +44,14 @@ def retRows(inf, delim = "\t"):
     
 def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, debug = False):
     """reads .tsv into a [col][row] dictionary"""
-    inData = deepcopy(appendData)
+    inData = dict()
     colFeatures = []
     rowFeatures = []
+    ## copy appendData
+    for col in appendData.keys():
+        inData[col] = dict()
+        for row in appendData[col].keys():
+            inData[col][row] = [appendData[col][row]]
     ## read header
     f = openAnyFile(inf)
     line = f.readline()
@@ -57,9 +62,9 @@ def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, debug 
     if debug:
         log("%s\nLENGTH: %s\n" % (line, len(pline)))
     colFeatures = pline[1:]
-    for i in colFeatures:
-        if i not in inData:
-            inData[i] = dict()
+    for col in colFeatures:
+        if col not in inData:
+            inData[col] = dict()
     ## read data
     for line in f:
         if line.isspace():
@@ -71,44 +76,55 @@ def rCRSData(inf, appendData = dict(), delim = "\t", retFeatures = False, debug 
             log("%s\nLENGTH: %s\n" % (line, len(pline)))
         if len(pline) != (1+len(colFeatures)):
             log("ERROR: length of line does not match the rest of the file\n", die = True)
-        for i in range(len(colFeatures)):
+        for i, col in enumerate(colFeatures):
+            row = pline[0]
+            if row not in inData[col]:
+                inData[col][row] = []
             if pline[i+1] == "":
-                inData[colFeatures[i]][pline[0]] = "NA"
+                inData[col][row].append("NA")
             else:            
-                inData[colFeatures[i]][pline[0]] = pline[i+1]
+                inData[col][row].append(pline[i+1])
     f.close()
+    ## average entries
+    for col in inData.keys():
+        for row in inData[col].keys():
+            inData[col][row] = mean(inData[col][row], null = inData[col][row][0])
     if retFeatures:
         return(inData, colFeatures, rowFeatures)
     else:
         return(inData)
 
-def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None):
+def wCRSData(outf, outData, delim = "\t", useCols = None, useRows = None, null = "NA"):
     """write [col][row] dictionary to .tsv"""
     ## get colFeatures and rowFeatures
-    if useCols is None:
+    if useCols == None:
         colFeatures = outData.keys()
     else:
         colFeatures = useCols
-    if useRows is None:
-        rowFeatures = outData[colFeatures[0]].keys()
+    if useRows == None:
+        rowFeatures = []
+        for col in colFeatures:
+            if col in outData:
+                rowFeatures = outData[col].keys()
+                break
     else:
         rowFeatures = useRows
     ## write header
     f = open(outf, "w")
     f.write("id")
-    for i in colFeatures:
-        f.write("\t%s" % (i))
+    for col in colFeatures:
+        f.write("\t%s" % (col))
     f.write("\n")
-    for i in rowFeatures:
-        f.write("%s" % (i))
-        for j in colFeatures:
-            if j in outData:
-                if i in outData[j]:
-                    f.write("\t%s" % (outData[j][i]))
+    for row in rowFeatures:
+        f.write("%s" % (row))
+        for col in colFeatures:
+            if col in outData:
+                if row in outData[col]:
+                    f.write("\t%s" % (outData[col][row]))
                 else:
-                    f.write("\tNA") 
+                    f.write("\t%s" % (null)) 
             else:
-                f.write("\tNA")
+                f.write("\t%s" % (null))
         f.write("\n")
     f.close()
 
@@ -176,21 +192,27 @@ def rwCRSData(outf, inf, delim = "\t", useCols = None, useRows = None, null = "N
     f.close()
     o.close()
 
-def permuteCRSData(inData, exclude = []):
-    """permutes the rows keys of a CRS data matrix"""
-    rowMap = dict()
-    rowFeatures = list(set(inData[inData.keys()[0]].keys())-set(exclude))
-    permuteFeatures = random.sample(rowFeatures, len(rowFeatures))
-    for i in range(0, len(rowFeatures)):
-        rowMap[rowFeatures[i]] = permuteFeatures[i]
-    outData = dict()
-    for i in inData.keys():
-        outData[i] = dict()
-        for j in inData[i].keys():
-            if j in rowMap:
-                outData[i][j] = inData[i][rowMap[j]]
-            else:
-                outData[i][j] = inData[i][j]
+def remapCRSData(inData, colMap = dict(), rowMap = dict()):
+    """remaps the keys of a CRS data matrix"""
+    ## map entries
+    outData = {}
+    for col in inData.keys():
+        mcol = col
+        if col in colMap:
+            mcol = colMap[col]
+        if mcol not in outData:
+            outData[mcol] = {}
+        for row in inData[col].keys():
+            mrow = row
+            if row in rowMap:
+                mrow = rowMap[row]
+            if mrow not in outData[mcol]:
+                outData[mcol][mrow] = [] 
+            outData[mcol][mrow].append(inData[col][row])
+    ## average entries
+    for col in outData.keys():
+        for row in outData[col].keys():
+            outData[col][row] = mean(outData[col][row], null = outData[col][row][0])
     return(outData)
 
 def rPARADIGM(inf, delim = "\t"):
@@ -480,26 +502,14 @@ def wMutData(outf, mutData, samples, features):
         f.write("\n")
     f.close()
 
-def floatList(inList):
-    """returns only numeric elements of a list"""
-    outList = []
-    for i in inList:
-        try:
-            fval = float(i)
-            if fval != fval:
-                raise ValueError
-            outList.append(fval)
-        except ValueError:
-            continue
-    return(outList)
-
-def reverseDict(inDict):
-    outDict = dict()
-    for i in inDict.keys():
-        if inDict[i] not in outDict:
-            outDict[inDict[i]] = []
-        outDict[inDict[i]].append(i)
-    return(outDict)
+def reverseCRS(inData):
+    outData = dict()
+    for col in inData.keys():
+        for row in inData[col].keys():
+            if row not in outData:
+                outData[row] = dict()
+            outData[row][col] = inData[col][row]
+    return(outData)
 
 def getListIndices(inItem, inList):
     """returns indices of the occurence of inItem in inList"""
@@ -522,3 +532,75 @@ def randomNoise(val, scale = 0.1):
         return(float(val)*(1+scale*random.gauss(0,1)))
     except ValueError:
         return("NA")
+
+def floatList(inList):
+    """returns only numeric elements of a list"""
+    outList = []
+    for i in inList:
+        try:
+            fval = float(i)
+            if fval != fval:
+                raise ValueError
+            outList.append(fval)
+        except ValueError:
+            continue
+    return(outList)
+
+def mean(inList, null = "NA"):
+    """Calculates mean"""
+    fList = floatList(inList)
+    if len(fList) == 0:
+        mean = null
+    else:
+        mean = sum(fList)/len(fList)
+    return (mean)
+
+def mean_std(inList, sample = True):
+    """Calculates mean and std"""
+    fList = floatList(inList)
+    if len(fList) == 0:
+        mean = "NA"
+        std = "NA"
+    else:
+        mean = sum(fList)/float(len(fList))
+        std = 0.0
+        for i in fList:
+            std += (i-mean)**2
+        if len(fList) > 1:
+            if sample:
+                std = math.sqrt(std/(len(fList)-1))
+            else:
+                std = math.sqrt(std/len(fList))
+        else:
+            std = 0.0
+    return(mean, std)
+
+def corrMaps(map1, map2):
+    """Calculates pearson correlation"""        
+    features = list(set(map1.keys()) & set(map2.keys()))
+    list1 = []
+    list2 = []
+    for feature in features:
+        list1.append(map1[feature])
+        list2.append(map2[feature])
+    mean1 = mean(list1)
+    mean2 = mean(list2)
+    cov = 0.0
+    stdev1 = 0.0
+    stdev2 = 0.0
+    for i in range(len(list1)):
+        try:
+            fval1 = float(list1[i])
+            fval2 = float(list2[i])
+            cov += (fval1-mean1)*(fval2-mean2)
+            stdev1 += (fval1-mean1)**2
+            stdev2 += (fval2-mean2)**2
+        except:
+            continue
+    stdev1 = math.sqrt(stdev1)
+    stdev2 = math.sqrt(stdev2)
+    if stdev1 == 0 or stdev2 == 0:
+        value = "NA"
+    else:
+        value = cov/(stdev1*stdev2)
+    return(value)

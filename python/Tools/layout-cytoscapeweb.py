@@ -274,7 +274,7 @@ def getSize(val, minVal = -8, maxVal = 8):
     return(size)
 
 def main(args):
-    ## Parse arguments
+    ## parse arguments
     try:
         opts, args = getopt.getopt(args, "n:sq")
     except getopt.GetoptError, err:
@@ -301,15 +301,15 @@ def main(args):
     if not destDir.endswith("/"):
         destDir += "/"
     
-    ## Check structure
+    ## check structure
     assert os.path.exists("LABEL.NA")
     assert os.path.exists("TYPE.NA")
     assert os.path.exists("%s_SCORE.NA" % (feature))
     assert os.path.exists("%s" % (feature))
-    if os.path.exists("%s/img" % (feature)):
+    if os.path.exists("%s/img_%s" % (feature, feature)):
         customImage = True
     
-    ## Identify nets with feature
+    ## identify nets with feature
     sifFile = None
     for i in os.listdir("%s" % (feature+"/")):
         if i.endswith(netExtension):
@@ -327,7 +327,7 @@ def main(args):
     nodes = nodeMap.keys()
     nodes.sort()
     
-    ## Create graphml structure
+    ## create graphml structure
     graphmlContent = """<graphml>\\
                     <key id="name" for="node" attr.name="name" attr.type="string"/>\\
                     <key id="label" for="node" attr.name="label" attr.type="string"/>\\
@@ -361,8 +361,8 @@ def main(args):
             nodeSize = getSize(scoreMap[nodeMap[i]])
             nodeScore = scoreMap[nodeMap[i]]
             nodeImage = ""
-            if customImage:
-                nodeImage = "img/%s.png" % (re.sub("[:/]", "_", nodeMap[i]))
+            if (customImage):
+                nodeImage = "img_%s/%s.png" % (feature, re.sub("[:/]", "_", nodeMap[i]))
         graphmlContent += """       <node id="%s">\\
                             <data key="name">%s</data>\\
                             <data key="label">%s</data>\\
@@ -383,16 +383,16 @@ def main(args):
                 </graphml>\\
                 """
     
-    ## Launch cytoscape
+    ## launch cytoscape
     if (not os.path.exists(destDir)):
         os.system("mkdir %s" % (destDir))
     f = open(destDir+feature+".html", "w")
     f.write(htmlHead+graphmlContent+htmlTail)
     f.close()
     if customImage:
-        os.system("cp -r %s/img %s" % (feature, destDir))
+        os.system("cp -r %s/img_%s %s" % (feature, feature, destDir))
     
-    ## Score Table
+    ## score Table
     if scoreTable:
         if os.path.exists(destDir+"stats.tab"):
             f = open(destDir+"stats.tab", "a")

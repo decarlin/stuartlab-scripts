@@ -9,7 +9,7 @@ def log(msg, die = False):
     if die:
         sys.exit(1)
 
-def revDict(inDict, list = True):
+def reverseDict(inDict, list = True):
     outDict = dict()
     for i in inDict.keys():
         if inDict[i] in outDict:
