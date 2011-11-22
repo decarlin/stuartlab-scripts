@@ -1,15 +1,20 @@
 #Pathway module
 #Written By: Sam Ng
-#Last Updated: 5/17/11
+#Last Updated: 9/10/11
 import re, sys
 import mData
 from copy import deepcopy
 
+class Pathway:
+    def __init__(self, nodes, interactions):
+        self.nodes = nodes
+        self.interactions = interactions
+        self.rinteractions = reverseInteractions(interactions)
+
 def rPathway(inf, reverse = False, retProteins = False, delim = "\t"):
     """read UCSC pathway tab"""
-    inNodes = dict()                            #Dictionary with (A : type)
-    inInteractions = dict()                     #Dictionary with (A : (B : interaction))
-    proteins = set()                            #Set of features in pathway
+    proteins = set()
+    readPathway = Pathway(dict(), dict())
     f = open(inf, "r")
     for line in f:
         if line.isspace():
@@ -17,35 +22,55 @@ def rPathway(inf, reverse = False, retProteins = False, delim = "\t"):
         line = line.rstrip("\r\n")
         pline = re.split(delim, line)
         if len(pline) == 2:
-            inNodes[pline[1]] = pline[0]
+            readPathway.nodes[pline[1]] = pline[0]
             if pline[0] == "protein":
                 proteins.update([pline[1]])
         elif len(pline) == 3:
             if reverse:
-                if pline[1] not in inInteractions:
-                    inInteractions[pline[1]] = dict()
-                if pline[0] not in inInteractions[pline[1]]:
-                    inInteractions[pline[1]][pline[0]] = pline[2]
+                if pline[1] not in readPathway.interactions:
+                    readPathway.interactions[pline[1]] = dict()
+                if pline[0] not in readPathway.interactions[pline[1]]:
+                    readPathway.interactions[pline[1]][pline[0]] = pline[2]
                 else:
-                    inInteractions[pline[1]][pline[0]] += ";"+pline[2]
+                    readPathway.interactions[pline[1]][pline[0]] += ";"+pline[2]
             else:
-                if pline[0] not in inInteractions:
-                    inInteractions[pline[0]] = dict()
-                if pline[1] not in inInteractions[pline[0]]:
-                    inInteractions[pline[0]][pline[1]] = pline[2]
+                if pline[0] not in readPathway.interactions:
+                    readPathway.interactions[pline[0]] = dict()
+                if pline[1] not in readPathway.interactions[pline[0]]:
+                    readPathway.interactions[pline[0]][pline[1]] = pline[2]
                 else:
-                    inInteractions[pline[0]][pline[1]] += ";"+pline[2]
+                    readPathway.interactions[pline[0]][pline[1]] += ";"+pline[2]
         else:
             print >> sys.stderr, "ERROR: line length not 2 or 3: \"%s\"" % (line)
             sys.exit(1)
     f.close()
     if retProteins:
-        return(inNodes, inInteractions, proteins)
+        return(readPathway.nodes, readPathway.interactions, proteins)
     else:
-        return(inNodes, inInteractions)
+        return(readPathway.nodes, readPathway.interactions)
+
+def wPathway(outf, outNodes, outInteractions, useNodes = None):
+    """write UCSC pathway.tab"""
+    f = open(outf, "w")
+    if useNodes == None:
+        useNodes = outNodes.keys()
+    for i in useNodes:
+        if i not in outNodes:
+            continue
+        f.write("%s\t%s\n" % (outNodes[i], i))
+    for i in useNodes:
+        if i not in outInteractions:
+            continue
+        for j in outInteractions[i].keys():
+            if j not in useNodes:
+                continue
+            for k in re.split(";", outInteractions[i][j]):
+                f.write("%s\t%s\t%s\n" % (i, j, k))
+    f.close()
 
 def rSIF(inf, typef = None, reverse = False):
     """read .sif"""
+    readPathway = Pathway(dict(), dict())
     inNodes = dict()                            #Dictionary with (A : type)
     inInteractions = dict()                     #Dictionary with (A : (B : interaction))
     nodeMap = dict()
@@ -84,86 +109,37 @@ def rSIF(inf, typef = None, reverse = False):
     f.close()
     return(inNodes, inInteractions)
 
-def wSIF(outf, outInteractions, useNodes = None):
+def wSIF(writeFile, writeInteractions, useNodes = None):
     """write .sif"""
-    f = open(outf, "w")
+    f = open(writeFile, "w")
     if useNodes == None:
-        for i in outInteractions.keys():
-            for j in outInteractions[i].keys():
-                for k in re.split(";", outInteractions[i][j]):
+        for i in writeInteractions.keys():
+            for j in writeInteractions[i].keys():
+                for k in re.split(";", writeInteractions[i][j]):
                     f.write("%s\t%s\t%s\n" % (i, k, j))
     else:
         for i in useNodes:
-            if i not in outInteractions:
+            if i not in writeInteractions:
                 continue
-            for j in outInteractions[i].keys():
+            for j in writeInteractions[i].keys():
                 if j not in useNodes:
                     continue
-                for k in re.split(";", outInteractions[i][j]):
+                for k in re.split(";", writeInteractions[i][j]):
                     f.write("%s\t%s\t%s\n" % (i, k, j))
     f.close()
 
-def wPathway(outf, outNodes, outInteractions, useNodes = None):
-    """write UCSC pathway.tab"""
-    f = open(outf, "w")
-    if useNodes == None:
-        useNodes = outNodes.keys()
-    for i in useNodes:
-        if i not in outNodes:
-            continue
-        f.write("%s\t%s\n" % (outNodes[i], i))
-    for i in useNodes:
-        if i not in outInteractions:
-            continue
-        for j in outInteractions[i].keys():
-            if j not in useNodes:
-                continue
-            for k in re.split(";", outInteractions[i][j]):
-                f.write("%s\t%s\t%s\n" % (i, j, k))
-    f.close()
-
-def wAdj(outf, outNodes, outInteractions, useNodes = None, symmetric = False, signed = True):
-    """write adjacency matrix from interactions (cols = SOURCE, rows = TARGET)"""
-    if useNodes is None:
-        useNodes = outNodes.keys()
-    else:
-        for i in useNodes:
-            if i not in outNodes.keys():
-                print >> sys.stderr, "WARNING: %s in include not found in pathway" % (i)    
-    f = open(outf, "w")
-    f.write("\t".join(["id"]+useNodes)+"\n")
-    val = None
-    for i in useNodes:
-        f.write("%s" % (i))
-        for j in useNodes:
-            val = 0
-            if i in outInteractions:
-                if j in outInteractions[i]:
-                    if (outInteractions[i][j].endswith("|") & signed):
-                        val = -1
-                    else:
-                        val = 1
-            if (symmetric & (j in outInteractions)):
-                if i in outInteractions[j]:
-                    if (outInteractions[j][i].endswith("|") & signed):
-                        val = -1
-                    else:
-                        val = 1
-            f.write("\t%s" % (val))
-        f.write("\n")
-    f.close()
-
-def getComponentMap(allNodes, revInteractions):
+def getComponentMap(pNodes, pInteractions):
     """create the dictionary componentMap from interaction map"""
+    rpInteractions = reverseInteractions(pInteractions)
     componentMap = dict()
-    for i in allNodes.keys():
-        if allNodes[i] != "complex":
+    for i in pNodes.keys():
+        if pNodes[i] != "complex":
             continue
         componentMap[i] = []
-        if i not in revInteractions:
+        if i not in rpInteractions:
             continue
-        for j in revInteractions[i]:
-            if revInteractions[i][j] == "component>":
+        for j in rpInteractions[i]:
+            if rpInteractions[i][j] == "component>":
                 componentMap[i].append(j)
     return(componentMap)
 
@@ -201,7 +177,7 @@ def filterComplexesByGeneSupport(allNodes, forInteractions, revInteractions, typ
                 otherSubunitsInNet.append(i)
         m = len(complexSubunitsInNet)+len(otherSubunitsInNet)
         if m <= threshold*n:
-            (allNodes, forInteractions, revInteractions) = removeNode(complex, allNodes, forInteractions, revInteractions)
+            (allNodes, forInteractions, revInteractions) = removeNode(complex, allNodes, forInteractions)
             return(False, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions)
         else:
             return(True, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions)
@@ -213,92 +189,46 @@ def filterComplexesByGeneSupport(allNodes, forInteractions, revInteractions, typ
         (logical, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions) = keepMajority(complex, unvisitedComplexes, recursedComplexes, allNodes, forInteractions, revInteractions, typeMap, componentMap, threshold = threshold)
     return(allNodes, forInteractions)
 
-def reverseInteractions(inInteractions):
+def reverseInteractions(pInteractions):
     """reverse interaction mapping"""
-    outInteractions = dict()
-    for i in inInteractions.keys():
-        for j in inInteractions[i].keys():
-            if j not in outInteractions:
-                outInteractions[j] = dict()
-            outInteractions[j][i] = inInteractions[i][j]
-    return(outInteractions)
+    rpInteractions = dict()
+    for i in pInteractions.keys():
+        for j in pInteractions[i].keys():
+            if j not in rpInteractions:
+                rpInteractions[j] = dict()
+            rpInteractions[j][i] = pInteractions[i][j]
+    return(rpInteractions)
 
-def constructInteractions(nodeList, inNodes, inInteractions):
-    """select concepts from list and construct Nodes and Interactions"""
-    outNodes = dict()
-    outInteractions = dict()
+def constructInteractions(nodeList, refNodes, refInteractions):
+    """select concepts from list and construct Pathway"""
+    outPathway = Pathway({}, {})
     for i in nodeList:
-        outNodes[i] = inNodes[i]
-        if i in inInteractions:
-            for j in inInteractions[i].keys():
+        outPathway.nodes[i] = refNodes[i]
+        if i in refInteractions:
+            for j in refInteractions[i].keys():
                 if j in nodeList:
-                    if i not in outInteractions:
-                        outInteractions[i] = dict()
-                    outInteractions[i][j] = inInteractions[i][j]
-    return(outNodes, outInteractions)
+                    if i not in outPathway.interactions:
+                        outPathway.interactions[i] = dict()
+                    outPathway.interactions[i][j] = refInteractions[i][j]
+    return(outPathway.nodes, outPathway.interactions)
 
-def addInteractions(inf, inNodes, inInteractions, delim = "\t"):
-    """read in interactions and append to current pathway mappings"""
-    outNodes = deepcopy(inNodes)
-    outInteractions = deepcopy(inInteractions)
-    f = open(inf, "r")
-    for line in f:
-        if line.isspace():
+def combinePathways(currentPathway, appendPathway, exclude = []):
+    """combine Pathways"""
+    for source in appendPathway.interactions.keys():
+        if source in exclude:
             continue
-        line = line.rstrip("\r\n")
-        pline = re.split(delim, line)
-        if len(pline) != 3:
-            print >> sys.stderr, "ERROR: line length not 3: \"%s\"" % (line)
-            sys.exit(1)
-        if pline[0] not in outInteractions:
-            outInteractions[pline[0]] = dict()
-        if pline[1] not in outInteractions[pline[0]]:
-            outInteractions[pline[0]][pline[1]] = pline[2]
-        if pline[2] == "component>":
-            if pline[0] not in outNodes:
-                outNodes[pline[0]] = "protein"
-            if pline[1] not in outNodes:
-                outNodes[pline[1]] = "complex"
-        elif (pline[2] == "-a>") | (pline[2] == "-a|"):
-            if pline[0] not in outNodes:
-                outNodes[pline[0]] = "protein"
-            if pline[1] not in outNodes:
-                outNodes[pline[1]] = "protein"
-        elif (pline[2] == "-t>") | (pline[2] == "-t|"):
-            if pline[0] not in outNodes:
-                outNodes[pline[0]] = "protein"
-            if pline[1] not in outNodes:
-                outNodes[pline[1]] = "protein"
-        elif (pline[2] == "-ap>") | (pline[2] == "-ap|"):
-            if pline[0] not in outNodes:
-                outNodes[pline[0]] = "protein"
-            if pline[1] not in outNodes:
-                outNodes[pline[1]] = "abstract"
-        else:
-            print >> sys.stderr, "ERROR: unknown interaction type \"%s\"" % (pline[2])
-            sys.exit(1)
-    f.close()
-    return(outNodes, outInteractions)
-
-def removeNode(i, allNodes, forInteractions, revInteractions):
-    del allNodes[i]
-    if i in forInteractions:
-        for j in forInteractions[i].keys():
-            del forInteractions[i][j]
-            if len(forInteractions[i].keys()) == 0:
-                del forInteractions[i]
-            del revInteractions[j][i]
-            if len(revInteractions[j].keys()) == 0:
-                del revInteractions[j]
-    if i in revInteractions:
-        for j in revInteractions[i].keys():
-            del forInteractions[j][i]
-            if len(forInteractions[j].keys()) == 0:
-                del forInteractions[j]
-            del revInteractions[i][j]
-            if len(revInteractions[i].keys()) == 0:
-                del revInteractions[i]
-    return(allNodes, forInteractions, revInteractions)
+        if source not in currentPathway.nodes:
+            currentPathway.nodes[source] = appendPathway.nodes[source]
+        for target in appendPathway.interactions[source].keys():
+            if target in exclude:
+                continue
+            if target not in currentPathway.nodes:
+                currentPathway.nodes[target] = appendPathway.nodes[target]
+            if source not in currentPathway.interactions:
+                currentPathway.interactions[source] = dict()
+            if target not in currentPathway.interactions[source]:
+                currentPathway.interactions[source][target] = appendPathway.interactions[source][target]
+    return(currentPathway)
 
 def sortConnected(allNodes, forInteractions, revInteractions, method = "size", addData = None):
     index = 1
@@ -349,7 +279,168 @@ def sortConnected(allNodes, forInteractions, revInteractions, method = "size", a
         sortedNets.append(mapNets[i])
     return(sortedNets)
 
-def getDownstream(node, distance, forInteractions):
+def flattenPathway(inPathway):
+    """expands complexes into their respective gene components"""
+    allowedNodes = ["abstract", "family", "miRNA", "protein", "rna"]
+    outPathway = Pathway({}, {})
+    ## read and search componentMap for protein components
+    componentMap = getComponentMap(inPathway.nodes, inPathway.interactions)
+    for entity in componentMap.keys():
+        seenNodes = set()
+        elements = []
+        expand = deepcopy(componentMap[entity])
+        while len(expand) > 0:
+            if expand[0] in seenNodes:
+                expand.pop(0)
+                continue
+            seenNodes.update([expand[0]])
+            if inPathway.nodes[expand[0]] == "protein":
+                elements.append(expand[0])
+            elif expand[0] in componentMap:
+                expand += deepcopy(componentMap[expand[0]])
+            expand.pop(0)
+        componentMap[entity] = elements
+    ## iterate over all interactions
+    for source in inPathway.interactions.keys(): 
+        for target in inPathway.interactions[source].keys():
+            ## update interactions map
+            if inPathway.nodes[source] in allowedNodes:
+                if inPathway.nodes[target] in allowedNodes:
+                    if source not in outPathway.nodes:
+                        outPathway.nodes[source] = inPathway.nodes[source]
+                    if target not in outPathway.nodes:
+                        outPathway.nodes[target] = inPathway.nodes[target]
+                    if source not in outPathway.interactions:
+                        outPathway.interactions[source] = {}
+                    outPathway.interactions[source][target] = inPathway.interactions[source][target]
+                elif target in componentMap:
+                    for element in componentMap[target]:
+                        if source != element:
+                            if source not in outPathway.nodes:
+                                outPathway.nodes[source] = inPathway.nodes[source]
+                            if element not in outPathway.nodes:
+                                outPathway.nodes[element] = inPathway.nodes[element]
+                            if source not in outPathway.interactions:
+                                outPathway.interactions[source] = {}
+                            if inPathway.interactions[source][target] == "component>":
+                                outPathway.interactions[source][element] = "-a>"
+                            else:
+                                outPathway.interactions[source][element] = inPathway.interactions[source][target]
+            elif source in componentMap:
+                if inPathway.nodes[target] in allowedNodes:
+                    for element in componentMap[source]:
+                        if element not in outPathway.nodes:
+                            outPathway.nodes[element] = inPathway.nodes[element]
+                        if target not in outPathway.nodes:
+                            outPathway.nodes[target] = inPathway.nodes[target]
+                        if element not in outPathway.interactions:
+                            outPathway.interactions[element] = {}
+                        outPathway.interactions[element][target] = inPathway.interactions[source][target]
+                elif target in componentMap:
+                    continue
+    return(outPathway)
+
+def getMutationPathways(node, gPathway, distance = [2, 1], include = None):
+    """returns upstream and downstream neighbors"""
+    rpInteractions = reverseInteractions(gPathway.interactions)
+    if include == None:
+        include = set(gPathway.nodes.keys())
+    upPathway = Pathway({node : gPathway.nodes[node]}, {})
+    downPathway = Pathway({node : gPathway.nodes[node]}, {})
+    seenUp = set([node])
+    seenDown = set([node])
+    unresolvedUp = [node]
+    unresolvedDown = [node]
+    for d in range(distance[0]):    
+        ## Up-
+        frontierUp = []
+        while len(unresolvedUp) > 0:
+            currNode = unresolvedUp.pop()
+            ## Add complex as upstream for seed node
+            if currNode == node:
+                if currNode in gPathway.interactions:
+                    for target in gPathway.interactions[currNode].keys():
+                        if gPathway.interactions[currNode][target] == "component>":
+                            seenUp.update([target])
+                            upPathway.nodes[target] = gPathway.nodes[target]
+                            upPathway.interactions[currNode] = {}
+                            upPathway.interactions[currNode][target] = "component>"
+                            unresolvedUp.append(target)
+            ## Add upstream
+            if currNode in gPathway.rinteractions:
+                for target in gPathway.rinteractions[currNode].keys():
+                    if target not in seenUp:
+                        seenUp.update([target])
+                        if gPathway.nodes[target] == "protein":
+                            if target in include:
+                                upPathway.nodes[target] = gPathway.nodes[target]
+                                upPathway.interactions[target] = {}
+                                upPathway.interactions[target][currNode] = gPathway.interactions[target][currNode]
+                                frontierUp.append(target)
+                        elif gPathway.nodes[target] == "complex":
+                            upPathway.nodes[target] = gPathway.nodes[target]
+                            upPathway.interactions[target] = {}
+                            upPathway.interactions[target][currNode] = gPathway.interactions[target][currNode]
+                            unresolvedUp.append(target)
+                    else:
+                        if target not in upPathway.interactions:
+                            upPathway.interactions[target] = {}
+                        if currNode not in upPathway.interactions[target]:
+                            upPathway.interactions[target][currNode] = gPathway.interactions[target][currNode]
+        unresolvedUp = deepcopy(frontierUp)
+    for d in range(distance[1]):
+        ## Down-
+        frontierDown = []
+        while len(unresolvedDown) > 0:
+            currNode = unresolvedDown.pop()
+            ## Add downstream
+            if currNode in gPathway.interactions:
+                for target in gPathway.interactions[currNode].keys():
+                    if target not in seenDown:
+                        seenDown.update([target])
+                        if gPathway.nodes[target] == "protein":
+                            if target in include:
+                                downPathway.nodes[target] = gPathway.nodes[target]
+                                if currNode not in downPathway.interactions:
+                                    downPathway.interactions[currNode] = {}
+                                downPathway.interactions[currNode][target] = gPathway.interactions[currNode][target]
+                                frontierDown.append(target)
+                        elif gPathway.nodes[target] == "complex":
+                            downPathway.nodes[target] = gPathway.nodes[target]
+                            if currNode not in downPathway.interactions:
+                                downPathway.interactions[currNode] = {}
+                            downPathway.interactions[currNode][target] = gPathway.interactions[currNode][target]
+                            unresolvedDown.append(target)
+                    else:
+                        if currNode not in downPathway.interactions:
+                            downPathway.interactions[currNode] = {}
+                        if target not in downPathway.interactions[currNode]:
+                            downPathway.interactions[currNode][target] = gPathway.interactions[currNode][target]
+            ## Add upstream for non-seed node
+            # if currNode != node:
+                # if currNode in gPathway.rinteractions:
+                    # for target in gPathway.rinteractions[currNode].keys():
+                        # if target not in seenDown:
+                            # seenDown.update([target])
+                            # if gPathway.nodes[target] == "protein":
+                                # if target in include:
+                                    # downPathway.nodes[target] = gPathway.nodes[target]
+                                    # downPathway.interactions[target] = {}
+                                    # downPathway.interactions[target][currNode] = gPathway.interactions[target][currNode]
+                            # elif gPathway.nodes[target] == "complex":
+                                # downPathway.nodes[target] = gPathway.nodes[target]
+                                # downPathway.interactions[target] = {}
+                                # downPathway.interactions[target][currNode] = gPathway.interactions[target][currNode]
+                                # unresolvedDown.append(target)
+                        # else:
+                            # if target not in downPathway.interactions:
+                                # downPathway.interactions[target] = {}
+                            # if currNode not in downPathway.interactions[target]:
+                                # downPathway.interactions[target][currNode] = gPathway.interactions[target][currNode]
+        unresolvedDown = deepcopy(frontierDown)
+    return(upPathway, downPathway)
+
+def getDownstream(node, distance, pInteractions):
     """returns downstream neighbors of distance"""
     seenNodes = set([node])
     borderNodes = [node]
@@ -357,8 +448,8 @@ def getDownstream(node, distance, forInteractions):
     for dist in range(distance):
         while len(borderNodes) > 0:
             currNode = borderNodes.pop()
-            if currNode in forInteractions:
-                for i in forInteractions[currNode].keys():
+            if currNode in pInteractions:
+                for i in pInteractions[currNode].keys():
                     if i not in seenNodes:
                         seenNodes.update([i])
                         frontierNodes.append(i)
@@ -366,17 +457,17 @@ def getDownstream(node, distance, forInteractions):
         frontierNodes = list()
     return(seenNodes)
 
-def getUpstream(node, distance, forInteractions):
+def getUpstream(node, distance, pInteractions):
     """returns downstream neighbors of distance"""
-    revInteractions = reverseInteractions(forInteractions)
+    rpInteractions = reverseInteractions(pInteractions)
     seenNodes = set([node])
     borderNodes = [node]
     frontierNodes = []
     for dist in range(distance):
         while len(borderNodes) > 0:
             currNode = borderNodes.pop()
-            if currNode in revInteractions:
-                for i in revInteractions[currNode].keys():
+            if currNode in rpInteractions:
+                for i in rpInteractions[currNode].keys():
                     if i not in seenNodes:
                         seenNodes.update([i])
                         frontierNodes.append(i)
@@ -384,24 +475,85 @@ def getUpstream(node, distance, forInteractions):
         frontierNodes = list()
     return(seenNodes)
 
-def getNeighbors(node, distance, forInteractions, revInteractions):
+def getNeighbors(node, distance, pInteractions):
     """returns upstream and downstream neighbors of distance"""
+    rpInteractions = reverseInteractions(pInteractions)
     seenNodes = set([node])
     borderNodes = [node]
     frontierNodes = []
     for dist in range(distance):
         while len(borderNodes) > 0:
             currNode = borderNodes.pop()
-            if currNode in forInteractions:
-                for i in forInteractions[currNode].keys():
+            if currNode in pInteractions:
+                for i in pInteractions[currNode].keys():
                     if i not in seenNodes:
                         seenNodes.update([i])
                         frontierNodes.append(i)
-            if currNode in revInteractions:
-                for i in revInteractions[currNode].keys():
+            if currNode in rpInteractions:
+                for i in rpInteractions[currNode].keys():
                     if i not in seenNodes:
                         seenNodes.update([i])
                         frontierNodes.append(i)
         borderNodes = deepcopy(frontierNodes)
         frontierNodes = list()
     return(seenNodes)
+    
+def wNodeAttributes(pNodes, scoreMap = None, directory = "."):
+    """write cytoscape node attribute files"""
+    ## TYPE.NA
+    typef = open("%s/TYPE.NA" % (directory), "w")
+    typef.write("TYPE (class=java.lang.String)\n")
+    for node in pNodes.keys():
+        typef.write("%s = %s\n" % (node, pNodes[node]))
+    typef.close()
+    ## LABEL.NA
+    labelf = open("%s/LABEL.NA" % (directory), "w")
+    labelf.write("LABEL (class=java.lang.String)\n")
+    for node in pNodes.keys():
+        if pNodes[node] == "protein":
+            labelf.write("%s = %s\n" % (node, node))
+        else:
+            labelf.write("%s = %s\n" % (node, ""))
+    labelf.close()
+    ## *_SCORE.NA
+    if scoreMap != None:
+        for element in scoreMap.keys():
+            scoref = open("%s/%s_SCORE.NA" % (directory, element), "w")
+            scoref.write("SCORE (class=java.lang.Double)\n")
+            for node in scoreMap[element].keys():
+                scoref.write("%s = %s\n" % (node, scoreMap[element][node]))
+            scoref.close()
+
+def isTerminal(node, interactions):
+    rinteractions = reverseInteractions(interactions)
+    nLinks = 0
+    if node in interactions:
+        nLinks += len(interactions[nodes].keys())
+    if node in rinteractions:
+        nLinks += len(rinteractions[nodes].keys())
+    if nLinks > 1:
+        return False:
+    else
+        return True
+    
+def removeNode(node, pNodes, pInteractions):
+    """remove a node and its interactions from a Pathway"""
+    rpInteractions = reverseInteractions(pInteractions)
+    del pNodes[node]
+    if node in pInteractions:
+        for element in pInteractions[node].keys():
+            del pInteractions[node][element]
+            if len(pInteractions[node].keys()) == 0:
+                del pInteractions[node]
+            del rpInteractions[element][node]
+            if len(rpInteractions[element].keys()) == 0:
+                del rpInteractions[element]
+    if node in rpInteractions:
+        for element in rpInteractions[node].keys():
+            del pInteractions[element][node]
+            if len(pInteractions[element].keys()) == 0:
+                del pInteractions[element]
+            del rpInteractions[node][element]
+            if len(rpInteractions[node].keys()) == 0:
+                del rpInteractions[node]
+    return(pNodes, pInteractions)
