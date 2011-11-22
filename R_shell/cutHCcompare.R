@@ -47,6 +47,14 @@ compareHCclusterings <- function(file1, file2, k) {
 	m1 <- as.matrix(read.delim(file1, sep="\t", header=TRUE, row.names=1))
 	m2 <- as.matrix(read.delim(file2, sep="\t", header=TRUE, row.names=1))
 
+	# sort both matrices by the name
+	m1 <- m1[order(m1[,1]),]
+	m2 <- m2[order(m2[,1]),]
+	if (!identical(m1[,1],m2[,1])) {
+		print ("Error: samples clustered are not equal!")
+		q();
+	}
+
 	group1 <- groupHC(m1, k)
 	group2 <- groupHC(m2, k)
 	return (adjustedRandIndex(group1, group2))
