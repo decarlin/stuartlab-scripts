@@ -12,20 +12,28 @@
 # You can cite Yeung 2001 (Validating Clustering for Gene Expression Data) 
 # if using the adjusted rand index for a paper.
 
+#usage, options and doc goes here
+argspec <- c("clusterKMCompare.R takes 2 directories containing .kag files produced by k-means clustering (i.e. cluster-eisen) to do an all vs all comparison Output: the adjusted rand index between each possible pair in a tab-delineated matrix format
+
+	Usage: 
+		clusterKMCompare.R -f <dir1> -e <dir2> -o <output file>
+	Options:
+		out = the output cdt file to write to\n")
+
+if (commandArgs(TRUE)=="--help") { 
+	write(argspec, stderr())
+	q();
+}
+
 library(getopt)
 library(mclust)
 
 opt = getopt(matrix(c(
-    'type', 't', 1, "character",
     'f1', 'f', 1, "character",
     'f2', 'e', 1, "character",
     'out', 'o', 1, "character"
 	),ncol=4,byrow=TRUE));
 
-if (opt$type != 'kmeans') {
-	print ("only the kmeans type is supported at this time (requires .KAG files input)")
-	q();
-}
 # take a 2 named vectors of clusterings (the names are the cluster assignments,
 # and the values are the cluster members). 
 # The cluster members must be identical

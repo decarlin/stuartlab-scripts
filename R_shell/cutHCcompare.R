@@ -13,12 +13,24 @@
 # You can cite Yeung 2001 (Validating Clustering for Gene Expression Data) 
 # if using the adjusted rand index for a paper.
 
+#usage, options and doc goes here
+argspec <- c("cutHCcompare.R H-Clusters 2 tab-delineated matrix files, cuts them into a specified number of clusters and calculates the adjusted Rand Index between 2 clusterings. 
+
+	Usage: 
+		cutHCcompare.R -m <matrix1.tab> -n <matrix2.tab>  -k '5'
+	Options:
+		k = the number of clusters to produce from a h-clustering, using cuttree\n")
+
+if (commandArgs(TRUE)=="--help") { 
+	write(argspec, stderr())
+	q();
+}
+
 library('getopt')
 
 opt = getopt(matrix(c(
     'm1' , 'm', 1, "character",
     'm2' , 'n', 1, "character",
-    'type' , 't', 1, "character",
     'k' , 'k', 1, "character"
 	),ncol=4,byrow=TRUE));
 
