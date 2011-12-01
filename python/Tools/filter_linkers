@@ -1,0 +1,63 @@
+#!/usr/bin/env python2.7
+
+#
+# FILTER: A 2-pass Filter to Find 'Linker' Nodes
+# For use with the Heat Diffusion Kernel / 'HotLink'
+# Approach
+#
+# Find Nodes that have a high heat in diffused graphs
+# that are seeded by either the mutations only or 
+# the Paradigm IPZ scores only.
+#
+# Nodes that also have a significantly higher heat in the
+# diffusion graph seeded with both mutations and IPZ
+# (compared with max(Mut, IPZ) will pass the final filter
+
+import sys, os
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("-d","--delta",dest="delta",action="store",default=2)
+parser.add_option("-c","--cutoff",dest="cutoff",action="store",default=2)
+(opts, args) = parser.parse_args()
+# the absolute heat required in either IPZ or mutation seeded graphs
+HEAT_CUTOFF_1 = float(opts.cutoff)
+# the delta required between h(IPZ, Mut) - max(h(IPZ), h(Mut))
+HEAT_DELTA = float(opts.delta)
+
+working_dir = args[0]
+
+mut_f = working_dir+"/"+"heat.tab"
+ipz_f = working_dir+"/"+"heat_ipz.tab"
+all_f = working_dir+"/"+"heat_all.tab"
+
+if  not os.path.exists(mut_f) or \
+	not os.path.exists(ipz_f) or \
+	not os.path.exists(all_f):
+	
+	raise Exception("Can't find all heat files!")
+
+
+def hashIt(file):
+	hash = {}
+	for line in open(file, 'r'):
+		prot, heat = line.rstrip().split("\t")
+		hash[prot] = float(heat)
+
+	return hash
+
+mut_heat = hashIt(mut_f)
+ipz_heat = hashIt(ipz_f)
+all_heat = hashIt(all_f)
+
+filtered = {}
+# Filter1: high heat in either mut or ipz's
+for prot in mut_heat:
+	if (mut_heat[prot] > HEAT_CUTOFF_1) or \
+	   (ipz_heat[prot] > HEAT_CUTOFF_1):
+		filtered[prot] = max(mut_heat[prot], ipz_heat[prot])
+
+# Filter2: value combined heat diffusion graph must be greater than max plus delta...
+for prot in filtered:
+	delta = all_heat[prot] - filtered[prot] 
+	if delta > HEAT_DELTA:
+		print prot+"\t"+str(delta)
