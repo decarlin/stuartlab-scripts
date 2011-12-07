@@ -44,6 +44,38 @@ def getGenes(complex_str, componentMap, depth):
 
 	return all_genes
 
+def addEdges(abs_source, abs_target, map, componentMap):
+	"""
+	Add the source/target interaction, break them up into
+	component parts with the component map and add them to the 
+	edge map
+	Returns: An updated edge mapping
+	"""
+
+	# use to component map to find all the source genes
+	sourceGenes = []
+	if complexRE.match(abs_source):
+		sourceGenes = getGenes(abs_source, componentMap, 1)
+	else:
+		sourceGenes.append(abs_source)
+
+	# find target genes with the component map
+	targetGenes = []
+	if complexRE.match(abs_target):
+		for gene in getGenes(abs_target, componentMap, 1):
+			targetGenes.append(gene)
+	else:
+		targetGenes.append(abs_target)
+
+	# connect these sink genes to the source gene
+	for sr in sourceGenes:
+		if sr not in map:
+			map[sr] = []
+		for target in targetGenes:
+			# again, only proteins
+			map[sr].append(target)
+
+	return map
 
 # print out a 2-column interactions file of simple PPIs
 # protein -> protein
@@ -83,13 +115,9 @@ for node in nodes:
 
 		type = Interactions[node][inode]
 		if type.startswith("-t"):
-			tf_edges[node].append(gene)	
-			continue
-
-		if complexRE.match(inode):
-			genes = getGenes(inode, componentMap, 1)
-			for gene in genes:
-				edges[node].append(gene)	
+			tf_edges = addEdges(node, inode, tf_edges, componentMap) 
+		else:
+			edges = addEdges(node, inode, edges, componentMap) 
 
 interactions_out = open(options.ppi_output, 'w')
 for source in edges:
