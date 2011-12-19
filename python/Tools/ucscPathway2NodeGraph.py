@@ -44,11 +44,12 @@ def getGenes(complex_str, componentMap, depth):
 
 	return all_genes
 
-def addEdges(abs_source, abs_target, map, componentMap):
+def addEdges(abs_source, abs_target, interaction, map, componentMap):
 	"""
 	Add the source/target interaction, break them up into
 	component parts with the component map and add them to the 
 	edge map
+	map[ (sourceGene, interactionType) ] = targetGene
 	Returns: An updated edge mapping
 	"""
 
@@ -69,11 +70,11 @@ def addEdges(abs_source, abs_target, map, componentMap):
 
 	# connect these sink genes to the source gene
 	for sr in sourceGenes:
-		if sr not in map:
-			map[sr] = []
+		if (sr,interaction) not in map:
+			map[(sr,interaction)] = []
 		for target in targetGenes:
 			# again, only proteins
-			map[sr].append(target)
+			map[(sr,interaction)].append(target)
 
 	return map
 
@@ -98,16 +99,12 @@ for line in open(options.pathway_file, 'r'):
 			
 
 # for each node, find all interactions, and use the component map to refine them to genes
-# if the interaction is a -t>, add it to the TF edge list, otherwise add it to the ppi edge list
+# if the interaction is a -t*, add it to the TF edge list, otherwise if -p* add it to the ppi edge list
 for node in nodes:
 
-	# complex, etc
+	# complex, -t> or -t| interaction type
 	type =  nodes[node]
 		
-	# for each protein, add all interactions to corresponding elements
-	edges[node] = [] 
-	tf_edges[node] = [] 
-
 	if node not in Interactions:
 		continue
 
@@ -115,23 +112,23 @@ for node in nodes:
 
 		type = Interactions[node][inode]
 		if type.startswith("-t"):
-			tf_edges = addEdges(node, inode, tf_edges, componentMap) 
-		else:
-			edges = addEdges(node, inode, edges, componentMap) 
+			tf_edges = addEdges(node, inode, type, tf_edges, componentMap) 
+		elif type.startswith("-a"):
+			edges = addEdges(node, inode, type, edges, componentMap) 
 
 interactions_out = open(options.ppi_output, 'w')
-for source in edges:
+for (source, interaction) in edges:
 
-	for sink in edges[source]:
-		interactions_out.write(source+"\t"+sink+"\n")
+	for sink in edges[(source, interaction)]:
+		interactions_out.write(source+"\t"+sink+"\t"+interaction+"\n")
 
 interactions_out.close()
 			
 tf_out = open(options.tf_output, 'w')
-for source in tf_edges:
+for (source, interaction) in tf_edges:
 
-	for sink in tf_edges[source]:
-		tf_out.write(source+"\t"+sink+"\n")
+	for sink in tf_edges[(source, interaction)]:
+		tf_out.write(source+"\t"+sink+"\t"+interaction+"\n")
 
 tf_out.close()
 
