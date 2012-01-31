@@ -22,6 +22,7 @@ rev_nodes, revInteractions = mPathway.rPathway(options.pathway_file, reverse = T
 componentMap = mPathway.getComponentMap(rev_nodes, revInteractions)
 
 complexRE = re.compile(".*\((complex|family)\).*")
+abstractRE = re.compile(".*\(abstract\).*")
 
 # get the constituents of a complex
 def getGenes(complex_str, componentMap, depth):
@@ -110,6 +111,9 @@ all_out = open(options.flattened, 'w')
 for (source, interaction) in all_edges:
 
 	for sink in all_edges[(source, interaction)]:
+		# remove self links:
+		if source == sink:
+			continue
 		all_out.write(source+"\t"+sink+"\t"+interaction+"\n")
 
 all_out.close()
