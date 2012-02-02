@@ -99,11 +99,14 @@ mapModuleNames <- function(ids, map) {
 # SCORE = f_B(Sr/S) - 0.1*f_C(I-Sr)/S)
 scoreSubnet <- function(activities, subnet) {
 
-	subnet <- V(igraph_module)$name
-	Sr <- length(intersect(subnet, activities))
+	net_genes <- V(subnet)$name
+	Sr <- length(intersect(net_genes, activities))
 	S <- length(activities)	
-	I <- length(subnet)
+	I <- length(net_genes)
 
+	print(paste("Sr: ", Sr, collapse=""))
+	print(paste("S: ", S, collapse=""))
+	print(paste("(I-Sr)/S: ", (I-Sr)/S, collapse=""))
 	return (Sr/S - 0.1*(I-Sr)/S)
 }
 
@@ -121,9 +124,12 @@ parseActivitiesPvalsFile <- function(file) {
 	m <- as.matrix(read.delim(file, header=FALSE, sep="\t"))
 	m <- m[which(as.numeric(c(m[,2])) < 0.49999),1:2]
 
-	gene_names <- c(m[,1])
+	#gene_names <- c(m[,1])
+
 	for (row in c(1:dim(m)[1])) {
-		m[row,2] = paste(gsub(" +","", m[row,2]),collapse="",sep=":")
+		m[row,2] = gsub(" +","#", m[row,2])
+		m[row,1] = gsub(" +","#", m[row,1])
+		#m[row,1] = paste(gsub(" +","", m[row,1]),collapse="",sep=":")
 	}
 	ids <- c(m[,1])
 	pvals <- as.numeric(c(m[,2]))
@@ -152,8 +158,9 @@ parseNetworkFile <- function(network_file, weight_col) {
 	# change the names to add the type -- edges should be unique now
 	for (row in c(1:dim(m)[1])) {
 		# 4th column is the type for the second row
-		m[row,2] = paste(gsub(" +","", m[row,2]), collapse="",sep=":")
-		m[row,1] = paste(gsub(" +","", m[row,1]),collapse="",sep=":")
+		#m[row,2] = paste(gsub(" +","#", m[row,2]), collapse="",sep=":")
+		m[row,2] = gsub(" +","#", m[row,2])
+		m[row,1] = gsub(" +","#", m[row,1])
 	}
     g <- graph.edgelist(m[,1:2], directed=FALSE)
 	# assign the weight vector: Heinz will automatically use the edge $score attribute
@@ -349,11 +356,11 @@ plotPCSTModule <- function (network, layout = layout.fruchterman.reingold, label
 write(paste("Parsing network file ", opt$network, "\n",collapse=""), stderr())
 network <- parseNetworkFile(opt$network, 0)
 write(paste("found network with ",  length(V(network)$name), " nodes and ", length(E(network)), " edges ", "\n", collapse=""), stderr())
-
 # get mutations data matrix: 3 columns, with each tuple having
 # (entrez gene ID, gene Name, experimentally dervied p-value of no-mutation NH)
 write(paste("Parsing activities file ", opt$activies, "\n", collapse=""), stderr())
 activities_data <- parseActivitiesPvalsFile(opt$activities)
+#print(activities_data)
 write(paste("Attempting to link up to ", dim(activities_data)[1], " genes over the network...\n"), stderr())
 
 igraph_module <- findModules(network, activities_data)
