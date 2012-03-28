@@ -6,7 +6,7 @@
 # an optimal subset of the nodes provided and any other required 'linker' nodes
 # in the network. 
 #
-# This is the computationally 'cheap' version of the PCST algorithm, which is not
+# This is the computationally cheap version of the PCST algorithm, which is not
 # guaranteed to converge in a reasonable amount of time (or even give an estimate of
 # the time required to converge).
 #
@@ -19,7 +19,9 @@ library('getopt')
 opt = getopt(matrix(c(
     'help' , 'h', 1, "character",
     'network' , 'n', 1, "character",
-    'activities' , 'a', 1, "character"
+    'activities' , 'a', 1, "character",
+    'pcst' , 'p', 1, "character",
+    'fdr' , 'f', 1, "character"
 	),ncol=4,byrow=TRUE));
 
 if (!is.null(opt$help) || is.null(opt$network) || is.null(opt$activities)) {
@@ -50,6 +52,45 @@ pcstRunFast <- function(subnet, scores, no_solutions) {
 	modules <- list()
 	for (k in c(1:no_solutions)) {
 		modules[[k]] <- runFastHeinz(subnet, scores)
+	}
+
+	return (modules)
+}
+
+# PCST_RUN - Take a igraph network and a set of node scores and find
+# a given number of suboptimal solutions using the PCST Heinz algorithm 
+# implemented by Ivana Ljubic (http://homepage.univie.ac.at/ivana.ljubic/research/pcstp/) 
+# along with the BioNet package R libraries (http://bionet.bioapps.biozentrum.uni-wuerzburg.de/)
+# 
+# INPUT: 
+# 	- subnet : an igraph network of named nodes
+# 	- scores : a named vector of node scores corresponding to a subset of the nodes in (subnet)
+#	- no_solutions : the number of suboptimal solutions to find (0 for only the optimal solution)
+#
+# RETURNS:
+# 	- modules : a list object containing each solution as a graphNEL object
+pcstRun <- function(subnet, scores, no_solutions) {
+
+	# create temp directories for heinz files
+	dir.create("heinztmp")
+	dir.create("tmp")
+	heinz.node.file = "tmp/heinz.n.file.txt"
+	heinz.edge.file = "tmp/heinz.e.file.txt"
+
+
+	writeHeinzEdges(network=subnet, file=heinz.edge.file, use.score=TRUE)
+	writeHeinzNodes(network=subnet, file=heinz.node.file, node.scores=scores)
+
+	runHeinz(heinz.folder="/projects/sysbio/apps/x86_64/heinz_1.63", heinz.e.file=heinz.edge.file, heinz.n.file = heinz.node.file, N=TRUE, E=FALSE, diff=-1, n=no_solutions)
+	out.node.file <- paste(heinz.node.file,".0.hnz",collapse="",sep="")
+
+	solutions <- list.files("./tmp",pattern="heinz.n.*.hnz")
+	modules <- list()
+	k <- 1
+	for (s in sort(solutions)) {
+		print(paste("reading solution: ", s))
+		modules[[k]] <- readHeinzGraph(node.file = paste("./tmp",s,collapse="",sep="/"), subnet, format="igraph")
+		k <- k + 1 
 	}
 
 	return (modules)
@@ -104,9 +145,9 @@ scoreSubnet <- function(activities, subnet) {
 	S <- length(activities)	
 	I <- length(net_genes)
 
-	print(paste("Sr: ", Sr, collapse=""))
-	print(paste("S: ", S, collapse=""))
-	print(paste("(I-Sr)/S: ", (I-Sr)/S, collapse=""))
+	#print(paste("Sr: ", Sr, collapse=""))
+	#print(paste("S: ", S, collapse=""))
+	#print(paste("(I-Sr)/S: ", (I-Sr)/S, collapse=""))
 	return (Sr/S - 0.1*(I-Sr)/S)
 }
 
@@ -253,9 +294,13 @@ findModules <- function(network, activities_data) {
 		print("ERROR: couldn't fit Beta-Uniform model!")
 		q();
 	}
-	scores <- scoreNodes(network, fb, fdr = 0.05)
+	scores <- scoreNodes(network, fb, fdr = opt$fdr)
 	scores[is.na(scores)] <- rep.int(0, length(is.na(scores)))
-	modules <- pcstRunFast(network, scores, 1)
+	if (is.null(opt$pcst)) {
+		modules <- pcstRunFast(network, scores, 1)
+	} else {
+		modules <- pcstRun(network, scores, 1)
+	}
 
 	# return the single module
 	return (modules[[1]])
@@ -352,6 +397,11 @@ plotPCSTModule <- function (network, layout = layout.fruchterman.reingold, label
         vertex.shape = shapes, main = main, ...)
 }
 
+if (is.null(opt$fdr)) {
+	opt$fdr = 0.05
+} else {
+	opt$fdr = as.numeric(opt$fdr)
+}
 # parse the PPI network into an undirected graph with uniform weights
 write(paste("Parsing network file ", opt$network, "\n",collapse=""), stderr())
 network <- parseNetworkFile(opt$network, 0)
@@ -365,10 +415,10 @@ write(paste("Attempting to link up to ", dim(activities_data)[1], " genes over t
 
 igraph_module <- findModules(network, activities_data)
 score <- scoreSubnet(activities_data[,1], igraph_module)
-print (paste("Stat: ", "Score ", score, collapse=""))
-print(paste("Stat: ", "CC ",  transitivity(igraph_module, type="global"), collapse=""))
-print(paste("Stat: ", "Nodes ", length(V(igraph_module)$name), collapse=""))
-print(paste("Stat: ", "Edges ", length(E(igraph_module)), collapse=""))
+#print (paste("Stat: ", "Score ", score, collapse=""))
+#print(paste("Stat: ", "CC ",  transitivity(igraph_module, type="global"), collapse=""))
+#print(paste("Stat: ", "Nodes ", length(V(igraph_module)$name), collapse=""))
+#print(paste("Stat: ", "Edges ", length(E(igraph_module)), collapse=""))
 #pdf(opt$pdf)
 #cshapes <- rep("circle", length(V(igraph_module)$name))
 #ccolors <- rep("White", length(V(igraph_module)$name))
