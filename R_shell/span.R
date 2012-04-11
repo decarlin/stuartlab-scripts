@@ -96,39 +96,35 @@ pcstRun <- function(subnet, scores, no_solutions) {
 	return (modules)
 }
 
-# MAP_MODULE_NAMES - convert a set of Ds
+# MAP_NAMES_2_INTERNAL_IDS - convert a set of Ds
 # into gene names, using a map matrix object
 #
 # INPUT: 
-#	- ids : a vector of gene ids + ":type"
+#	- names : a vector of gene ids 
 #	- map : a 2-column matrix with gene ids
 #	in column 1 paired with gene names in column 2 
 #
 # RETURNS: 
 #	- a vector of the corresponding gene names (or
 #	just the original IDs if none match)
-mapModuleNames <- function(ids, map) {
+mapModuleNames2Ids <- function(names, map) {
 
-	mapped_names <- vector(length=length(ids))
+	ids <- vector(length=length(names))
 
 	k <- 1
-    for (i in c(1:length(ids))) {
+    for (i in c(1:length(names))) {
 
-		v <- strsplit(ids[i],":")[[1]]
-		id <- v[1]
-		type <- v[2]
 		# id + ":" type string to prepend to the gene name
-		name <- paste(id,type,collapse="",sep=":")
+		name <- names[i]
 
 		# should get 3 values: the second is the gene name
-		gene_name <- map[which(map[,1] == id), 2][2]
-        name <- paste(name, gene_name, collapse="",sep=":")
+		id <- map[which(map[,2] == name), 1][1]
 
-		mapped_names[k] <- gsub(" +", "_", name)
+		ids[k] <- id
 		k <- k + 1
     }
 
-	return (mapped_names)
+	return (ids)
 }
 
 # SCORE: Score a network using the source and target
@@ -200,8 +196,8 @@ parseNetworkFile <- function(network_file, weight_col) {
 	for (row in c(1:dim(m)[1])) {
 		# 4th column is the type for the second row
 		#m[row,2] = paste(gsub(" +","#", m[row,2]), collapse="",sep=":")
-		m[row,2] = gsub(" +","#", m[row,2])
-		m[row,1] = gsub(" +","#", m[row,1])
+		m[row,2] = gsub(" +","_", m[row,2])
+		m[row,1] = gsub(" +","_", m[row,1])
 	}
     g <- graph.edgelist(m[,1:2], directed=FALSE)
 	# assign the weight vector: Heinz will automatically use the edge $score attribute
@@ -395,6 +391,15 @@ plotPCSTModule <- function (network, layout = layout.fruchterman.reingold, label
         vertex.label = labels, vertex.label.cex = cex, vertex.label.dist = labels.dist, 
         vertex.color = coloring, vertex.label.family = "sans", 
         vertex.shape = shapes, main = main, ...)
+}
+
+createInternalMap <- function(names) {
+
+	m <- matrix(ncol=2, nrow=length(names))
+	m[,2] <- names
+	m[,1] <- seq(1,length(names))
+
+	return (m)
 }
 
 if (is.null(opt$fdr)) {
