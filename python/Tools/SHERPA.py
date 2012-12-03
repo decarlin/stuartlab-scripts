@@ -6,10 +6,9 @@ from os import path,mkdir
 parser = OptionParser()
 parser.add_option("-d","--depth",dest="depth",action="store",default="7",help="Search depth (default 7)")
 parser.add_option("-n","--network",dest="network",action="store",default=None,help="Base Network in UCSC Pathway Format")
-parser.add_option("-o","--output_directory",dest="od",action="store",default="SearchDFS_Result",help="Output Directory for Networks and Report")
 parser.add_option("-u","--upstream_genes",dest="up",action="store",default=None,help="Upstream (Cell Surface) Gene Set")
 parser.add_option("-s","--signaling_genes",dest="signaling",action="store",default=None,help="Optional Signaling genes: must be used to connect paths if present")
-parser.add_option("-d","--downstream_genes",dest="down",action="store",default=None,help="Downstream (Cell Nucleus) Gene Set")
+parser.add_option("-c","--downstream_genes",dest="down",action="store",default=None,help="Downstream (Cell Nucleus) Gene Set")
 parser.add_option("-o","--output_directory",dest="od",action="store",default="SHERPA_RESULT",help="Output Directory for Networks and Report")
 (opts, args) = parser.parse_args()
 
