@@ -1,0 +1,92 @@
+#!/usr/bin/env python2.7
+
+'''
+ formatRNASEQ: Input Tumor and Normal RNASEQ counts files, output a single matrix with
+ sample labels attached as binary 0 (normal) and 1 (tumor) values. 
+ Samples will be columns, rows genes
+'''
+
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("--normal",dest="normal",action="store",default=None)
+parser.add_option("--tumor",dest="tumor",action="store",default=None)
+(opts, args) = parser.parse_args()
+
+
+def parseRNASEQ(file):
+
+	'''
+		Parse an Illumina RNASEQ file in the GDAC format (firehose output, downloaded from gdac.broadinstitute.org)
+		with redundant sample ids on the top row , data type descriptors on the next, and data below. Gene IDs
+		are the row labels.  (HUGO|entrezid) format. 
+	'''
+	
+	try:
+		fh = open(file, 'r')
+	except:
+		raise Exception("Can't open file:"+file)
+
+	gene_counts = {}
+
+	lineno = 1
+	sampleids = None
+	typelabels = None
+	for line in fh:
+		parts = line.rstrip().split("\t")
+		id = parts[0]
+		if lineno == 1:
+			sampleids = parts[1:]
+		elif lineno == 2:
+			typelabels = parts[1:]
+		else:
+			gene_name = id.split("|")[0]
+			if gene_name == "?":
+				continue
+			gene_counts[gene_name] = {}
+			for i in range(1, len(parts)):
+				type = typelabels[i-1]
+				if type != "raw_counts":
+					continue
+				# add the value, indexed by gene name then sample
+				sample = sampleids[i-1]
+				val = parts[i]
+				gene_counts[gene_name][sample] = val
+		
+		lineno += 1
+
+	fh.close()
+
+	sample_names = set()
+	for name in sampleids:
+		sample_names.add(name)
+
+	return (gene_counts, sample_names)	
+	
+	
+normal_counts, normal_samples = parseRNASEQ(opts.normal)
+tumor_counts, tumor_samples = parseRNASEQ(opts.tumor)
+
+sample_order = []
+for s in normal_samples:
+	sample_order.append(s)
+for s in tumor_samples:
+	sample_order.append(s)
+
+# print out 
+print "Gene\t"+"\t".join(sample_order)
+print "Type\t"+"\t".join([str(i) for i in [0]*len(normal_samples)])+"\t"+"\t".join([str(i) for i in [1]*len(tumor_samples)])
+for gene in normal_counts:
+	if gene not in tumor_counts:
+		raise Exception("Error: gene not found in both datasets:"+gene)
+
+	printstr = gene
+	for s in sample_order:
+		val = None
+		if s in normal_samples:
+			val = normal_counts[gene][s]
+		else: 
+			val = tumor_counts[gene][s]
+
+		printstr += "\t"+str(val)
+
+	print printstr
