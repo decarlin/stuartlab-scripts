@@ -24,7 +24,7 @@ opt = getopt(matrix(c(
 if (!is.null(opt$help) || is.null(opt$expr)) {
 	self = commandArgs()[1];
 	#print a friendly message and exit with a non-zero error code
-	cat(paste("Usage: ",self,"  --expr <expression file> \n"))
+	cat(paste("Usage: ",self,"  --expr <expression file> --output <out datafile> \n"))
 	q();
 }
 
