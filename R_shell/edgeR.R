@@ -18,21 +18,24 @@ library('getopt')
 opt = getopt(matrix(c(
     'help' , 'h', 1, "character",
     'expr' , 'e', 1, "character",
+    'groups' , 'g', 1, "character",
     'output' , 'o', 1, "character"
 	),ncol=4,byrow=TRUE));
 
 if (!is.null(opt$help) || is.null(opt$expr)) {
 	self = commandArgs()[1];
 	#print a friendly message and exit with a non-zero error code
-	cat(paste("Usage: ",self,"  --expr <expression file> --output <out datafile> \n"))
+	cat(paste("Usage: ",self,"  --expr <expression file> --groups <binary vector: first column assignments>\n"))
 	q();
 }
 
 library(edgeR)
 
-raw.data <- read.delim(opt$expr, sep="\t", header=TRUE, row.names=1)
-counts <- raw.data[2:nrow(raw.data),]
-groups <- as.numeric(raw.data[1,])
+raw.data <- read.delim(opt$expr, sep="\t", header=TRUE,row.names=1)
+counts <- raw.data
+assignments <- as.matrix(read.delim(opt$groups, sep="\t", header=TRUE))
+groups <- as.numeric(assignments[,2])
+# needs to be in order 
 
 # create DGE List object from counts, assignments
 cds <- DGEList(counts, group = groups)
