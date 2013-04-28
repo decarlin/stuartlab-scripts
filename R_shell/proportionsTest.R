@@ -45,8 +45,8 @@ merged <- as.matrix(merge(divisions, data, by=0))
 # the first column contains the subtype id
 group1_indexes <- which(as.numeric(merged[,2]) == "1")
 group2_indexes <- which(as.numeric(merged[,2]) == "0")
-output <- matrix(ncol=4)
-output <- rbind(output, c("Gene", "Statistic", "Proportion", "Sign"))
+output <- matrix(ncol=5)
+output <- rbind(output, c("Gene", "Statistic", "P-val", "Proportion", "Sign"))
 
 # first col is the sample id, second column is subtype
 # iterate over the columns
@@ -106,7 +106,7 @@ for (i in c(3:dim(merged)[2])) {
 
 
 	#print (ssig$statistic)
-	output <- rbind(output, c(gene_name, ssig$statistic, sign, fold))
+	output <- rbind(output, c(gene_name, ssig$statistic, ssig$p.val, fold, sign))
 
 }
 
