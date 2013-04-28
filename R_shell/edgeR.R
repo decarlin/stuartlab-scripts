@@ -35,7 +35,11 @@ raw.data <- read.delim(opt$expr, sep="\t", header=TRUE,row.names=1)
 counts <- raw.data
 assignments <- as.matrix(read.delim(opt$groups, sep="\t", header=TRUE))
 groups <- as.numeric(assignments[,2])
-# needs to be in order 
+if (!isTRUE(all.equal(assignments[,1], colnames(raw.data)))) {
+	print ("Error: group assignments not in the same order as data columns: use join.pl first")
+	quit();
+}
+# needs to be in order
 
 # create DGE List object from counts, assignments
 cds <- DGEList(counts, group = groups)
