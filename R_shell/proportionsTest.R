@@ -6,6 +6,20 @@
 # Rows: sample ids
 # Values: 1/0 = mutation status 
 #
+# Example Data file:
+# Sample	Gene1	Gene2	Gene3
+# S1	1	1	0
+# S2	1	0	1
+# S3	0	1	1
+# S4	0	0	1
+# 
+# Example Dichotomy feature file:
+# S1	1
+# S2	1
+# S3	0
+# S4	0
+#
+
 
 library('getopt')
 options(warn=-1)
@@ -20,6 +34,7 @@ opt = getopt(matrix(c(
 	),ncol=4,byrow=TRUE));
 
 SIG = 0.05
+SIG = 0.5
 EPSILON = 0.001
 
 SIG = SIG+EPSILON
@@ -56,13 +71,13 @@ for (i in c(3:dim(merged)[2])) {
 
 	print(paste("testing gene", gene_name))
 	group1 <- as.numeric(merged[group1_indexes,i])
-	mut_g1 <- length(which(group1 == 1))
-	non_mut_g1 <- length(which(group1 == 0))
+	mut_g1 <- length(which(group1 == "1"))
+	non_mut_g1 <- length(which(group1 == "0"))
 
 	group2 <- as.numeric(merged[group2_indexes,i])
 
-	mut_g2 <- length(which(group2 == 1))
-	non_mut_g2 <- length(which(group2 == 0))
+	mut_g2 <- length(which(group2 == "1"))
+	non_mut_g2 <- length(which(group2 == "0"))
 
 	r1 <- mut_g1/non_mut_g1
 	r2 <- mut_g2/non_mut_g2
@@ -73,7 +88,7 @@ for (i in c(3:dim(merged)[2])) {
 		sign <- "-"
 	}
 	
-	fold = r1/r2
+	fold = as.numeric(r1)/as.numeric(r2)
 
 	test_m <- matrix(c(mut_g1, non_mut_g1, mut_g2, non_mut_g2), ncol=2, byrow=TRUE)
 	rownames(test_m) <- c("G1", "G2")
@@ -84,12 +99,12 @@ for (i in c(3:dim(merged)[2])) {
 	# pval = enough genes to make a call
 	# -1 = mutated, but not enough to test, or not significant
 	# -2 = not mutated
-	if (mut_g2 > as.numeric(opt$min_mut)) {
+	if (mut_g2 >= as.numeric(opt$min_mut)) {
 		mut_status <- ssig$p.value
 		if (mut_status > SIG) {
 			mut_status = -1
 		}
-	} else if (mut_g1 > as.numeric(opt$min_mut)) {
+	} else if (mut_g1 >= as.numeric(opt$min_mut)) {
 		mut_status <- ssig$p.value
 		if (mut_status > SIG) {
 			mut_status = -1
