@@ -1,4 +1,4 @@
-#!/usr/local/bin/python2.6
+#!/usr/bin/env	python
 
 import mPathway, sys, re, collections, itertools
 
