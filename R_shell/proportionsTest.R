@@ -42,7 +42,7 @@ SIG = SIG+EPSILON
 if (!is.null(opt$help) || is.null(opt$data) || is.null(opt$output) || is.null(opt$dichotomy)) {
 	self = commandArgs()[1];
 	#print a friendly message and exit with a non-zero error code
-	cat(paste("Usage: ",self,"  --input proportions +/- matrix --output p-vals-file \n"))
+	cat(paste("Usage: ",self,"  --data <matrix (samples are rows)> --dichotomy (2 column list, second in binary) --output (filename) \n"))
 	q();
 }
 
